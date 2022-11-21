@@ -308,6 +308,11 @@ public class BuildingSerializer
         new Vector3 (-0f, 180, -0f)
     };
 
+    public void SerializeBuilding(Building b)
+    { 
+        
+    }
+    
     public void UnRenderBuilding()
     {
         //var b = bldgFolder.gameObject;

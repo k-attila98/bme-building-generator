@@ -22,6 +22,7 @@ namespace BuildingGenerator.Shared
         public int Width { get; set; }
         public int Height { get; set; }
 
+        /*
         Vector3[] Normals { get; set; }
         Vector3[] Vertices
         {
@@ -36,7 +37,9 @@ namespace BuildingGenerator.Shared
                 }
             }
         }
-        
+        */
+
+        public Face[] Faces { get; set; }
 
         public Transform()
         {
@@ -44,8 +47,7 @@ namespace BuildingGenerator.Shared
             Position = new Vector3(0, 0, 0);
             Width = 0;
             Height = 0;
-            Vertices = new Vector3[0];
-            Normals = new Vector3[0];
+            Faces = new Face[0];
         }
 
         public Transform(string name)
@@ -54,8 +56,7 @@ namespace BuildingGenerator.Shared
             Position = new Vector3(0, 0, 0);
             Width = 0;
             Height = 0;
-            Vertices = new Vector3[0];
-            Normals = new Vector3[0];
+            Faces = new Face[0];
         }
 
         public Transform(Transform prefab, Vector3Int position, Quaternion rotation)
@@ -64,18 +65,12 @@ namespace BuildingGenerator.Shared
             Position = position.AsVec3();
             Width = prefab.Width;
             Height = prefab.Height;
-            Vertices = new Vector3[prefab.Vertices.Length];
-            for (int i = 0; i < prefab.Vertices.Length; i++)
+            Faces = prefab.Faces.Length > 0 ? new Face[prefab.Faces.Length] : new Face[0];
+            for (int i = 0; i < prefab.Faces.Length; i++)
             {
-                Vertices[i] = prefab.Vertices[i];
-            }
-
-            this.Rotate(rotation);
-
-            
-            for (int i = 0; i < Vertices.Length; i++)
-            {
-                Vertices[i] = Vertices[i].Add(position);
+                Faces[i] = prefab.Faces[i].Clone();
+                Faces[i].Rotate(rotation);
+                Faces[i].Translate(position);
             }
         }
 
@@ -85,21 +80,15 @@ namespace BuildingGenerator.Shared
             Position = position;
             Width = prefab.Width;
             Height = prefab.Height;
-            Vertices = new Vector3[prefab.Vertices.Length];
-            for (int i = 0; i < prefab.Vertices.Length; i++)
+            Faces = prefab.Faces.Length > 0 ? new Face[prefab.Faces.Length] : new Face[0];
+            for (int i = 0; i < prefab.Faces.Length; i++)
             {
-                Vertices[i] = prefab.Vertices[i];
-            }
-
-            this.Rotate(rotation);
-
-
-            for (int i = 0; i < Vertices.Length; i++)
-            {
-                Vertices[i] = Vertices[i].Add(position);
+                Faces[i] = prefab.Faces[i].Clone();
+                Faces[i].Rotate(rotation);
+                Faces[i].Translate(position);
             }
         }
-
+        /*
         private Vector3Int _CalculateNormal(Vector3Int vertex1, Vector3Int vertex2, Vector3Int vertex3)
         {
             var v1 = vertex2.Subtract(vertex1);
@@ -178,6 +167,7 @@ namespace BuildingGenerator.Shared
             var qv2 = q * qv * Quaternion.Conjugate(q);
             return new Vector3(qv2.X, qv2.Y, qv2.Z);
         }
+        */
 
         public void SetParent(Transform parent)
         {
@@ -187,6 +177,24 @@ namespace BuildingGenerator.Shared
         public Vector3 TransformPoint(Vector3 vector)
         {
             return new Vector3(Position.x + vector.x, Position.y + vector.y, Position.z + vector.z);
+        }
+
+        public string ToString()
+        {
+            string result = "";
+            foreach (var face in Faces)
+            {
+                foreach (var vertex in face.Vertices)
+                {
+                    result += vertex.ToString();
+                }
+            }
+
+            foreach (var face in Faces)
+            {
+                result += face.ToString();
+            }
+            return result;
         }
     }
 }

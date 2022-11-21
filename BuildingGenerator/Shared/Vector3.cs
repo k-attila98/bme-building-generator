@@ -52,7 +52,10 @@ namespace BuildingGenerator.Shared
             return new Vector3(m_X + vectorToAdd.x, m_Y + vectorToAdd.y, m_Z + vectorToAdd.z);
         }
 
-
+        public string ToString()
+        {
+            return $"v {m_X} {m_Y} {m_Z}\n";
+        }
 
 
     }
