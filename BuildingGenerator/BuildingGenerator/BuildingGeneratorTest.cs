@@ -7,15 +7,18 @@ public class BuildingGeneratorTest
     private GenerationParams genParams = null;
     private Building b = null;
     
-    void Start()
+    public void Start()
     {
         genParams = new GenerationParams();
         genParams.BoundingBox = settings.Bounds;
         
         b = BuildingGenerator_v2.Generate(settings, genParams);
-        Console.Write(b.ToString());
+        var serializer = new BuildingSerializer();
+
+        var obj = serializer.StringifyBuilding();
+        serializer.SaveBuildingToObj(obj);
         //new BuildingRenderer().Render(b);
-        
+
     }
     
     public void GenerateBuilding()

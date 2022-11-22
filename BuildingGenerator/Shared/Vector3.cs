@@ -57,6 +57,25 @@ namespace BuildingGenerator.Shared
             return $"v {m_X} {m_Y} {m_Z}\n";
         }
 
+        public static bool operator ==(Vector3 a, Vector3 b)
+        {
+            return a.x == b.x && a.y == b.y && a.z == b.z;
+        }
+        public static bool operator !=(Vector3 a, Vector3 b)
+        {
+            return !(a == b);
+        }
 
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            Vector3 p = obj as Vector3;
+            if ((System.Object)p == null)
+                return false;
+
+            return (x == p.x) && (y == p.y) && (z == p.z);
+        }
     }
 }

@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingGenerator", "BuildingGenerator\BuildingGenerator.csproj", "{D0034084-30E2-411B-83D1-BFAEAF7605C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildingGenerator", "BuildingGenerator\BuildingGenerator.csproj", "{D0034084-30E2-411B-83D1-BFAEAF7605C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingGeneratorTest", "BuildingGeneratorTest\BuildingGeneratorTest.csproj", "{D419441B-D989-4838-8A5A-759E91469171}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{D0034084-30E2-411B-83D1-BFAEAF7605C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0034084-30E2-411B-83D1-BFAEAF7605C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0034084-30E2-411B-83D1-BFAEAF7605C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D419441B-D989-4838-8A5A-759E91469171}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D419441B-D989-4838-8A5A-759E91469171}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D419441B-D989-4838-8A5A-759E91469171}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D419441B-D989-4838-8A5A-759E91469171}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

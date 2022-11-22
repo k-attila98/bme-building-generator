@@ -15,6 +15,8 @@ public class BuildingSerializer
     private float wallHeight = 4f;
     private float wallWidth = 2f;
 
+    private List<Transform> placedPrefabs;
+
     public void SerializeToObj(Building bldg)
     {
         if (wallPrefab.Length == 0 || roofPrefab.Length == 0 || floorPrefab == null)
@@ -117,7 +119,7 @@ public class BuildingSerializer
                     Transform wall = wallPrefab[(int)story.Walls[(wing.Bounds.size.x + wing.Bounds.size.y) * 2 - (y - wing.Bounds.min.y + 1)]];
                     PlaceWestWall(x, y, story.Level, storyFolder, wall);
                 }
-                
+                */
                 if (y == story.Bounds.min.y) 
                 {
                     Transform wall = wallPrefab[(int)story.Walls[x - story.Bounds.min.x]];
@@ -144,8 +146,6 @@ public class BuildingSerializer
                     Transform wall = wallPrefab[(int)story.Walls[(story.Bounds.size.x + story.Bounds.size.y) * 2 - (y - story.Bounds.min.y + 1)]];
                     PlaceWestWall(x, y, story.Level, storyFolder, wall);
                 }
-                */
-
 
             }
         }
@@ -160,6 +160,8 @@ public class BuildingSerializer
                 y * -wallWidth
             ), Quaternion.Identity);
         f.SetParent(storyFolder);
+
+        placedPrefabs.Add(f);
     }
 
     private void PlaceSouthWall(int x, int y, int level, Transform storyFolder, Transform wall)
@@ -177,6 +179,8 @@ public class BuildingSerializer
             );
         w.Name = "south wall";
         w.SetParent(storyFolder);
+
+        placedPrefabs.Add(w);
     }
 
     private void PlaceEastWall(int x, int y, int level, Transform storyFolder, Transform wall)
@@ -193,6 +197,8 @@ public class BuildingSerializer
             Quaternion.Identity);
         w.Name = "east wall";
         w.SetParent(storyFolder);
+
+        placedPrefabs.Add(w);
     }
 
     private void PlaceNorthWall(int x, int y, int level, Transform storyFolder, Transform wall)
@@ -209,6 +215,8 @@ public class BuildingSerializer
             Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, -90));
         w.Name = "north wall";
         w.SetParent(storyFolder);
+
+        placedPrefabs.Add(w);
     }
 
     private void PlaceWestWall(int x, int y, int level, Transform storyFolder, Transform wall)
@@ -225,6 +233,8 @@ public class BuildingSerializer
             Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, 180));
         w.Name = "west wall";
         w.SetParent(storyFolder);
+
+        placedPrefabs.Add(w);
     }
 
     private void RenderRoofOnTop(Wing wing, Transform wingFolder)
@@ -299,6 +309,8 @@ public class BuildingSerializer
             Quaternion.Identity
             );
         r.SetParent(wingFolder);
+        
+        placedPrefabs.Add(r);
     }
 
     Vector3[] rotationOffset = {
@@ -308,9 +320,29 @@ public class BuildingSerializer
         new Vector3 (-0f, 180, -0f)
     };
 
-    public void SerializeBuilding(Building b)
-    { 
-        
+    public string StringifyBuilding()
+    {
+        string objFileContent = "";
+        Console.WriteLine("Serializing building...");
+        foreach (var prefab in placedPrefabs)
+        {
+            objFileContent += prefab.VerticesToString();
+        }
+
+        foreach (var prefab in placedPrefabs)
+        {
+            objFileContent += prefab.FacesToString();
+        }
+
+        return objFileContent;
+    }
+
+    public void SaveBuildingToObj(string objStringToSave)
+    {
+        using (StreamWriter writer = new StreamWriter("./Generated/building.obj"))
+        {
+            writer.WriteAsync(objStringToSave);
+        }
     }
     
     public void UnRenderBuilding()

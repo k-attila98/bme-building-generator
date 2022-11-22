@@ -9,17 +9,28 @@ namespace BuildingGenerator.Shared
 {
     public class Face
     {
+        private Vertex[] _vertices = new Vertex[3];
+
+        public Face(Vertex[] vertices)
+        {
+            if (vertices.Length != 3)
+            {
+                throw new ArgumentException("Face must have 3 vertices");
+            }
+            _vertices = vertices;
+            Normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
+        }
         public Vertex[] Vertices {
-            get { return Vertices; }
+            get { return _vertices; }
             set
             {
                 if (value.Length != 3)
                 {
                     throw new ArgumentException("Face must have 3 vertices");
                 }
-                
-                Vertices = value;
-                Normal = _CalculateNormal(Vertices[0], Vertices[1], Vertices[2]);
+
+                _vertices = value;
+                Normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
             }
         }
         public Vector3 Normal { get; set; }
@@ -37,14 +48,14 @@ namespace BuildingGenerator.Shared
         //this function should clone the face
         public Face Clone()
         {
-            Face face = new Face();
+            
             Vertex[] vertices = new Vertex[Vertices.Length];
             foreach (var vertex in Vertices)
             {
                 vertices.Append(vertex.Clone());
             }
-            face.Vertices = Vertices;
-            face.Normal = new Vector3(Normal.x, Normal.y, Normal.z);
+            Face face = new Face(vertices);
+            //face.Normal = new Vector3(Normal.x, Normal.y, Normal.z);
             return face;
         }
 
@@ -66,8 +77,8 @@ namespace BuildingGenerator.Shared
             var v1 = vertex2.Subtract(vertex1);
             var v2 = vertex3.Subtract(vertex1);
             Vector3 normal = new Vector3(
-                    (v1.Position.y * v2.Position.z) - (v1.Position.z - v2.Position.y),
-                    -((v2.Position.z * v1.Position.x) - (v2.Position.x * v1.Position.z)),
+                    (v1.Position.y * v2.Position.z) - (v1.Position.z * v2.Position.y),
+                    (v1.Position.z * v2.Position.x) - (v1.Position.x * v2.Position.z),
                     (v1.Position.x * v2.Position.y) - (v1.Position.y * v2.Position.x)
                 );
 
@@ -81,6 +92,7 @@ namespace BuildingGenerator.Shared
             {
                 Vertices[i] = Vertices[i].Add(vector);
             }
+            Normal = _CalculateNormal(Vertices[0], Vertices[1], Vertices[2]);
         }
 
         public void Translate(Vector3 vector)
@@ -89,6 +101,7 @@ namespace BuildingGenerator.Shared
             {
                 Vertices[i] = Vertices[i].Add(vector);
             }
+            Normal = _CalculateNormal(Vertices[0], Vertices[1], Vertices[2]);
         }
 
         public void Rotate(Quaternion q)
@@ -98,13 +111,18 @@ namespace BuildingGenerator.Shared
             {
                 Vertices[i].Position = _Multiply(q, Vertices[i].Position);
             }
+            Normal = _CalculateNormal(Vertices[0], Vertices[1], Vertices[2]);
         }
 
         private Vector3 _Multiply(Quaternion q, Vector3 v)
         {
             var qv = new Quaternion(v.x, v.y, v.z, 0);
             var qv2 = q * qv * Quaternion.Conjugate(q);
-            return new Vector3(qv2.X, qv2.Y, qv2.Z);
+            return new Vector3(
+                (float)Math.Round(qv2.X, 3),
+                (float)Math.Round(qv2.Y, 3),
+                (float)Math.Round(qv2.Z, 3)
+            );
         }
 
         private Vector3 _RotatePoint(Quaternion rotation, Vector3 point)

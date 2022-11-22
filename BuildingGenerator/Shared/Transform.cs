@@ -88,6 +88,26 @@ namespace BuildingGenerator.Shared
                 Faces[i].Translate(position);
             }
         }
+
+        public void Translate(Vector3 vector)
+        {
+            for (int i = 0; i < Faces.Length; i++)
+            {
+                Faces[i].Translate(vector);
+            }
+            Position = Position.Add(vector);
+        }
+
+        public void Rotate(Quaternion q)
+        {
+            
+            for (int i = 0; i < Faces.Length; i++)
+            {
+                Faces[i].Rotate(q);
+                //Normals.Append(_CalculateNormal(Vertices[i], Vertices[(i + 1) % Vertices.Length], Vertices[(i + 2) % Vertices.Length]));
+            }
+        }
+
         /*
         private Vector3Int _CalculateNormal(Vector3Int vertex1, Vector3Int vertex2, Vector3Int vertex3)
         {
@@ -179,7 +199,7 @@ namespace BuildingGenerator.Shared
             return new Vector3(Position.x + vector.x, Position.y + vector.y, Position.z + vector.z);
         }
 
-        public string ToString()
+        public string VerticesToString()
         {
             string result = "";
             foreach (var face in Faces)
@@ -189,7 +209,12 @@ namespace BuildingGenerator.Shared
                     result += vertex.ToString();
                 }
             }
+            return result;
+        }
 
+        public string FacesToString()
+        {
+            string result = "";
             foreach (var face in Faces)
             {
                 result += face.ToString();

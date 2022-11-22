@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-[CreateAssetMenu(menuName = "Building generation/Walls/Parametrized Walls Strategy")] 
 public class ParametrizedWallsStrategy : WallsStrategy
 {
     public override Wall[] GenerateWalls(BuildingSettings settings, GenerationParams genParams)
@@ -14,8 +12,9 @@ public class ParametrizedWallsStrategy : WallsStrategy
 
         for (int i = 0; i < size; i++)
         {
-            float prob = UnityEngine.Random.value;
-            
+            Random random = new Random();
+            float prob = (float)random.NextDouble();
+
             if (prob < 0.6f)
                 walls[i] = Wall.Standard;
             if (prob >= 0.6f && prob < 0.9f)
@@ -28,7 +27,7 @@ public class ParametrizedWallsStrategy : WallsStrategy
             }
             else if (prob >= 0.9f && doorCount >= 1)
             {
-                float prob2 = UnityEngine.Random.value;
+                float prob2 = (float)random.NextDouble();
                 if (prob2 < 0.5f)
                     walls[i] = Wall.Standard;
                 if (prob2 >= 0.5f)

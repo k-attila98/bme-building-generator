@@ -23,10 +23,10 @@ public class RandomizedCountStoriesWithTerracesStrategy : StoriesStrategy
             }
             else
             {
-                var newSizeX = (int)Math.Round(random.Next(1, settings.Bounds.xMax));
-                var newSizeY = (int)Math.Round(random.Next(1, settings.Bounds.yMax));
-                var newPosX = (int)Math.Round(random.Next(genParams.BoundingBox.x-newSizeX+1, genParams.BoundingBox.xMax-1));
-                var newPosY = (int)Math.Round(random.Next(genParams.BoundingBox.y-newSizeY+1, genParams.BoundingBox.yMax-1));
+                var newSizeX = (int)Math.Round((decimal)random.Next(1, settings.Bounds.xMax));
+                var newSizeY = (int)Math.Round((decimal)random.Next(1, settings.Bounds.yMax));
+                var newPosX = (int)Math.Round((decimal)random.Next(genParams.BoundingBox.x-newSizeX+1, genParams.BoundingBox.xMax-1));
+                var newPosY = (int)Math.Round((decimal)random.Next(genParams.BoundingBox.y-newSizeY+1, genParams.BoundingBox.yMax-1));
                 // TODO: a felsőbb szintek boundingboxát valahogy randomizálni, esetleg kivezetni egy kapcsolót a felületre
                 
                 genParams.BoundingBox = new RectInt(new Vector2Int(newPosX, newPosY), new Vector2Int(newSizeX,newSizeY));
