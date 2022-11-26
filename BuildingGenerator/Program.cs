@@ -4,7 +4,7 @@ using BuildingGenerator.Shared;
 
 Console.WriteLine("Building Generator v0.1");
 
-var test = new BuildingGenerator();
+var test = new BuildingGenerationOrchestrator();
 var settings = new BuildingSettings();
 settings.Size = new Vector2Int(1, 1);
 settings.Stories = 1;
