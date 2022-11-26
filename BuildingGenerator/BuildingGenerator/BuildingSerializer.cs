@@ -336,7 +336,15 @@ public class BuildingSerializer
 
         return objFileContent;
     }
-
+    public void SaveBuildingToObj()
+    {
+        var objStringToSave = StringifyBuilding();
+        using (StreamWriter writer = new StreamWriter("./Generated/building.obj"))
+        {
+            writer.WriteAsync(objStringToSave);
+        }
+    }
+    
     public void SaveBuildingToObj(string objStringToSave)
     {
         using (StreamWriter writer = new StreamWriter("./Generated/building.obj"))

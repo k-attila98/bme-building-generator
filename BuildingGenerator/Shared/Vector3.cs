@@ -31,25 +31,37 @@ namespace BuildingGenerator.Shared
             m_Y = y;
             m_Z = z;
         }
-
-        public Vector3 Subtract(Vector3 vectorToSubtract)
+        
+        public void Subtract(Vector3 vectorToSubtract)
+        {
+            m_X = m_X - vectorToSubtract.x;
+            m_Y = m_Y - vectorToSubtract.y;
+            m_Z = m_Z - vectorToSubtract.z;
+            
+        }
+        public Vector3 SubtractWithReturn(Vector3 vectorToSubtract)
         {
             return new Vector3(m_X - vectorToSubtract.x, m_Y - vectorToSubtract.y, m_Z - vectorToSubtract.z);
+        }
+        
+        public void Subtract(Vector3Int vectorToSubtract)
+        {
+            m_X = m_X - vectorToSubtract.x;
+            m_Y = m_Y - vectorToSubtract.y;
+            m_Z = m_Z - vectorToSubtract.z;
 
         }
-        public Vector3 Subtract(Vector3Int vectorToSubtract)
+        public void Add(Vector3 vectorToAdd)
         {
-            return new Vector3(m_X - vectorToSubtract.x, m_Y - vectorToSubtract.y, m_Z - vectorToSubtract.z);
-
+            m_X = m_X + vectorToAdd.x;
+            m_Y = m_Y + vectorToAdd.y;
+            m_Z = m_Z + vectorToAdd.z;
         }
-
-        public Vector3 Add(Vector3 vectorToAdd)
+        public void Add(Vector3Int vectorToAdd)
         {
-            return new Vector3(m_X + vectorToAdd.x, m_Y + vectorToAdd.y, m_Z + vectorToAdd.z);
-        }
-        public Vector3 Add(Vector3Int vectorToAdd)
-        {
-            return new Vector3(m_X + vectorToAdd.x, m_Y + vectorToAdd.y, m_Z + vectorToAdd.z);
+            m_X = m_X + vectorToAdd.x;
+            m_Y = m_Y + vectorToAdd.y;
+            m_Z = m_Z + vectorToAdd.z;
         }
 
         public string ToString()

@@ -8,7 +8,7 @@ namespace BuildingGenerator.Serialization
 {
     public static class VertexIdProvider
     {
-        private static long _id = 0;
+        private static long _id = 1;
 
         public static long GetNextId()
         {

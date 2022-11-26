@@ -9,53 +9,75 @@ namespace BuildingGenerator.Shared
 {
     public class Vertex
     {
-        public long Id { get; }
-        public Vector3 Position { get; set; }
+        private long _id = 0;
+        private Vector3 _position = new Vector3(0, 0, 0);
+        
+        public long Id { 
+            get { return _id; }
+            set { _id = value; }
+        }
+        public Vector3 Position { 
+            get { return _position; } 
+            set { _position = value; } 
+        }
 
         public Vertex(Vector3 position)
         {
-            Id = VertexIdProvider.GetNextId();
-            Position = position;
+            //_id = VertexIdProvider.GetNextId();
+            _position = position;
         }
 
-        public Vertex Clone()
+        public Vertex(long id, Vector3 position)
         {
-            return new Vertex(new Vector3(Position.x, Position.y, Position.z));
-        }
-
-        public Vertex Add(Vector3 vectorToAdd)
-        {
-            return new Vertex(Position.Add(vectorToAdd));
-        }
-
-        public Vertex Subtract(Vector3 vectorToSubtract)
-        {
-            return new Vertex(Position.Subtract(vectorToSubtract));
-        }
-
-        public Vertex Add(Vector3Int vectorToAdd)
-        {
-            return new Vertex(Position.Add(vectorToAdd));
-        }
-
-        public Vertex Subtract(Vector3Int vectorToSubtract)
-        {
-            return new Vertex(Position.Subtract(vectorToSubtract));
+            _id = id;
+            _position = position;
         }
         
-        public Vertex Add(Vertex vertexToAdd)
+        public Vertex Clone(bool isDeepClone)
         {
-            return new Vertex(Position = Position.Add(vertexToAdd.Position));
+            return isDeepClone ?
+                new Vertex(_id, new Vector3(_position.x, _position.y, _position.z)) :
+                new Vertex(new Vector3(_position.x, _position.y, _position.z));
+        }
+        
+        public void Add(Vector3 vectorToAdd)
+        {
+            _position.Add(vectorToAdd);
+        }
+        
+        public void Subtract(Vector3 vectorToSubtract)
+        {
+            _position.Subtract(vectorToSubtract);
         }
 
-        public Vertex Subtract(Vertex vertexToSubtract)
+        public void Add(Vector3Int vectorToAdd)
         {
-            return new Vertex(Position.Subtract(vertexToSubtract.Position));
+            _position.Add(vectorToAdd);
+        }
+        
+        public void Subtract(Vector3Int vectorToSubtract)
+        {
+            _position.Subtract(vectorToSubtract);
+        }
+        
+        public void Add(Vertex vertexToAdd)
+        {
+            _position.Add(vertexToAdd.Position);
+        }
+
+        public void Subtract(Vertex vertexToSubtract)
+        {
+            _position.Subtract(vertexToSubtract.Position);
+        }
+        
+        public Vertex SubtractWithReturn(Vertex vertexToSubtract)
+        {
+            return new Vertex(_position.SubtractWithReturn(vertexToSubtract.Position));
         }
 
         public string ToString()
         {
-            return Position.ToString();
+            return _position.ToString();
         }
     }
 }

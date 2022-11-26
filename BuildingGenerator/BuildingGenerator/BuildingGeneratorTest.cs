@@ -27,8 +27,11 @@ public class BuildingGeneratorTest
         genParams.BoundingBox = settings.Bounds;
         
         b = BuildingGenerator_v2.Generate(settings, genParams);
+        var serializer = new BuildingSerializer();
+        serializer.SerializeToObj(b);
+        serializer.SaveBuildingToObj();
         //new BuildingRenderer().Render(b);
-        
+
     }
     
     public void DestroyBuilding()

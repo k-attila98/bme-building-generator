@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Folder Include="Generated\" />
+    <Folder Include="Prefabs\" />
   </ItemGroup>
 
 </Project>

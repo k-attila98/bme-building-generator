@@ -12,24 +12,25 @@ public class BuildingSettings
     public WingsStrategy wingsStrategy;
     
     public Vector2Int buildingSize;
-    
+    public int buildingStoryCount;
+    public int buildingWingCount;
+
     public Vector2Int Size
     {
         get { return buildingSize; }
+        set { buildingSize = value; }
     }
-    
-    public int buildingStoryCount;
     
     public int Stories
     {
         get { return buildingStoryCount; }
+        set { buildingStoryCount = value; }
     }
-    
-    public int buildingWingCount;
     
     public int Wings
     {
         get { return buildingWingCount; }
+        set { buildingWingCount = value; }
     }
 
     public RectInt Bounds

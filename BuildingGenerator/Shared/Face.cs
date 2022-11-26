@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BuildingGenerator.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -10,6 +11,7 @@ namespace BuildingGenerator.Shared
     public class Face
     {
         private Vertex[] _vertices = new Vertex[3];
+        private Vector3 _normal = new Vector3(0, 0, 0);
 
         public Face(Vertex[] vertices)
         {
@@ -18,7 +20,7 @@ namespace BuildingGenerator.Shared
                 throw new ArgumentException("Face must have 3 vertices");
             }
             _vertices = vertices;
-            Normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
+            _normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
         }
         public Vertex[] Vertices {
             get { return _vertices; }
@@ -30,31 +32,41 @@ namespace BuildingGenerator.Shared
                 }
 
                 _vertices = value;
-                Normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
+                _normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
             }
         }
-        public Vector3 Normal { get; set; }
+        public Vector3 Normal { 
+            get { return _normal; } 
+            set { _normal = value; } 
+        }
 
         public void AddVertex(Vertex vertex)
         {
-            if (Vertices.Length < 3)
+            if (_vertices.Length < 3)
             {
-                List<Vertex> vertices = Vertices.ToList();
+                List<Vertex> vertices = _vertices.ToList();
                 vertices.Add(vertex);
-                Vertices = vertices.ToArray();
+                _vertices = vertices.ToArray();
+            }
+        }
+
+        public void SetVertexIds()
+        {
+            foreach (var vertex in _vertices)
+            {
+                vertex.Id = VertexIdProvider.GetNextId();
             }
         }
 
         //this function should clone the face
-        public Face Clone()
+        public Face Clone(bool isDeepClone)
         {
-            
-            Vertex[] vertices = new Vertex[Vertices.Length];
-            foreach (var vertex in Vertices)
+            List<Vertex> vertices = new List<Vertex>();
+            foreach (var vertex in _vertices)
             {
-                vertices.Append(vertex.Clone());
+                vertices.Add(vertex.Clone(isDeepClone));
             }
-            Face face = new Face(vertices);
+            Face face = new Face(vertices.ToArray());
             //face.Normal = new Vector3(Normal.x, Normal.y, Normal.z);
             return face;
         }
@@ -74,8 +86,8 @@ namespace BuildingGenerator.Shared
 
         private Vector3 _CalculateNormal(Vertex vertex1, Vertex vertex2, Vertex vertex3)
         {
-            var v1 = vertex2.Subtract(vertex1);
-            var v2 = vertex3.Subtract(vertex1);
+            var v1 = vertex2.SubtractWithReturn(vertex1);
+            var v2 = vertex3.SubtractWithReturn(vertex1);
             Vector3 normal = new Vector3(
                     (v1.Position.y * v2.Position.z) - (v1.Position.z * v2.Position.y),
                     (v1.Position.z * v2.Position.x) - (v1.Position.x * v2.Position.z),
@@ -88,30 +100,30 @@ namespace BuildingGenerator.Shared
 
         public void Translate(Vector3Int vector)
         {
-            for (int i = 0; i < Vertices.Length; i++)
+            for (int i = 0; i < _vertices.Length; i++)
             {
-                Vertices[i] = Vertices[i].Add(vector);
+                _vertices[i].Add(vector);
             }
-            Normal = _CalculateNormal(Vertices[0], Vertices[1], Vertices[2]);
+            _normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
         }
 
         public void Translate(Vector3 vector)
         {
-            for (int i = 0; i < Vertices.Length; i++)
+            for (int i = 0; i < _vertices.Length; i++)
             {
-                Vertices[i] = Vertices[i].Add(vector);
+                _vertices[i].Add(vector);
             }
-            Normal = _CalculateNormal(Vertices[0], Vertices[1], Vertices[2]);
+            _normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
         }
 
         public void Rotate(Quaternion q)
         {
-            Normal = _CalculateNormal(Vertices[0], Vertices[1], Vertices[2]);
-            for (int i = 0; i < Vertices.Length; i++)
+            //_normal = _CalculateNormal(Vertices[0], Vertices[1], Vertices[2]);
+            for (int i = 0; i < _vertices.Length; i++)
             {
-                Vertices[i].Position = _Multiply(q, Vertices[i].Position);
+                _vertices[i].Position = _Multiply(q, _vertices[i].Position);
             }
-            Normal = _CalculateNormal(Vertices[0], Vertices[1], Vertices[2]);
+            _normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
         }
 
         private Vector3 _Multiply(Quaternion q, Vector3 v)
@@ -151,7 +163,7 @@ namespace BuildingGenerator.Shared
         
         public string ToString()
         {
-            return $"f {Vertices[0].Id} {Vertices[1].Id} {Vertices[2].Id}\n";
+            return $"f {_vertices[0].Id} {_vertices[1].Id} {_vertices[2].Id}\n";
         }
     }
 }

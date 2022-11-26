@@ -68,10 +68,12 @@ namespace BuildingGenerator.Shared
             Faces = prefab.Faces.Length > 0 ? new Face[prefab.Faces.Length] : new Face[0];
             for (int i = 0; i < prefab.Faces.Length; i++)
             {
-                Faces[i] = prefab.Faces[i].Clone();
+                Faces[i] = prefab.Faces[i].Clone(true);
                 Faces[i].Rotate(rotation);
                 Faces[i].Translate(position);
             }
+
+            _SetVertexIds();
         }
 
         public Transform(Transform prefab, Vector3 position, Quaternion rotation)
@@ -83,19 +85,21 @@ namespace BuildingGenerator.Shared
             Faces = prefab.Faces.Length > 0 ? new Face[prefab.Faces.Length] : new Face[0];
             for (int i = 0; i < prefab.Faces.Length; i++)
             {
-                Faces[i] = prefab.Faces[i].Clone();
+                Faces[i] = prefab.Faces[i].Clone(false);
                 Faces[i].Rotate(rotation);
                 Faces[i].Translate(position);
             }
-        }
 
+            _SetVertexIds();
+        }
+        
         public void Translate(Vector3 vector)
         {
             for (int i = 0; i < Faces.Length; i++)
             {
                 Faces[i].Translate(vector);
             }
-            Position = Position.Add(vector);
+            Position.Add(vector);
         }
 
         public void Rotate(Quaternion q)
@@ -108,6 +112,13 @@ namespace BuildingGenerator.Shared
             }
         }
 
+        private void _SetVertexIds()
+        {
+            foreach (var face in Faces)
+            {
+                face.SetVertexIds();
+            }
+        }
         /*
         private Vector3Int _CalculateNormal(Vector3Int vertex1, Vector3Int vertex2, Vector3Int vertex3)
         {
