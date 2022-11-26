@@ -24,6 +24,9 @@ namespace BuildingGeneratorTest
             Assert.AreEqual(serialized, "Building");
             */
             var settings = new BuildingSettings();
+            settings.Size = new Vector2Int(1, 1);
+            settings.Stories = 1;
+            settings.Wings = 1;
             var genParams = new GenerationParams();
             genParams.BoundingBox = settings.Bounds;
 
@@ -39,7 +42,17 @@ namespace BuildingGeneratorTest
             serializer.wallPrefab = new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() };
 
             serializer.SerializeToObj(b);
-            serializer.SaveBuildingToObj();
+            var result = serializer.StringifyBuilding();
+
+            //TODO: ezt megírni xd
+            /*
+            Assert.AreEqual(result, "" +
+                "v 0 0 0" +
+                "");
+            */
+            Console.WriteLine(result);
+
+            Assert.AreEqual(true, false);
         }
     }
 }

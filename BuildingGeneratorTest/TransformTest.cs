@@ -56,7 +56,7 @@ namespace BuildingGeneratorTest
         {
             //Arrange
             var transformToTest = new Transform();
-            var testRotationQuaternion = Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitZ, ((float)(Math.PI / 180F) * 90F));
+            var testRotationQuaternion = Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitZ, (MathHelper.GetRadFromDeg(90)));
 
             Vertex[] vertices = new Vertex[3];
             vertices[0] = new Vertex(new Vector3(0, 0, 0));
@@ -88,7 +88,7 @@ namespace BuildingGeneratorTest
         {
             //Arrange
             var transformToTest = new Transform();
-            var testRotationQuaternion = Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitZ, ((float)(Math.PI / 180F) * -90F));
+            var testRotationQuaternion = Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitZ, (MathHelper.GetRadFromDeg(-90)));
 
             Vertex[] vertices = new Vertex[3];
             vertices[0] = new Vertex(new Vector3(0, 0, 0));
@@ -120,7 +120,7 @@ namespace BuildingGeneratorTest
         {
             //Arrange
             var transformToTest = new Transform();
-            var testRotationQuaternion = Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitZ, ((float)(Math.PI / 180F) * 45F));
+            var testRotationQuaternion = Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitZ, (MathHelper.GetRadFromDeg(45)));
 
             Vertex[] vertices = new Vertex[3];
             vertices[0] = new Vertex(new Vector3(0, 0, 0));
@@ -226,7 +226,7 @@ namespace BuildingGeneratorTest
         {
             //Arrange
             var transformToTest = new Transform();
-            var testRotationQuaternion = Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitZ, ((float)(Math.PI / 180F) * 90F));
+            var testRotationQuaternion = Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitZ, (MathHelper.GetRadFromDeg(90)));
 
             Vertex[] vertices1 = new Vertex[3];
             vertices1[0] = new Vertex(new Vector3(0, 0, 0));
@@ -359,6 +359,7 @@ namespace BuildingGeneratorTest
         }
 
         [TestMethod]
+
         public void StringifyTest()
         {
             Vertex[] vertices1 = new Vertex[3];
@@ -447,10 +448,7 @@ namespace BuildingGeneratorTest
                 "f 16 17 18\n" +
                 "f 19 20 21\n" +
                 "f 22 23 24\n";
-            Assert.AreEqual(objFileContent, correctSerialization);
-            //Assert.AreEqual(true, false);
-
-            //Assert.AreEqual(true, true);
+            Assert.AreEqual(correctSerialization, objFileContent);
         }
     }
 }

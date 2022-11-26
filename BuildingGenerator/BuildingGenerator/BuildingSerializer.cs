@@ -15,7 +15,7 @@ public class BuildingSerializer
     private float wallHeight = 4f;
     private float wallWidth = 2f;
 
-    private List<Transform> placedPrefabs;
+    private List<Transform> placedPrefabs = new List<Transform>();
 
     public void SerializeToObj(Building bldg)
     {
@@ -175,7 +175,7 @@ public class BuildingSerializer
                     y * -wallWidth + wallWidth
                     )
                 ),
-            Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, 90)
+            Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, MathHelper.GetRadFromDeg(90))
             );
         w.Name = "south wall";
         w.SetParent(storyFolder);
@@ -212,7 +212,7 @@ public class BuildingSerializer
                     y * -wallWidth
                     )
                 ),
-            Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, -90));
+            Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, MathHelper.GetRadFromDeg(-90)));
         w.Name = "north wall";
         w.SetParent(storyFolder);
 
@@ -230,7 +230,7 @@ public class BuildingSerializer
                     y * -wallWidth + wallWidth
                     )
                 ),
-            Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, 180));
+            Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, MathHelper.GetRadFromDeg(180)));
         w.Name = "west wall";
         w.SetParent(storyFolder);
 

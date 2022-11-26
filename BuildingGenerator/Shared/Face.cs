@@ -131,9 +131,9 @@ namespace BuildingGenerator.Shared
             var qv = new Quaternion(v.x, v.y, v.z, 0);
             var qv2 = q * qv * Quaternion.Conjugate(q);
             return new Vector3(
-                (float)Math.Round(qv2.X, 3),
-                (float)Math.Round(qv2.Y, 3),
-                (float)Math.Round(qv2.Z, 3)
+                MathHelper.RoundToNearestFloatWithDecimals(qv2.X, 3),
+                MathHelper.RoundToNearestFloatWithDecimals(qv2.Y, 3),
+                MathHelper.RoundToNearestFloatWithDecimals(qv2.Z, 3)
             );
         }
 
