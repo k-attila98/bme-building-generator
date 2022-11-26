@@ -5,7 +5,7 @@ using BuildingGenerator.Shared;
 using System.Collections;
 using System.Collections.Generic;
 
-public class BuildingGeneratorTest
+public class BuildingGenerationOrchestrator
 {
     public BuildingSettings settings;
     private GenerationParams genParams = null;
@@ -16,7 +16,7 @@ public class BuildingGeneratorTest
         genParams = new GenerationParams();
         genParams.BoundingBox = settings.Bounds;
         
-        b = BuildingGenerator_v2.Generate(settings, genParams);
+        b = BuildingGeneration.Generate(settings, genParams);
         var serializer = new BuildingSerializer();
 
         var obj = serializer.StringifyBuilding();
@@ -30,7 +30,7 @@ public class BuildingGeneratorTest
         genParams = new GenerationParams();
         genParams.BoundingBox = settings.Bounds;
         
-        b = BuildingGenerator_v2.Generate(settings, genParams);
+        b = BuildingGeneration.Generate(settings, genParams);
         var serializer = new BuildingSerializer();
 
         var floorPrefab = new BasicFloor();

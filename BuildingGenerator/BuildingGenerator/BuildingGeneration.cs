@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public static class BuildingGenerator_v2
+public static class BuildingGeneration
 {
     public static Building Generate(BuildingSettings settings, GenerationParams genParams)
     {
