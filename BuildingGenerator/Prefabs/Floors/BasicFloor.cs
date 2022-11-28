@@ -100,7 +100,7 @@ namespace BuildingGenerator.Prefabs.Floors
             Transform prefab = new Transform("Floor");
             prefab.Faces = faces;
             prefab.Width = 2;
-            prefab.Height = 0.1f;
+            prefab.Height = 0;
             return prefab;
         }
     }

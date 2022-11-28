@@ -11,20 +11,6 @@ public class BuildingGenerationOrchestrator
     private GenerationParams genParams = null;
     private Building b = null;
     
-    public void Start()
-    {
-        genParams = new GenerationParams();
-        genParams.BoundingBox = settings.Bounds;
-        
-        b = BuildingGeneration.Generate(settings, genParams);
-        var serializer = new BuildingSerializer();
-
-        var obj = serializer.StringifyBuilding();
-        serializer.SaveBuildingToObj(obj);
-        //new BuildingRenderer().Render(b);
-
-    }
-    
     public void GenerateBuilding()
     {
         genParams = new GenerationParams();
@@ -42,14 +28,8 @@ public class BuildingGenerationOrchestrator
         serializer.wallPrefab = new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() };
 
         serializer.SerializeToObj(b);
-        serializer.SaveBuildingToObj();
+        serializer.SaveBuilding();
         //new BuildingRenderer().Render(b);
 
     }
-    
-    public void DestroyBuilding()
-    {
-        //new BuildingRenderer().UnRenderBuilding();
-    }
-    
 }

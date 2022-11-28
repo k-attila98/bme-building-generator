@@ -120,28 +120,28 @@ public class BuildingSerializer
                     PlaceWestWall(x, y, story.Level, storyFolder, wall);
                 }
                 */
-                if (y == story.Bounds.min.y) 
+                if (x == story.Bounds.min.x) 
                 {
                     Transform wall = wallPrefab[(int)story.Walls[x - story.Bounds.min.x]];
                     PlaceSouthWall(x, y, story.Level, storyFolder, wall);
                 }
 
                 //east wall
-                if (x == story.Bounds.min.x + story.Bounds.size.x - 1) 
+                if (y == story.Bounds.min.y + story.Bounds.size.y - 1) 
                 {
                     Transform wall = wallPrefab[(int)story.Walls[story.Bounds.size.x + y - story.Bounds.min.y]];
                     PlaceEastWall(x, y, story.Level, storyFolder, wall);
                 }
 
                 //north wall
-                if (y == story.Bounds.min.y + story.Bounds.size.y - 1)
+                if (x == story.Bounds.min.x + story.Bounds.size.x - 1)
                 {
                     Transform wall = wallPrefab[(int)story.Walls[story.Bounds.size.x * 2 + story.Bounds.size.y - (x - story.Bounds.min.x + 1)]];
                     PlaceNorthWall(x, y, story.Level, storyFolder, wall);
                 }
 
                 //west wall
-                if (x == story.Bounds.min.x)
+                if (y == story.Bounds.min.y)
                 {
                     Transform wall = wallPrefab[(int)story.Walls[(story.Bounds.size.x + story.Bounds.size.y) * 2 - (y - story.Bounds.min.y + 1)]];
                     PlaceWestWall(x, y, story.Level, storyFolder, wall);
@@ -155,9 +155,9 @@ public class BuildingSerializer
     {
         //Transform f = Instantiate(floorPrefab, storyFolder.TransformPoint(new Vector3(x * -wallWidth, 0f + level * wallHeight, y * -wallWidth)), Quaternion.identity);
         Transform f = new Transform(floorPrefab, new Vector3(
-                x * -wallWidth,
+                x * wallWidth,
                 0f + level * wallHeight,
-                y * -wallWidth
+                y * wallWidth
             ), Quaternion.Identity);
         f.SetParent(storyFolder);
 
@@ -170,13 +170,13 @@ public class BuildingSerializer
             wall, 
             storyFolder.TransformPoint(
                     new Vector3(
-                    x * -wallWidth - wallWidth,
+                    x * wallWidth,
                     level * wallHeight,
-                    y * -wallWidth + wallWidth
+                    y * wallWidth
                     )
                 ),
-            Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, MathHelper.GetRadFromDeg(90))
-            );
+            Quaternion.Identity
+        );
         w.Name = "south wall";
         w.SetParent(storyFolder);
 
@@ -189,12 +189,13 @@ public class BuildingSerializer
             wall,
             storyFolder.TransformPoint(
                 new Vector3(
-                    x * -wallWidth - wallWidth,
+                    x * wallWidth + wallWidth,
                     level * wallHeight,
-                    y * -wallWidth
+                    y * wallWidth + wallWidth
                     )
                 ),
-            Quaternion.Identity);
+            Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, MathHelper.GetRadFromDeg(90))
+        );
         w.Name = "east wall";
         w.SetParent(storyFolder);
 
@@ -207,12 +208,13 @@ public class BuildingSerializer
             wall,
             storyFolder.TransformPoint(
                 new Vector3(
-                    x * -wallWidth,
+                    x * wallWidth + wallWidth,
                     level * wallHeight,
-                    y * -wallWidth
+                    y * wallWidth + wallWidth
                     )
                 ),
-            Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, MathHelper.GetRadFromDeg(-90)));
+            Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, MathHelper.GetRadFromDeg(180))
+        );
         w.Name = "north wall";
         w.SetParent(storyFolder);
 
@@ -225,12 +227,13 @@ public class BuildingSerializer
             wall,
             storyFolder.TransformPoint(
                 new Vector3(
-                    x * -wallWidth,
+                    x * wallWidth,
                     level * wallHeight,
-                    y * -wallWidth + wallWidth
+                    y * wallWidth
                     )
                 ),
-            Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, MathHelper.GetRadFromDeg(180)));
+            Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, MathHelper.GetRadFromDeg(-90))
+        );
         w.Name = "west wall";
         w.SetParent(storyFolder);
 
@@ -300,9 +303,9 @@ public class BuildingSerializer
             roofPrefab[(int)type],
             wingFolder.TransformPoint(
                 new Vector3(
-                        x * -wallWidth + rotationOffset[(int)direction].x,
+                        x * wallWidth,
                         level * wallHeight, //+ (type == RoofType.Point ? -0.3f : 0f),
-                        y * -wallWidth + rotationOffset[(int)direction].z + 2f
+                        y * wallWidth
                     )
                 ),
             //Quaternion.Euler(0f, rotationOffset[(int)direction].y, 0f)
@@ -327,29 +330,53 @@ public class BuildingSerializer
         foreach (var prefab in placedPrefabs)
         {
             objFileContent += prefab.VerticesToString();
+            Console.WriteLine("Serialized " + prefab.Name + "\n");
         }
 
         foreach (var prefab in placedPrefabs)
         {
             objFileContent += prefab.FacesToString();
         }
-
+        Console.WriteLine("Serialization complete!");
         return objFileContent;
     }
     public void SaveBuildingToObj()
     {
         var objStringToSave = StringifyBuilding();
-        using (StreamWriter writer = new StreamWriter("./Generated/building.obj"))
+        using (StreamWriter writer = new StreamWriter(File.Open("../../../Generated/building.obj", System.IO.FileMode.Append)))
         {
             writer.WriteAsync(objStringToSave);
         }
+        Console.WriteLine("Saved building to obj file!");
     }
     
     public void SaveBuildingToObj(string objStringToSave)
     {
-        using (StreamWriter writer = new StreamWriter("./Generated/building.obj"))
+        using (StreamWriter writer = new StreamWriter(File.Open("../../../Generated/building.obj", System.IO.FileMode.Append)))
         {
             writer.WriteAsync(objStringToSave);
+        }
+    }
+
+    public void SaveBuilding()
+    {
+        Console.WriteLine("Serializing building...");
+        using (StreamWriter writer = new StreamWriter(File.Open("../../../Generated/building.obj", System.IO.FileMode.Append)))
+        {
+            
+            foreach (var prefab in placedPrefabs)
+            {
+                writer.WriteAsync(prefab.VerticesToString());
+                Console.WriteLine("Serialized " + prefab.Name + "\n");
+            }
+
+            foreach (var prefab in placedPrefabs)
+            {
+                writer.WriteAsync(prefab.FacesToString());
+            }
+            
+            Console.WriteLine("Serialization complete!");
+            //writer.WriteAsync(objStringToSave);
         }
     }
     

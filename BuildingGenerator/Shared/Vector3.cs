@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,7 +67,10 @@ namespace BuildingGenerator.Shared
 
         public string ToString()
         {
-            return $"v {m_X} {m_Y} {m_Z}\n";
+            return $"v {m_X.ToString(CultureInfo.GetCultureInfo("en-US"))} " +
+                $"{m_Y.ToString(CultureInfo.GetCultureInfo("en-US"))} " +
+                $"{m_Z.ToString(CultureInfo.GetCultureInfo("en-US"))}" +
+                $"\n";
         }
 
         public static bool operator ==(Vector3 a, Vector3 b)
