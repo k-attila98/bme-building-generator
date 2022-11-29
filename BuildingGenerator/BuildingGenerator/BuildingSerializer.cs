@@ -120,28 +120,28 @@ public class BuildingSerializer
                     PlaceWestWall(x, y, story.Level, storyFolder, wall);
                 }
                 */
-                if (x == story.Bounds.min.x) 
+                if (y == story.Bounds.min.y) 
                 {
                     Transform wall = wallPrefab[(int)story.Walls[x - story.Bounds.min.x]];
                     PlaceSouthWall(x, y, story.Level, storyFolder, wall);
                 }
 
                 //east wall
-                if (y == story.Bounds.min.y + story.Bounds.size.y - 1) 
+                if (x == story.Bounds.min.x + story.Bounds.size.x - 1) 
                 {
                     Transform wall = wallPrefab[(int)story.Walls[story.Bounds.size.x + y - story.Bounds.min.y]];
                     PlaceEastWall(x, y, story.Level, storyFolder, wall);
                 }
 
                 //north wall
-                if (x == story.Bounds.min.x + story.Bounds.size.x - 1)
+                if (y == story.Bounds.min.y + story.Bounds.size.y - 1)
                 {
                     Transform wall = wallPrefab[(int)story.Walls[story.Bounds.size.x * 2 + story.Bounds.size.y - (x - story.Bounds.min.x + 1)]];
                     PlaceNorthWall(x, y, story.Level, storyFolder, wall);
                 }
-
+                
                 //west wall
-                if (y == story.Bounds.min.y)
+                if (x == story.Bounds.min.x)
                 {
                     Transform wall = wallPrefab[(int)story.Walls[(story.Bounds.size.x + story.Bounds.size.y) * 2 - (y - story.Bounds.min.y + 1)]];
                     PlaceWestWall(x, y, story.Level, storyFolder, wall);
@@ -366,13 +366,13 @@ public class BuildingSerializer
             
             foreach (var prefab in placedPrefabs)
             {
-                writer.WriteAsync(prefab.VerticesToString());
+                writer.Write(prefab.VerticesToString());
                 Console.WriteLine("Serialized " + prefab.Name + "\n");
             }
 
             foreach (var prefab in placedPrefabs)
             {
-                writer.WriteAsync(prefab.FacesToString());
+                writer.Write(prefab.FacesToString());
             }
             
             Console.WriteLine("Serialization complete!");

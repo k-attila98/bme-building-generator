@@ -215,7 +215,7 @@ namespace BuildingGenerator.Shared
             string result = "";
             foreach (var face in Faces)
             {
-                foreach (var vertex in face.Vertices)
+                foreach (var vertex in face.Vertices.Reverse())
                 {
                     result += vertex.ToString();
                 }

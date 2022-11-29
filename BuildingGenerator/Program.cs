@@ -9,7 +9,7 @@ Console.WriteLine("Building Generator v0.1");
 
 var generator = new BuildingGenerationOrchestrator();
 var settings = new BuildingSettings();
-settings.Size = new Vector2Int(1, 1);
+settings.Size = new Vector2Int(2, 3);
 settings.Stories = 1;
 settings.Wings = 1;
 var genParams = new GenerationParams();
