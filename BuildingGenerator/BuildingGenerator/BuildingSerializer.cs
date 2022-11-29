@@ -21,7 +21,7 @@ public class BuildingSerializer
     {
         if (wallPrefab.Length == 0 || roofPrefab.Length == 0 || floorPrefab == null)
         {
-            Console.Write("Component [BuildingRenderer] doesn't have required prefabs set!");
+            Console.Write("Component [BuildingSerializer] doesn't have required prefabs set!");
             return;
         }
         
@@ -34,6 +34,8 @@ public class BuildingSerializer
         {
             RenderWing(wing);
         }
+        
+        _SaveBuilding();
     }
 
     private void RenderWing(Wing wing)
@@ -83,43 +85,12 @@ public class BuildingSerializer
     {
         Transform storyFolder = new Transform("Story " + story.Level);
         storyFolder.SetParent(wingFolder);
-        //for (int x = wing.Bounds.min.x; x < wing.Bounds.max.x; x++)
         for (int x = story.Bounds.min.x; x < story.Bounds.max.x; x++)
         {
-            //for (int y = wing.Bounds.min.y; y < wing.Bounds.max.y; y++)
             for (int y = story.Bounds.min.y; y < story.Bounds.max.y; y++)
             {
                 PlaceFloor(x, y, story.Level, storyFolder);
 
-                /*
-                //south wall
-                if (y == wing.Bounds.min.y) 
-                {
-                    Transform wall = wallPrefab[(int)story.Walls[x - wing.Bounds.min.x]];
-                    PlaceSouthWall(x, y, story.Level, storyFolder, wall);
-                }
-
-                //east wall
-                if (x == wing.Bounds.min.x + wing.Bounds.size.x - 1) 
-                {
-                    Transform wall = wallPrefab[(int)story.Walls[wing.Bounds.size.x + y - wing.Bounds.min.y]];
-                    PlaceEastWall(x, y, story.Level, storyFolder, wall);
-                }
-
-                //north wall
-                if (y == wing.Bounds.min.y + wing.Bounds.size.y - 1)
-                {
-                    Transform wall = wallPrefab[(int)story.Walls[wing.Bounds.size.x * 2 + wing.Bounds.size.y - (x - wing.Bounds.min.x + 1)]];
-                    PlaceNorthWall(x, y, story.Level, storyFolder, wall);
-                }
-
-                //west wall
-                if (x == wing.Bounds.min.x)
-                {
-                    Transform wall = wallPrefab[(int)story.Walls[(wing.Bounds.size.x + wing.Bounds.size.y) * 2 - (y - wing.Bounds.min.y + 1)]];
-                    PlaceWestWall(x, y, story.Level, storyFolder, wall);
-                }
-                */
                 if (y == story.Bounds.min.y) 
                 {
                     Transform wall = wallPrefab[(int)story.Walls[x - story.Bounds.min.x]];
@@ -153,7 +124,6 @@ public class BuildingSerializer
 
     private void PlaceFloor(int x, int y, int level, Transform storyFolder)
     {
-        //Transform f = Instantiate(floorPrefab, storyFolder.TransformPoint(new Vector3(x * -wallWidth, 0f + level * wallHeight, y * -wallWidth)), Quaternion.identity);
         Transform f = new Transform(floorPrefab, new Vector3(
                 x * wallWidth,
                 0f + level * wallHeight,
@@ -264,7 +234,6 @@ public class BuildingSerializer
     
     private void RenderRoofToEveryDynamicSizedStory(Wing wing, Transform wingFolder)
     {
-        
         if (wing.Stories.Length < 2)
         {
             RenderRoofOnTop(wing, wingFolder);
@@ -316,6 +285,9 @@ public class BuildingSerializer
         placedPrefabs.Add(r);
     }
 
+    /**
+     * Now unused, there is no unsymmetric prefab in the prefabs folder
+     */
     Vector3[] rotationOffset = {
         new Vector3 (-0f, 270f, 0f),
         new Vector3 (0f, 0f, 0f),
@@ -323,44 +295,7 @@ public class BuildingSerializer
         new Vector3 (-0f, 180, -0f)
     };
 
-    public string StringifyBuilding()
-    {
-        string objFileContent = "";
-        Console.WriteLine("Serializing building...");
-        foreach (var prefab in placedPrefabs)
-        {
-            objFileContent += prefab.VerticesToString();
-            Console.WriteLine("Serialized " + prefab.Name + "\n");
-        }
-
-        foreach (var prefab in placedPrefabs)
-        {
-            objFileContent += prefab.FacesToString();
-        }
-        Console.WriteLine("Serialization complete!");
-        return objFileContent;
-    }
-    /*
-    public void SaveBuildingToObj()
-    {
-        var objStringToSave = StringifyBuilding();
-        using (StreamWriter writer = new StreamWriter(File.Open($"../../../Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz")}.obj", System.IO.FileMode.Create)))
-        {
-            writer.WriteAsync(objStringToSave);
-        }
-        Console.WriteLine("Saved building to obj file!");
-    }
-    
-    public void SaveBuildingToObj(string objStringToSave)
-    {
-        using (StreamWriter writer = new StreamWriter(File.Open("../../../Generated/building.obj", System.IO.FileMode.Create)))
-        {
-            writer.WriteAsync(objStringToSave);
-        }
-    }
-    */
-
-    public void SaveBuilding()
+    private void _SaveBuilding()
     {
         Console.WriteLine("Serializing building...");
         using (StreamWriter writer = new StreamWriter(File.Open($"../../../Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss")}.obj", System.IO.FileMode.Create)))
@@ -380,5 +315,26 @@ public class BuildingSerializer
             Console.WriteLine("Serialization complete!");
             //writer.WriteAsync(objStringToSave);
         }
+    }
+    
+    /**
+     * Mainly for testing purposes
+     */
+    public string StringifyBuilding()
+    {
+        string objFileContent = "";
+        Console.WriteLine("Serializing building...");
+        foreach (var prefab in placedPrefabs)
+        {
+            objFileContent += prefab.VerticesToString();
+            Console.WriteLine("Serialized " + prefab.Name + "\n");
+        }
+
+        foreach (var prefab in placedPrefabs)
+        {
+            objFileContent += prefab.FacesToString();
+        }
+        Console.WriteLine("Serialization complete!");
+        return objFileContent;
     }
 }

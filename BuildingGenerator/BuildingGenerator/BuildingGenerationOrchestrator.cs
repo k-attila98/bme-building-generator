@@ -7,16 +7,22 @@ using System.Collections.Generic;
 
 public class BuildingGenerationOrchestrator
 {
-    public BuildingSettings settings;
-    private GenerationParams genParams = null;
-    private Building b = null;
+    private BuildingSettings settings;
+    private GenerationParams? genParams = null;
+    private Building? b = null;
+
+    public BuildingGenerationOrchestrator(BuildingSettings settings, GenerationParams? genParams = null)
+    {
+        this.settings = settings;
+        this.genParams = new GenerationParams
+        {
+            BoundingBox = settings.Bounds
+        };
+    }
     
     public void GenerateBuilding()
     {
-        genParams = new GenerationParams();
-        genParams.BoundingBox = settings.Bounds;
-        
-        b = BuildingGeneration.Generate(settings, genParams);
+        b = BuildingGeneration.Generate(settings, genParams != null ? genParams : new GenerationParams());
         var serializer = new BuildingSerializer();
 
         var floorPrefab = new BasicFloor();
@@ -28,8 +34,6 @@ public class BuildingGenerationOrchestrator
         serializer.wallPrefab = new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() };
 
         serializer.SerializeToObj(b);
-        serializer.SaveBuilding();
-        //new BuildingRenderer().Render(b);
 
     }
 }

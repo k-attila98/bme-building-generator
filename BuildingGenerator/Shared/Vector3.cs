@@ -67,6 +67,8 @@ namespace BuildingGenerator.Shared
 
         public string ToString()
         {
+            // Cultureinfo stuff needed because of the decimal dot is needed
+            // .obj files do not work with decimal commas so this is necessary
             return $"v {m_X.ToString(CultureInfo.GetCultureInfo("en-US"))} " +
                 $"{m_Y.ToString(CultureInfo.GetCultureInfo("en-US"))} " +
                 $"{m_Z.ToString(CultureInfo.GetCultureInfo("en-US"))}" +
