@@ -10,8 +10,10 @@ Console.WriteLine("Building Generator v0.1");
 var generator = new BuildingGenerationOrchestrator();
 var settings = new BuildingSettings();
 settings.Size = new Vector2Int(2, 3);
-settings.Stories = 1;
-settings.Wings = 1;
+settings.Stories = 5;
+settings.Wings = 3;
+settings.storiesStrategy = new RandomizedCountStoriesWithTerracesStrategy();
+settings.wingsStrategy = new RandomizedCountWingsStrategy();
 var genParams = new GenerationParams();
 genParams.BoundingBox = settings.Bounds;
 

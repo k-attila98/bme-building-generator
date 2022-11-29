@@ -343,7 +343,7 @@ public class BuildingSerializer
     public void SaveBuildingToObj()
     {
         var objStringToSave = StringifyBuilding();
-        using (StreamWriter writer = new StreamWriter(File.Open("../../../Generated/building.obj", System.IO.FileMode.Append)))
+        using (StreamWriter writer = new StreamWriter(File.Open("../../../Generated/building.obj", System.IO.FileMode.Create)))
         {
             writer.WriteAsync(objStringToSave);
         }
@@ -352,7 +352,7 @@ public class BuildingSerializer
     
     public void SaveBuildingToObj(string objStringToSave)
     {
-        using (StreamWriter writer = new StreamWriter(File.Open("../../../Generated/building.obj", System.IO.FileMode.Append)))
+        using (StreamWriter writer = new StreamWriter(File.Open("../../../Generated/building.obj", System.IO.FileMode.Create)))
         {
             writer.WriteAsync(objStringToSave);
         }
@@ -361,7 +361,7 @@ public class BuildingSerializer
     public void SaveBuilding()
     {
         Console.WriteLine("Serializing building...");
-        using (StreamWriter writer = new StreamWriter(File.Open("../../../Generated/building.obj", System.IO.FileMode.Append)))
+        using (StreamWriter writer = new StreamWriter(File.Open("../../../Generated/building.obj", System.IO.FileMode.Create)))
         {
             
             foreach (var prefab in placedPrefabs)
