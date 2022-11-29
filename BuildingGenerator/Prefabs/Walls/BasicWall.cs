@@ -99,7 +99,7 @@ namespace BuildingGenerator.Prefabs.Walls
             faces[10] = new Face(vertices11);
             faces[11] = new Face(vertices12);
 
-            Transform prefab = new Transform("Wall");
+            Transform prefab = new Transform("wall");
             prefab.Faces = faces;
             prefab.Width = 2;
             prefab.Height = 4;

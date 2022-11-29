@@ -340,10 +340,11 @@ public class BuildingSerializer
         Console.WriteLine("Serialization complete!");
         return objFileContent;
     }
+    /*
     public void SaveBuildingToObj()
     {
         var objStringToSave = StringifyBuilding();
-        using (StreamWriter writer = new StreamWriter(File.Open("../../../Generated/building.obj", System.IO.FileMode.Create)))
+        using (StreamWriter writer = new StreamWriter(File.Open($"../../../Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz")}.obj", System.IO.FileMode.Create)))
         {
             writer.WriteAsync(objStringToSave);
         }
@@ -357,11 +358,12 @@ public class BuildingSerializer
             writer.WriteAsync(objStringToSave);
         }
     }
+    */
 
     public void SaveBuilding()
     {
         Console.WriteLine("Serializing building...");
-        using (StreamWriter writer = new StreamWriter(File.Open("../../../Generated/building.obj", System.IO.FileMode.Create)))
+        using (StreamWriter writer = new StreamWriter(File.Open($"../../../Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss")}.obj", System.IO.FileMode.Create)))
         {
             
             foreach (var prefab in placedPrefabs)
@@ -379,12 +381,4 @@ public class BuildingSerializer
             //writer.WriteAsync(objStringToSave);
         }
     }
-    
-    public void UnRenderBuilding()
-    {
-        //var b = bldgFolder.gameObject;
-        //DestroyImmediate(b);
-        
-    }
-    
 }

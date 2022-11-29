@@ -55,7 +55,7 @@ namespace BuildingGenerator.Prefabs.Roofs
             faces[4] = new Face(vertices5);
             faces[5] = new Face(vertices6);
 
-            Transform prefab = new Transform("Pyramid roof");
+            Transform prefab = new Transform("pyramid roof");
             prefab.Faces = faces;
             prefab.Width = 2;
             prefab.Height = 1;
