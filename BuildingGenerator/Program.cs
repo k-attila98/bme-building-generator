@@ -9,7 +9,7 @@ Console.WriteLine("Building Generator v0.7");
 
 
 var settings = new BuildingSettings();
-settings.Size = new Vector2Int(2, 3);
+settings.Size = new Vector2Int(4, 3);
 settings.Stories = 5;
 settings.Wings = 3;
 settings.storiesStrategy = new RandomizedCountStoriesWithTerracesStrategy();

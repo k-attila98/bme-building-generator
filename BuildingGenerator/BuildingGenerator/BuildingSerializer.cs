@@ -16,8 +16,8 @@ public class BuildingSerializer
     private float wallWidth = 2f;
 
     private List<Transform> placedPrefabs = new List<Transform>();
-    private Dictionary<int, RectInt[]> storiesByLevel = new Dictionary<int, RectInt[]>();
-    //private Dictionary<int, RectInt[]> intersectionsByLevel = new Dictionary<int, RectInt[]>();
+    private Dictionary<int, Story[]> storiesByLevel = new Dictionary<int, Story[]>();
+
     private HashSet<string> placedFloorsPositions = new HashSet<string>();
 
     public void SerializeToObj(Building bldg)
@@ -58,41 +58,35 @@ public class BuildingSerializer
             {
                 if (!storiesByLevel.ContainsKey(story.Level))
                 {
-                    storiesByLevel.Add(story.Level, new RectInt[1] { story.Bounds });
+                    storiesByLevel.Add(story.Level, new Story[] { story });
                 }
                 else
                 {
-                    RectInt[] stories = storiesByLevel[story.Level];
-                    storiesByLevel[story.Level] = new RectInt[stories.Length + 1];
+                    Story[] stories = storiesByLevel[story.Level];
+                    storiesByLevel[story.Level] = new Story[stories.Length + 1];
                     stories.CopyTo(storiesByLevel[story.Level], 0);
-                    storiesByLevel[story.Level][stories.Length] = story.Bounds;
+                    storiesByLevel[story.Level][stories.Length] = story;
                 }
             }
         }
     }
     
-    /*
-    private void _SetIntersectionsByLevel(int level, RectInt[] storiesByLevel)
+    
+    private RectInt[] _GetIntersectionsOnLevelForStory(int level, Story story)
     {
-        foreach (Wing wing in bldg.Wings)
+        var stories = storiesByLevel[level];
+        List<RectInt> intersections = new List<RectInt>();
+
+        var otherStories = stories.Except(stories.Where(s => s.Bounds == story.Bounds));
+
+        foreach (var otherStory in otherStories)
         {
-            foreach (Story story in wing.Stories)
-            {
-                if (!storiesByLevel.ContainsKey(story.Level))
-                {
-                    storiesByLevel.Add(story.Level, new RectInt[1] { story.Bounds });
-                }
-                else
-                {
-                    RectInt[] stories = storiesByLevel[story.Level];
-                    storiesByLevel[story.Level] = new RectInt[stories.Length + 1];
-                    stories.CopyTo(storiesByLevel[story.Level], 0);
-                    storiesByLevel[story.Level][stories.Length] = story.Bounds;
-                }
-            }
+            intersections.Add(story.Bounds.Intersect(otherStory.Bounds));
         }
+
+        return intersections.ToArray();
     }
-    */
+    
 
 
     private void RenderWing(Wing wing)
@@ -162,7 +156,7 @@ public class BuildingSerializer
     {
         Transform storyFolder = new Transform("Story " + story.Level);
         storyFolder.SetParent(wingFolder);
-
+        /*
         // intersections with this story
         List<RectInt> intersectRects = new List<RectInt>();
         var storiesOnLevel = storiesByLevel[story.Level];
@@ -183,15 +177,24 @@ public class BuildingSerializer
             
         }
         var intersectionsOnLevel = intersectRects.ToArray();
+        */
 
+        RectInt[] intersections = _GetIntersectionsOnLevelForStory(story.Level, story);
+        
         for (int x = story.Bounds.min.x; x < story.Bounds.max.x; x++)
         {
             for (int y = story.Bounds.min.y; y < story.Bounds.max.y; y++)
             {
                 
                 PlaceFloor(x, y, story.Level, storyFolder);
+                
+                if (_IsWallClipping(x, y, intersections))
+                {
+                    continue;
+                }
+                
                 /*
-                if (_IsWallClipping(x, y, intersectionsOnLevel))
+                if (intersections.)
                 {
                     continue;
                 }
