@@ -7,7 +7,10 @@ public class RandomizedCountWingsStrategy : WingsStrategy
     public override Wing[] GenerateWings(BuildingSettings settings, GenerationParams genParams)
     {
         Random random = new Random();
-        int wingsInt = random.Next(settings.buildingWingCount + 1);
+
+        float wingsRnd = random.Next(1, settings.buildingWingCount);
+        int wingsInt = (int)Math.Round(wingsRnd);
+        //int wingsInt = random.Next(settings.buildingWingCount + 1);
 
         Wing[] wings = new Wing[wingsInt];
         for (int i = 0; i < wingsInt; i++)

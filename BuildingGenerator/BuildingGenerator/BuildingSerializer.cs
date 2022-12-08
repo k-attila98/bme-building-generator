@@ -16,6 +16,9 @@ public class BuildingSerializer
     private float wallWidth = 2f;
 
     private List<Transform> placedPrefabs = new List<Transform>();
+    private Dictionary<int, RectInt[]> storiesByLevel = new Dictionary<int, RectInt[]>();
+    //private Dictionary<int, RectInt[]> intersectionsByLevel = new Dictionary<int, RectInt[]>();
+    private HashSet<string> placedFloorsPositions = new HashSet<string>();
 
     public void SerializeToObj(Building bldg)
     {
@@ -29,14 +32,68 @@ public class BuildingSerializer
         
         wallWidth = wallPrefab[0].Width;
         wallHeight = wallPrefab[0].Height;
+
+        _SetStoriesByLevel(bldg);
         
         foreach (Wing wing in bldg.Wings) 
         {
             RenderWing(wing);
         }
+
+        Transform roofFolder = new Transform("Roof");
+        roofFolder.SetParent(bldgFolder);
+        foreach (var wing in bldg.Wings)
+        {
+            RenderRoofToEveryDynamicSizedStory(wing, roofFolder);
+        }
         
         _SaveBuilding();
     }
+    
+    private void _SetStoriesByLevel(Building bldg)
+    {
+        foreach (Wing wing in bldg.Wings)
+        {
+            foreach (Story story in wing.Stories)
+            {
+                if (!storiesByLevel.ContainsKey(story.Level))
+                {
+                    storiesByLevel.Add(story.Level, new RectInt[1] { story.Bounds });
+                }
+                else
+                {
+                    RectInt[] stories = storiesByLevel[story.Level];
+                    storiesByLevel[story.Level] = new RectInt[stories.Length + 1];
+                    stories.CopyTo(storiesByLevel[story.Level], 0);
+                    storiesByLevel[story.Level][stories.Length] = story.Bounds;
+                }
+            }
+        }
+    }
+    
+    /*
+    private void _SetIntersectionsByLevel(int level, RectInt[] storiesByLevel)
+    {
+        foreach (Wing wing in bldg.Wings)
+        {
+            foreach (Story story in wing.Stories)
+            {
+                if (!storiesByLevel.ContainsKey(story.Level))
+                {
+                    storiesByLevel.Add(story.Level, new RectInt[1] { story.Bounds });
+                }
+                else
+                {
+                    RectInt[] stories = storiesByLevel[story.Level];
+                    storiesByLevel[story.Level] = new RectInt[stories.Length + 1];
+                    stories.CopyTo(storiesByLevel[story.Level], 0);
+                    storiesByLevel[story.Level][stories.Length] = story.Bounds;
+                }
+            }
+        }
+    }
+    */
+
 
     private void RenderWing(Wing wing)
     {
@@ -46,9 +103,27 @@ public class BuildingSerializer
         {
             RenderStory(story, wing, wingFolder);
         }
-        RenderRoofToEveryDynamicSizedStory(wing, wingFolder);
+        
     }
 
+    private bool _IsWallClipping(int x, int y, RectInt[] intersectionsOnLevel)
+    {
+        if (intersectionsOnLevel == null || intersectionsOnLevel.Length < 1)
+        {
+            return false;
+        }
+
+        foreach (RectInt intersection in intersectionsOnLevel)
+        {
+            if (intersection.Contains(new Vector2Int(x, y)))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    /*
     // TODO: ezt a függvényt befejezni, jelenleg nincs ötletem hogyan lehet elegánsan megoldani
     private void RemoveWallClippings(Wing[] wings)
     {
@@ -56,7 +131,9 @@ public class BuildingSerializer
         {
             return;
         }
-        
+
+        List<RectInt> intersectRects = new List<RectInt>();
+
         for (int i = 0; i < wings.Length-1; i++)
         {
             var wing1 = wings[i];
@@ -73,24 +150,53 @@ public class BuildingSerializer
 
             for (int j = 0; j < storyCount; j++)
             {
-                if (wing1.Stories[j].Bounds.Overlaps(wing2.Stories[j].Bounds))
-                {
+                wing1.Stories[j].Bounds.Intersect(wing2.Stories[j].Bounds);
+                
                     // TODO: itt kiszámolni hogy hol lapolódik át és eltüntetni azokat a falakat
-                }
+                
             }
         }
     }
-
+    */
     private void RenderStory(Story story, Wing wing, Transform wingFolder)
     {
         Transform storyFolder = new Transform("Story " + story.Level);
         storyFolder.SetParent(wingFolder);
+
+        // intersections with this story
+        List<RectInt> intersectRects = new List<RectInt>();
+        var storiesOnLevel = storiesByLevel[story.Level];
+        foreach (RectInt storyOnLevel in storiesOnLevel)
+        {
+
+            var intersection = storyOnLevel.Intersect(story.Bounds);
+            if (intersection.x != 0 && intersection.y != 0 && intersection.width != 0 && intersection.height != 0)
+            {
+                intersectRects.Add(intersection);
+            }
+            else
+            {
+                continue;
+            }
+            
+
+            
+        }
+        var intersectionsOnLevel = intersectRects.ToArray();
+
         for (int x = story.Bounds.min.x; x < story.Bounds.max.x; x++)
         {
             for (int y = story.Bounds.min.y; y < story.Bounds.max.y; y++)
             {
+                
                 PlaceFloor(x, y, story.Level, storyFolder);
-
+                /*
+                if (_IsWallClipping(x, y, intersectionsOnLevel))
+                {
+                    continue;
+                }
+                */
+                //south wall
                 if (y == story.Bounds.min.y) 
                 {
                     Transform wall = wallPrefab[(int)story.Walls[x - story.Bounds.min.x]];
@@ -125,12 +231,13 @@ public class BuildingSerializer
     private void PlaceFloor(int x, int y, int level, Transform storyFolder)
     {
         Transform f = new Transform(floorPrefab, new Vector3(
-                x * wallWidth,
+                x * floorPrefab.Width,
                 0f + level * wallHeight,
-                y * wallWidth
+                y * floorPrefab.Width
             ), Quaternion.Identity);
         f.SetParent(storyFolder);
 
+        placedFloorsPositions.Add(f.Position.ToString());
         placedPrefabs.Add(f);
     }
 
@@ -234,7 +341,8 @@ public class BuildingSerializer
     
     private void RenderRoofToEveryDynamicSizedStory(Wing wing, Transform wingFolder)
     {
-        if (wing.Stories.Length < 2)
+        
+        if (wing.Stories.Length == 1)
         {
             RenderRoofOnTop(wing, wingFolder);
             return;
@@ -251,7 +359,21 @@ public class BuildingSerializer
                 storiesThatNeedRoof.Add(lowerStory);
             }
         }
-
+        /*
+        var storiesArray = storiesThatNeedRoof.ToArray();
+        for (int i = 0; i < storiesArray.Length; i++)
+        {
+            var story = storiesArray[i];
+            for (int x = story.Bounds.min.x; x < story.Bounds.max.x; x++)
+            {
+                for (int y = story.Bounds.min.y; y < story.Bounds.max.y; y++)
+                {
+                    PlaceRoof(x, y, story.Level + 1, wingFolder, wing.GetRoof.Type, wing.GetRoof.Direction);
+                }
+            }
+        }
+        */
+        
         foreach (var story in storiesThatNeedRoof)
         {
             for (int x = story.Bounds.min.x; x < story.Bounds.max.x; x++)
@@ -262,26 +384,33 @@ public class BuildingSerializer
                 }
             }
         }
+        
         RenderRoofOnTopWithDynamicSize(wing, wingFolder);
     }
 
     private void PlaceRoof(int x, int y, int level, Transform wingFolder, RoofType type, RoofDirection direction)
     {
+        var transformPoint = wingFolder.TransformPoint(
+                new Vector3(
+                        x * roofPrefab[(int)type].Width,
+                        level * wallHeight, //+ (type == RoofType.Point ? -0.3f : 0f),
+                        y * roofPrefab[(int)type].Width
+                    )
+                );
+
+        if (placedFloorsPositions.Contains(transformPoint.ToString()))
+        {
+            return;
+        }
+
         Transform r;
         r = new Transform(
             roofPrefab[(int)type],
-            wingFolder.TransformPoint(
-                new Vector3(
-                        x * wallWidth,
-                        level * wallHeight, //+ (type == RoofType.Point ? -0.3f : 0f),
-                        y * wallWidth
-                    )
-                ),
+            transformPoint,
             //Quaternion.Euler(0f, rotationOffset[(int)direction].y, 0f)
             Quaternion.Identity
             );
         r.SetParent(wingFolder);
-        
         placedPrefabs.Add(r);
     }
 
@@ -316,7 +445,29 @@ public class BuildingSerializer
             //writer.WriteAsync(objStringToSave);
         }
     }
-    
+
+    private void _SaveBuilding(int num)
+    {
+        Console.WriteLine("Serializing building...");
+        using (StreamWriter writer = new StreamWriter(File.Open($"../../../Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss")}-{num}.obj", System.IO.FileMode.Create)))
+        {
+
+            foreach (var prefab in placedPrefabs)
+            {
+                writer.Write(prefab.VerticesToString());
+                Console.WriteLine("Serialized " + prefab.Name + "\n");
+            }
+
+            foreach (var prefab in placedPrefabs)
+            {
+                writer.Write(prefab.FacesToString());
+            }
+
+            Console.WriteLine("Serialization complete!");
+            //writer.WriteAsync(objStringToSave);
+        }
+    }
+
     /**
      * Mainly for testing purposes
      */

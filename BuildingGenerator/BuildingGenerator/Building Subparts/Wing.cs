@@ -21,6 +21,11 @@ public class Wing
         this.GetRoof = roof;
     }
 
+    public Story GetStoryFromLevel(int level)
+    {
+        return Stories[level];
+    }
+
     public override string ToString()
     {
         string wing = "Wing(" + Bounds.ToString() + "):\n";

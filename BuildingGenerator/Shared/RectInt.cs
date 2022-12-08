@@ -46,6 +46,23 @@ namespace BuildingGenerator.Shared
                 && position.x < xMax
                 && position.y < yMax;
         }
+
+        public bool Contains(int x, int y)
+        {
+            return x >= xMin
+                && y >= yMin
+                && x < xMax
+                && y < yMax;
+        }
+
+        public bool IsInside(int x, int y)
+        {
+            return x > xMin
+                && y > yMin
+                && x < xMax
+                && y < yMax;
+        }
+
         public bool Overlaps(RectInt other)
         {
             return other.xMin < xMax
@@ -92,6 +109,21 @@ namespace BuildingGenerator.Shared
                 new Vector2Int(xMax, yMax),
                 new Vector2Int(xMin, yMax)
             };
+        }
+
+        public RectInt Intersect(RectInt other)
+        {
+            if (!Overlaps(other))
+            {
+                return new RectInt(0, 0, 0, 0);
+            }
+
+            return new RectInt(
+                Math.Max(xMin, other.xMin),
+                Math.Max(yMin, other.yMin),
+                Math.Min(xMax, other.xMax) - Math.Max(xMin, other.xMin),
+                Math.Min(yMax, other.yMax) - Math.Max(yMin, other.yMin)
+            );
         }
 
     }
