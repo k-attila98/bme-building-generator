@@ -18,7 +18,8 @@ public class BuildingSerializer
     private List<Transform> placedPrefabs = new List<Transform>();
     private Dictionary<int, Story[]> storiesByLevel = new Dictionary<int, Story[]>();
 
-    private HashSet<string> placedFloorsPositions = new HashSet<string>();
+    private HashSet<string> placedFloorPositions = new HashSet<string>();
+    private HashSet<string> placedRoofPositions = new HashSet<string>();
 
     public void SerializeToObj(Building bldg)
     {
@@ -172,14 +173,21 @@ public class BuildingSerializer
 
     private void _PlaceFloor(int x, int y, int level, Transform storyFolder)
     {
-        Transform f = new Transform(floorPrefab, new Vector3(
+        var transformPoint = new Vector3(
                 x * floorPrefab.Width,
                 0f + level * wallHeight,
                 y * floorPrefab.Width
-            ), Quaternion.Identity);
+            );
+
+        if (placedFloorPositions.Contains(transformPoint.ToString()))
+        {
+            return;
+        }
+
+        Transform f = new Transform(floorPrefab, transformPoint, Quaternion.Identity);
         f.SetParent(storyFolder);
 
-        placedFloorsPositions.Add(f.Position.ToString());
+        placedFloorPositions.Add(f.Position.ToString());
         placedPrefabs.Add(f);
     }
 
@@ -340,7 +348,10 @@ public class BuildingSerializer
                     )
                 );
 
-        if (placedFloorsPositions.Contains(transformPoint.ToString()))
+        if (
+            placedFloorPositions.Contains(transformPoint.ToString()) 
+            || placedRoofPositions.Contains(transformPoint.ToString())
+           )
         {
             return;
         }
@@ -353,6 +364,8 @@ public class BuildingSerializer
             Quaternion.Identity
             );
         r.SetParent(wingFolder);
+
+        placedRoofPositions.Add(r.Position.ToString());
         placedPrefabs.Add(r);
     }
 

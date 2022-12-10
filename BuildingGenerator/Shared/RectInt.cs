@@ -55,6 +55,14 @@ namespace BuildingGenerator.Shared
                 && y < yMax;
         }
 
+        public bool ContainsWithEdges(int x, int y)
+        {
+            return x >= xMin
+                && y >= yMin
+                && x <= xMax
+                && y <= yMax;
+        }
+
         public bool IsInside(int x, int y)
         {
             return x > xMin
@@ -69,6 +77,14 @@ namespace BuildingGenerator.Shared
                 && other.xMax > xMin
                 && other.yMin < yMax
                 && other.yMax > yMin;
+        }
+
+        public bool OverlapsWithEdges(RectInt other)
+        {
+            return other.xMin <= xMax
+                && other.xMax >= xMin
+                && other.yMin <= yMax
+                && other.yMax >= yMin;
         }
         public bool Equals(RectInt other)
         {
@@ -113,10 +129,32 @@ namespace BuildingGenerator.Shared
 
         public RectInt Intersect(RectInt other)
         {
-            if (!Overlaps(other))
+            if (!Overlaps(other) || xMin == other.xMin || yMin == other.yMin)
             {
                 return new RectInt(0, 0, 0, 0);
             }
+            
+
+            /*
+            if (xMin == other.xMin || yMin == other.yMin)
+            {
+                return new RectInt(
+                    Math.Max(xMin, other.xMin),
+                    Math.Max(yMin, other.yMin),
+                    1,
+                    1
+                );
+            }
+            if (yMin == other.yMin)
+            {
+                return new RectInt(
+                    Math.Max(xMin, other.xMin),
+                    Math.Max(yMin, other.yMin),
+                    0,
+                    Math.Min(yMax, other.yMax) - Math.Max(yMin, other.yMin)
+                );
+            }
+            */
 
             return new RectInt(
                 Math.Max(xMin, other.xMin),

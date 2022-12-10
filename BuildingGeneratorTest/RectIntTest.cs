@@ -269,5 +269,13 @@ namespace BuildingGeneratorTest
             Assert.IsFalse(rect1.Overlaps(rect2));
         }
 
+        [TestMethod]
+        public void TestContainsWithEdgesZeroWidth()
+        {
+            var rect1 = new RectInt(3, 3, 0, 10);
+
+            Assert.IsTrue(rect1.ContainsWithEdges(3,4));
+        }
+
     }
 }
