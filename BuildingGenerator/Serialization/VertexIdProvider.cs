@@ -14,5 +14,10 @@ namespace BuildingGenerator.Serialization
         {
             return _id++;
         }
+
+        public static void Reset()
+        {
+            _id = 1;
+        }
     }
 }

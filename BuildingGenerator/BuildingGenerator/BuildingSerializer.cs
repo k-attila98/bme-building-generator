@@ -47,10 +47,41 @@ public class BuildingSerializer
         {
             _RenderRoofToEveryDynamicSizedStory(wing, roofFolder);
         }
-        
+
         _SaveBuilding();
     }
-    
+
+    public string SerializeToObjStyleStr(Building bldg)
+    {
+        if (wallPrefab.Length == 0 || roofPrefab.Length == 0 || floorPrefab == null)
+        {
+            Console.Write("Component [BuildingSerializer] doesn't have required prefabs set!");
+            return "";
+        }
+
+        bldgFolder = new Transform("Building");
+
+        wallWidth = wallPrefab[0].Width;
+        wallHeight = wallPrefab[0].Height;
+
+        _SetStoriesByLevel(bldg);
+
+        foreach (Wing wing in bldg.Wings)
+        {
+            _RenderWing(wing);
+        }
+
+        Transform roofFolder = new Transform("Roof");
+        roofFolder.SetParent(bldgFolder);
+        foreach (var wing in bldg.Wings)
+        {
+            _RenderRoofToEveryDynamicSizedStory(wing, roofFolder);
+        }
+
+        return StringifyBuilding();
+
+    }
+
     private void _SetStoriesByLevel(Building bldg)
     {
         foreach (Wing wing in bldg.Wings)
@@ -425,7 +456,7 @@ public class BuildingSerializer
     }
 
     /**
-     * Mainly for testing purposes
+     * Needed for the wpf app, need to return the string instead of writing it to a file for displaying it on the screen
      */
     public string StringifyBuilding()
     {

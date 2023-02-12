@@ -1,6 +1,7 @@
 using BuildingGenerator.Prefabs.Floors;
 using BuildingGenerator.Prefabs.Roofs;
 using BuildingGenerator.Prefabs.Walls;
+using BuildingGenerator.Serialization;
 using BuildingGenerator.Shared;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ public class BuildingGenerationOrchestrator
     
     public void GenerateBuilding()
     {
+        VertexIdProvider.Reset();
         b = BuildingGeneration.Generate(settings, genParams != null ? genParams : new GenerationParams());
         var serializer = new BuildingSerializer();
 
@@ -34,6 +36,24 @@ public class BuildingGenerationOrchestrator
         serializer.wallPrefab = new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() };
 
         serializer.SerializeToObj(b);
+
+    }
+
+    public string GenerateBuildingToDisplay()
+    {
+        VertexIdProvider.Reset();
+        b = BuildingGeneration.Generate(settings, genParams != null ? genParams : new GenerationParams());
+        var serializer = new BuildingSerializer();
+
+        var floorPrefab = new BasicFloor();
+        var roofPrefab = new BasicPyramidRoof();
+        var wallPrefab = new BasicWall();
+
+        serializer.floorPrefab = floorPrefab.GetTransform();
+        serializer.roofPrefab = new Transform[] { roofPrefab.GetTransform(), roofPrefab.GetTransform(), roofPrefab.GetTransform() };
+        serializer.wallPrefab = new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() };
+
+        return serializer.SerializeToObjStyleStr(b);
 
     }
 }
