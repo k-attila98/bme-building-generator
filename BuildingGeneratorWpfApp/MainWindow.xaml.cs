@@ -136,15 +136,12 @@ namespace BuildingGeneratorWpfApp
             using (var strStream = new MemoryStream(Encoding.UTF8.GetBytes(objString)))
             {
                 var dispatcher = Dispatcher.CurrentDispatcher;
-                //var strStream = new MemoryStream(Encoding.UTF8.GetBytes(objString));
 
                 ModelVisual3D device3D = new ModelVisual3D();
                 ObjReader objReader = new ObjReader(dispatcher)
                 {
                     SwitchYZ = true
                 };
-                //objReader.IgnoreErrors = true;
-                // TODO: ha új modelt akarok generálni akkor elszáll ennél a sornál a téma, javítani
                 Model3DGroup model3DGroup = objReader.Read(strStream);
                 device3D.Content = model3DGroup;
                 viewPort3d.Children.Add(device3D);
