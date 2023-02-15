@@ -7,7 +7,7 @@ public class RandomizedCountStoriesWithTerracesStrategy : StoriesStrategy
     public override Story[] GenerateStories(BuildingSettings settings, GenerationParams genParams)
     {
         Random random = new Random();
-        float storiesRnd = random.Next(1, settings.buildingStoryCount);
+        float storiesRnd = random.Next(settings.StoriesMin, settings.StoriesMax);
         int storiesInt = (int)Math.Round(storiesRnd);
 
         Story[] stories = new Story[storiesInt];

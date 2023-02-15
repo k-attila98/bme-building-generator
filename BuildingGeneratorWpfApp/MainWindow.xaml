@@ -7,9 +7,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BuildingGeneratorWpfApp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1368">
+        Title="MainWindow" Height="915" Width="1682" ResizeMode="NoResize">
     <Grid Background="#FF1F1F1F">
-        <HelixToolkit:HelixViewport3D x:Name="viewPort3d" ZoomExtentsWhenLoaded="True" Margin="36,36,750,197">
+        <HelixToolkit:HelixViewport3D x:Name="viewPort3d" ZoomExtentsWhenLoaded="True" Margin="36,36,0,0" Height="670" VerticalAlignment="Top" HorizontalAlignment="Left" Width="670">
             <!-- Remember to add light to the scene -->
             <HelixToolkit:SunLight/>
             <ModelVisual3D>
@@ -31,49 +31,88 @@
                     </GeometryModel3D>
                 </ModelVisual3D.Content>
             </ModelVisual3D>
-            <HelixToolkit:GridLinesVisual3D Width="8" Length="8" MinorDistance="1" MajorDistance="1" Thickness="0.01"/>
+            <HelixToolkit:GridLinesVisual3D Width="10" Length="10" MinorDistance="1" MajorDistance="1" Thickness="0.01"/>
         </HelixToolkit:HelixViewport3D>
-        <TextBox x:Name="tbWingFrom" HorizontalAlignment="Left" Margin="771,71,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="141" Height="24" />
+        <TextBox x:Name="tbWingFrom" HorizontalAlignment="Left" Margin="771,71,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="141" Height="24" TextChanged="tbWingFromTo_TextChanged" Background="#FF1F1F1F" Foreground="White" />
         <Label Content="Number of wings" HorizontalAlignment="Left" Margin="722,31,0,0" VerticalAlignment="Top" Width="190" Foreground="White" Height="35" FontSize="20"/>
         <Label Content="From" HorizontalAlignment="Left" Margin="722,66,0,0" VerticalAlignment="Top" Width="43" Foreground="White" Height="35"/>
         <Label Content="To" HorizontalAlignment="Left" Margin="935,66,0,0" VerticalAlignment="Top" Width="31" Foreground="White" Height="35"/>
-        <TextBox x:Name="tbWingTo" HorizontalAlignment="Left" Margin="971,71,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="141" Height="24"/>
-        <TextBox x:Name="tbStoryFrom" HorizontalAlignment="Left" Margin="771,171,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="141" Height="24" />
+        <TextBox x:Name="tbWingTo" HorizontalAlignment="Left" Margin="971,71,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="141" Height="24" TextChanged="tbWingFromTo_TextChanged" Background="#FF1F1F1F" Foreground="White"/>
+        <TextBox x:Name="tbStoryFrom" HorizontalAlignment="Left" Margin="771,171,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="141" Height="24" TextChanged="tbStoriesFromTo_TextChanged" Background="#FF1F1F1F" Foreground="White" />
         <Label Content="Number of stories" HorizontalAlignment="Left" Margin="722,131,0,0" VerticalAlignment="Top" Width="190" Foreground="White" Height="35" FontSize="20"/>
         <Label Content="From" HorizontalAlignment="Left" Margin="722,166,0,0" VerticalAlignment="Top" Width="43" Foreground="White" Height="35"/>
         <Label Content="To" HorizontalAlignment="Left" Margin="935,166,0,0" VerticalAlignment="Top" Width="31" Foreground="White" Height="35"/>
-        <TextBox x:Name="tbStoryTo" HorizontalAlignment="Left" Margin="971,171,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="141" Height="24"/>
-        <TextBox x:Name="tbSizeWidth" HorizontalAlignment="Left" Margin="777,272,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="135" Height="24" />
+        <TextBox x:Name="tbStoryTo" HorizontalAlignment="Left" Margin="971,171,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="141" Height="24" TextChanged="tbStoriesFromTo_TextChanged" Background="#FF1F1F1F" Foreground="White" />
+        <TextBox x:Name="tbSizeWidth" HorizontalAlignment="Left" Margin="777,272,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="135" Height="24" TextChanged="tbSizeWidthHeight_TextChanged" Background="#FF1F1F1F" Foreground="White" />
         <Label Content="Size of base level" HorizontalAlignment="Left" Margin="722,232,0,0" VerticalAlignment="Top" Width="190" Foreground="White" Height="35" FontSize="20"/>
         <Label Content="Width" HorizontalAlignment="Left" Margin="722,267,0,0" VerticalAlignment="Top" Width="49" Foreground="White" Height="35"/>
         <Label Content="Height" HorizontalAlignment="Left" Margin="916,267,0,0" VerticalAlignment="Top" Width="55" Foreground="White" Height="35" RenderTransformOrigin="0.091,0.401"/>
-        <TextBox x:Name="tbSizeHeight" HorizontalAlignment="Left" Margin="971,272,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="141" Height="24"/>
+        <TextBox x:Name="tbSizeHeight" HorizontalAlignment="Left" Margin="971,272,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="141" Height="24" TextChanged="tbSizeWidthHeight_TextChanged" Background="#FF1F1F1F" Foreground="White"/>
         <Button x:Name="btnGenerate" Content="Generate" HorizontalAlignment="Left" Margin="804,647,0,0" VerticalAlignment="Top" Height="27" Width="61" Click="Generate_Click" />
-        <Button x:Name="btnSave" Content="Save into File" HorizontalAlignment="Left" Margin="902,647,0,0" VerticalAlignment="Top" Height="27" Width="87" IsEnabled="False"/>
-        <Label Content="Generation Strategies" HorizontalAlignment="Left" Margin="722,0,0,0" VerticalAlignment="Center" Width="212" Foreground="White" Height="35" FontSize="20"/>
+        <Button x:Name="btnSave" Content="Save into File" HorizontalAlignment="Left" Margin="902,647,0,0" VerticalAlignment="Top" Height="27" Width="87" IsEnabled="False" Click="btnSave_Click"/>
+        <Label Content="Generation Strategies" HorizontalAlignment="Left" Margin="722,340,0,0" VerticalAlignment="Top" Width="212" Foreground="White" Height="35" FontSize="20"/>
         <ComboBox x:Name="cbWingsStrat" HorizontalAlignment="Left" Margin="757,406,0,0" VerticalAlignment="Top" Width="220" SelectionChanged="cbWingsStrat_SelectionChanged"
-                  SelectedIndex="0" Foreground="White" Background="Black" BorderBrush="Black"
-                  />
-        <Label Content="Wings" HorizontalAlignment="Left" Margin="757,375,0,0" VerticalAlignment="Top" Foreground="White"/>
+                  SelectedIndex="0" Foreground="White" BorderBrush="#FFFFFFFF" Background="#FF1F1F1F" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}">
+            <ComboBox.ItemContainerStyle>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="Background" Value="#FF1F1F1F"/>
+                    <Setter Property="BorderBrush" Value="#FF1F1F1F"/>
+                </Style>
+            </ComboBox.ItemContainerStyle>
+        </ComboBox>
+            <Label Content="Wings" HorizontalAlignment="Left" Margin="757,375,0,0" VerticalAlignment="Top" Foreground="White"/>
         <ComboBox x:Name="cbWingStrat" HorizontalAlignment="Left" Margin="757,471,0,0" VerticalAlignment="Top" Width="220" SelectionChanged="cbWingStrat_SelectionChanged"
-                  SelectedIndex="0" Background="Black" Foreground="White" BorderBrush="Black"
-                  />
+                  SelectedIndex="0" Foreground="White" BorderBrush="#FFFFFFFF" Background="#FF1F1F1F" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}">
+            <ComboBox.ItemContainerStyle>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="Background" Value="#FF1F1F1F"/>
+                    <Setter Property="BorderBrush" Value="#FF1F1F1F"/>
+                </Style>
+            </ComboBox.ItemContainerStyle>
+        </ComboBox>
         <Label Content="Wing" HorizontalAlignment="Left" Margin="757,440,0,0" VerticalAlignment="Top" Foreground="White"/>
         <ComboBox x:Name="cbStoriesStrat" HorizontalAlignment="Left" Margin="757,535,0,0" VerticalAlignment="Top" Width="220" SelectionChanged="cbStoriesStrat_SelectionChanged"
-                  SelectedIndex="0" Background="Black" Foreground="White" BorderBrush="Black"
-                  />
+                  SelectedIndex="0" Foreground="White" BorderBrush="#FFFFFFFF" Background="#FF1F1F1F" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}">
+            <ComboBox.ItemContainerStyle>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="Background" Value="#FF1F1F1F"/>
+                    <Setter Property="BorderBrush" Value="#FF1F1F1F"/>
+                </Style>
+            </ComboBox.ItemContainerStyle>
+        </ComboBox>
         <Label Content="Stories" HorizontalAlignment="Left" Margin="757,504,0,0" VerticalAlignment="Top" Foreground="White"/>
         <ComboBox x:Name="cbStoryStrat" HorizontalAlignment="Left" Margin="1029,406,0,0" VerticalAlignment="Top" Width="220" SelectionChanged="cbStoryStrat_SelectionChanged"
-                  SelectedIndex="0" Foreground="White" Background="Black" BorderBrush="Black"
-                  />
+                  SelectedIndex="0" Foreground="White" BorderBrush="#FFFFFFFF" Background="#FF1F1F1F" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}">
+            <ComboBox.ItemContainerStyle>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="Background" Value="#FF1F1F1F"/>
+                    <Setter Property="BorderBrush" Value="#FF1F1F1F"/>
+                </Style>
+            </ComboBox.ItemContainerStyle>
+        </ComboBox>
         <Label Content="Story" HorizontalAlignment="Left" Margin="1029,375,0,0" VerticalAlignment="Top" Foreground="White"/>
         <ComboBox x:Name="cbWallsStrat" HorizontalAlignment="Left" Margin="1029,471,0,0" VerticalAlignment="Top" Width="220" SelectionChanged="cbWallsStrat_SelectionChanged"
-                  SelectedIndex="0" Background="Black" Foreground="White" BorderBrush="Black"
-                  />
+                  SelectedIndex="0" Foreground="White" BorderBrush="#FFFFFFFF" Background="#FF1F1F1F" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}">
+            <ComboBox.ItemContainerStyle>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="Background" Value="#FF1F1F1F"/>
+                    <Setter Property="BorderBrush" Value="#FF1F1F1F"/>
+                </Style>
+            </ComboBox.ItemContainerStyle>
+        </ComboBox>
         <Label Content="Walls" HorizontalAlignment="Left" Margin="1029,440,0,0" VerticalAlignment="Top" Foreground="White"/>
         <ComboBox x:Name="cbRoofStrat" HorizontalAlignment="Left" Margin="1029,535,0,0" VerticalAlignment="Top" Width="220" SelectionChanged="cbRoofStrat_SelectionChanged"
-                  SelectedIndex="0" Background="Black" Foreground="White" BorderBrush="Black"
-                  />
+                  SelectedIndex="0" Foreground="White" BorderBrush="#FFFFFFFF" Background="#FF1F1F1F" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}">
+            <ComboBox.ItemContainerStyle>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="Background" Value="#FF1F1F1F"/>
+                    <Setter Property="BorderBrush" Value="#FF1F1F1F"/>
+                </Style>
+            </ComboBox.ItemContainerStyle>
+        </ComboBox>
         <Label Content="Roof" HorizontalAlignment="Left" Margin="1029,504,0,0" VerticalAlignment="Top" Foreground="White"/>
+        <Label x:Name="labelErrorWings" Content="&#xA;" HorizontalAlignment="Left" Margin="1166,62,0,0" VerticalAlignment="Top" Foreground="#FFC50606"/>
+        <Label x:Name="labelErrorStories" Content="&#xA;" HorizontalAlignment="Left" Margin="1166,162,0,0" VerticalAlignment="Top" Foreground="#FFC50606"/>
+        <Label x:Name="labelErrorWidthHeight" Content="&#xA;" HorizontalAlignment="Left" Margin="1166,264,0,0" VerticalAlignment="Top" Foreground="#FFC50606"/>
     </Grid>
 </Window>

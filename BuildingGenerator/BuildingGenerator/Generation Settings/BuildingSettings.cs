@@ -12,8 +12,8 @@ public class BuildingSettings
     public WingsStrategy wingsStrategy;
     
     public Vector2Int buildingSize;
-    public int buildingStoryCount;
-    public int buildingWingCount;
+    public Vector2Int buildingStoryCount;
+    public Vector2Int buildingWingCount;
 
     public Vector2Int Size
     {
@@ -21,16 +21,40 @@ public class BuildingSettings
         set { buildingSize = value; }
     }
     
-    public int Stories
+    public int StoriesMin
+    {
+        get { return buildingStoryCount.x; }
+        set { buildingStoryCount.x = value; }
+    }
+
+    public int StoriesMax
+    {
+        get { return buildingStoryCount.y; }
+        set { buildingStoryCount.y = value; }
+    }
+
+    public Vector2Int Stories
     {
         get { return buildingStoryCount; }
         set { buildingStoryCount = value; }
     }
-    
-    public int Wings
+
+    public Vector2Int Wings
     {
         get { return buildingWingCount; }
         set { buildingWingCount = value; }
+    }
+
+    public int WingsMin
+    {
+        get { return buildingWingCount.x; }
+        set { buildingWingCount.x = value; }
+    }
+
+    public int WingsMax
+    {
+        get { return buildingWingCount.y; }
+        set { buildingWingCount.y = value; }
     }
 
     public RectInt Bounds

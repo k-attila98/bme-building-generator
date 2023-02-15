@@ -56,4 +56,10 @@ public class BuildingGenerationOrchestrator
         return serializer.SerializeToObjStyleStr(b);
 
     }
+
+    public void SerializeBuildingFromStr(string bldgStr)
+    {
+        var serializer = new BuildingSerializer();
+        serializer.SaveBuilding(bldgStr);
+    }
 }

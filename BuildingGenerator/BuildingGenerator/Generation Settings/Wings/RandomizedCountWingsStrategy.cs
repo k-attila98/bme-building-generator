@@ -8,7 +8,7 @@ public class RandomizedCountWingsStrategy : WingsStrategy
     {
         Random random = new Random();
 
-        float wingsRnd = random.Next(1, settings.buildingWingCount);
+        float wingsRnd = random.Next(settings.WingsMin, settings.WingsMax);
         int wingsInt = (int)Math.Round(wingsRnd);
         //int wingsInt = random.Next(settings.buildingWingCount + 1);
 

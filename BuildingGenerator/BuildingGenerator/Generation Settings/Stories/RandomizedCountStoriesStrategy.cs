@@ -5,7 +5,7 @@ public class RandomizedCountStoriesStrategy : StoriesStrategy
 {
     public override Story[] GenerateStories(BuildingSettings settings, GenerationParams genParams)
     {
-        float storiesRnd = new Random().Next(1, settings.buildingStoryCount);
+        float storiesRnd = new Random().Next(settings.StoriesMin, settings.StoriesMax);
 
         int storiesInt = (int)Math.Round(storiesRnd);
         

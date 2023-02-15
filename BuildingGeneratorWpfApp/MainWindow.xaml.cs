@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,7 +40,11 @@ namespace BuildingGeneratorWpfApp
         private List<string> storyStrategies = StrategyResolver.GetAllStoryStrats();
         private List<string> roofStrategies = StrategyResolver.GetAllRoofStrats();
 
-        
+        private string objStr = string.Empty;
+        private BuildingGenerationOrchestrator generator;
+        private BuildingSettings settings = new BuildingSettings();
+
+        private bool isWingsNumsValid = true, isStoriesNumsvalid = true, isSizeNumsValid = true;
 
         public MainWindow()
         {
@@ -74,9 +79,147 @@ namespace BuildingGeneratorWpfApp
             selectedStoriesStrat = cbStoriesStrat.SelectedItem.ToString() ?? string.Empty;
         }
 
+        private void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+            generator.SerializeBuildingFromStr(objStr);
+            btnSave.IsEnabled = false;
+        }
+
         private void cbStoryStrat_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             selectedStoryStrat = cbStoryStrat.SelectedItem.ToString() ?? string.Empty;
+        }
+
+        private bool _IsTextboxValueNumber(TextBox tb)
+        {
+            return Regex.IsMatch(tb.Text, "^[0-9]*$");
+        }
+
+        private void _DisplayErrorInLabel(Label label, string errorMessage)
+        {
+            label.Content = errorMessage;
+            btnGenerate.IsEnabled = false;
+            btnSave.IsEnabled = false;
+        }
+
+        private void _ResetErrorInLabel(Label label)
+        {
+            label.Content = "";
+            btnGenerate.IsEnabled = isWingsNumsValid && isStoriesNumsvalid && isSizeNumsValid;
+        }
+
+        private void tbStoriesFromTo_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!this.IsLoaded)
+            {
+                return;
+            }
+
+            if (tbStoryFrom.Text == "" || tbStoryTo.Text == "")
+            {
+                _DisplayErrorInLabel(labelErrorStories, "Fill all textboxes!");
+                isStoriesNumsvalid = false;
+                return;
+            }
+
+            if (!_IsTextboxValueNumber(tbStoryFrom) || !_IsTextboxValueNumber(tbStoryTo))
+            {
+                _DisplayErrorInLabel(labelErrorStories, "Stories From or To is not a number!");
+                isStoriesNumsvalid = false;
+                return;
+            }
+
+            if (Int32.Parse(tbStoryFrom.Text) < 1 || Int32.Parse(tbStoryTo.Text) < 1)
+            {
+                _DisplayErrorInLabel(labelErrorStories, "Stories From or To cannot be smaller than 1!");
+                isStoriesNumsvalid = false;
+                return;
+            }
+
+            if (Int32.Parse(tbStoryFrom.Text) > Int32.Parse(tbStoryTo.Text))
+            {
+                _DisplayErrorInLabel(labelErrorStories, "Stories From cannot be greater than To!");
+                isStoriesNumsvalid = false;
+                return;
+            }
+
+            
+            isStoriesNumsvalid = true;
+            _ResetErrorInLabel(labelErrorStories);
+        }
+
+        private void tbSizeWidthHeight_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!this.IsLoaded)
+            {
+                return;
+            }
+
+            if (tbSizeWidth.Text == "" || tbSizeHeight.Text == "")
+            {
+                _DisplayErrorInLabel(labelErrorWidthHeight, "Fill all textboxes!");
+                isSizeNumsValid = false;
+                return;
+            }
+
+            if (!_IsTextboxValueNumber(tbSizeWidth) || !_IsTextboxValueNumber(tbSizeHeight))
+            {
+                _DisplayErrorInLabel(labelErrorWidthHeight, "Size Width or Height is not a number!");
+                isSizeNumsValid = false;
+                return;
+            }
+
+            if (Int32.Parse(tbSizeWidth.Text) < 1 || Int32.Parse(tbSizeHeight.Text) < 1)
+            {
+                _DisplayErrorInLabel(labelErrorWidthHeight, "Size Width or Height cannot be smaller than 1!");
+                isSizeNumsValid = false;
+                return;
+            }
+
+            
+            isSizeNumsValid = true;
+            _ResetErrorInLabel(labelErrorWidthHeight);
+        }
+
+        private void tbWingFromTo_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!this.IsLoaded)
+            {
+                return;
+            }
+
+            if (tbWingFrom.Text == "" || tbWingTo.Text == "")
+            {
+                _DisplayErrorInLabel(labelErrorWings, "Fill all textboxes!");
+                isWingsNumsValid = false;
+                return;
+            }
+
+            if (!_IsTextboxValueNumber(tbWingFrom) || !_IsTextboxValueNumber(tbWingTo))
+            {
+
+                _DisplayErrorInLabel(labelErrorWings, "Wing From or To is not a number!");
+                isWingsNumsValid = false;
+                return;
+            }
+
+            if (Int32.Parse(tbWingFrom.Text) < 1 || Int32.Parse(tbWingTo.Text) < 1)
+            {
+                _DisplayErrorInLabel(labelErrorWings, "Wings From or To cannot be smaller than 1!");
+                isWingsNumsValid = false;
+                return;
+            }
+
+            if (Int32.Parse(tbWingFrom.Text) > Int32.Parse(tbWingTo.Text))
+            {
+                _DisplayErrorInLabel(labelErrorWings, "Wing From cannot be greater than To!");
+                isWingsNumsValid = false;
+                return;
+            }
+
+            
+            isWingsNumsValid = true;
+            _ResetErrorInLabel(labelErrorWings);
         }
 
         private void cbWallsStrat_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -92,45 +235,28 @@ namespace BuildingGeneratorWpfApp
         private void Generate_Click(object sender, RoutedEventArgs e)
         {
 
-            // TODO: megtisztítani az összes textboxos inputot
             // TODO: vhogy feketére színezni az összeset
 
             viewPort3d.Children.Clear();
             viewPort3d.Children.Add(new SunLight());
-            viewPort3d.Children.Add(new GridLinesVisual3D());
-
-            var settings = new BuildingSettings();
-            settings.Size = new Vector2Int(Int32.Parse(tbSizeWidth.Text), Int32.Parse(tbSizeHeight.Text));
-            settings.Stories = Int32.Parse(tbStoryTo.Text);
-            settings.Wings = Int32.Parse(tbWingTo.Text);
+            viewPort3d.Children.Add(new GridLinesVisual3D() { Width = 10.0, Length = 10.0, MinorDistance = 1.0, MajorDistance = 1.0, Thickness = 0.01 });
+            
             settings.storiesStrategy = StrategyResolver.ResolveStoriesStratFromName(selectedStoriesStrat);
             settings.wingsStrategy = StrategyResolver.ResolveWingsStratFromName(selectedWingsStrat);
 
-            var generator = new BuildingGenerationOrchestrator(settings);
+            settings.Size = new Vector2Int(Int32.Parse(tbSizeWidth.Text), Int32.Parse(tbSizeHeight.Text));
+            settings.Wings = new Vector2Int(Int32.Parse(tbWingFrom.Text), Int32.Parse(tbWingTo.Text));
+            settings.Stories = new Vector2Int(Int32.Parse(tbStoryFrom.Text), Int32.Parse(tbStoryTo.Text));
 
-            var objStr = generator.GenerateBuildingToDisplay();
+            generator = new BuildingGenerationOrchestrator(settings);
+
+            objStr = generator.GenerateBuildingToDisplay();
 
             DisplayGeneratedBuilding(objStr);
 
             btnSave.IsEnabled = true;
         }
 
-        /*
-        private Model3D Display3d(string modelPath)
-        {
-            Model3D device = null;
-            try
-            {
-                ModelImporter import = new ModelImporter();
-                device = import.Load(modelPath);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("Exception Error : " + e.StackTrace);
-            }
-            return device;
-        }
-        */
         public void DisplayGeneratedBuilding(string objString)
         {
             using (var strStream = new MemoryStream(Encoding.UTF8.GetBytes(objString)))
@@ -147,15 +273,6 @@ namespace BuildingGeneratorWpfApp
                 viewPort3d.Children.Add(device3D);
 
             }
-
-
-            
-
-            
-
-            //device3D.Content = Display3d(MODEL_PATH);
-            // Add to view port
-            //viewPort3d.Children.Add(device3D);
         }
     }
 }

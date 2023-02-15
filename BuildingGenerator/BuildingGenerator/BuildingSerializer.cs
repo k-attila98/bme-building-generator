@@ -431,6 +431,29 @@ public class BuildingSerializer
         }
     }
 
+    public void SaveBuilding(string objStr)
+    {
+        Console.WriteLine("Serializing building...");
+        using (StreamWriter writer = new StreamWriter(File.Open($"../../../../BuildingGenerator/Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss")}.obj", System.IO.FileMode.Create)))
+        {
+            /*
+            foreach (var prefab in placedPrefabs)
+            {
+                writer.Write(prefab.VerticesToString());
+                Console.WriteLine("Serialized " + prefab.Name + "\n");
+            }
+
+            foreach (var prefab in placedPrefabs)
+            {
+                writer.Write(prefab.FacesToString());
+            }
+            */
+
+            writer.Write(objStr);
+            Console.WriteLine("Serialization complete!");
+        }
+    }
+
     /**
      * Mainly for testing purposes, if we want to see the generated parts step by step 
      */
