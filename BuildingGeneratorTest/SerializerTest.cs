@@ -1,4 +1,5 @@
-﻿using BuildingGenerator.Prefabs.Floors;
+﻿using BuildingGenerator.BuildingGenerator;
+using BuildingGenerator.Prefabs.Floors;
 using BuildingGenerator.Prefabs.Roofs;
 using BuildingGenerator.Prefabs.Walls;
 using BuildingGenerator.Shared;
@@ -31,18 +32,19 @@ namespace BuildingGeneratorTest
             genParams.BoundingBox = settings.Bounds;
 
             Building b = BuildingGeneration.Generate(settings, genParams);
+            var prefabPlacer = new BuildingPrefabPlacer();
             var serializer = new BuildingSerializer();
 
             var floorPrefab = new BasicFloor();
             var roofPrefab = new BasicPyramidRoof();
             var wallPrefab = new BasicWall();
 
-            serializer.floorPrefab = floorPrefab.GetTransform();
-            serializer.roofPrefab = new Transform[] { roofPrefab.GetTransform(), roofPrefab.GetTransform(), roofPrefab.GetTransform() };
-            serializer.wallPrefab = new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() };
-
-            serializer.SerializeToObj(b);
-            var result = serializer.StringifyBuilding();
+            prefabPlacer.floorPrefab = floorPrefab.GetTransform();
+            prefabPlacer.roofPrefab = new Transform[] { roofPrefab.GetTransform(), roofPrefab.GetTransform(), roofPrefab.GetTransform() };
+            prefabPlacer.wallPrefab = new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() };
+            var placedPrefabs = prefabPlacer.PlacePrefabs(b);
+ 
+            var result = serializer.StringifyBuilding(placedPrefabs);
 
             //TODO: ezt megírni xd
             /*
