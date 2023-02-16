@@ -25,8 +25,8 @@ namespace BuildingGeneratorTest
             */
             var settings = new BuildingSettings();
             settings.Size = new Vector2Int(1, 1);
-            settings.Stories = 1;
-            settings.Wings = 1;
+            settings.Stories = new Vector2Int(1,1);
+            settings.Wings = new Vector2Int(1, 1);
             var genParams = new GenerationParams();
             genParams.BoundingBox = settings.Bounds;
 
