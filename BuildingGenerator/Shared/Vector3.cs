@@ -71,8 +71,8 @@ namespace BuildingGenerator.Shared
             // .obj files do not work with decimal commas so this is necessary
             return $"v {m_X.ToString(CultureInfo.GetCultureInfo("en-US"))} " +
                 $"{m_Y.ToString(CultureInfo.GetCultureInfo("en-US"))} " +
-                $"{m_Z.ToString(CultureInfo.GetCultureInfo("en-US"))}" +
-                $"\n";
+                $"{m_Z.ToString(CultureInfo.GetCultureInfo("en-US"))}";// +
+                //$"\n";
         }
 
         public static bool operator ==(Vector3 a, Vector3 b)

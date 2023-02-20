@@ -11,7 +11,9 @@ namespace BuildingGenerator.Shared
     public class Face
     {
         private Vertex[] _vertices = new Vertex[3];
+        private TextureVertex[] _textureVertices = new TextureVertex[0];
         private Vector3 _normal = new Vector3(0, 0, 0);
+        public string UseMtl { get; set; }
 
         public Face(Vertex[] vertices)
         {
@@ -33,6 +35,23 @@ namespace BuildingGenerator.Shared
 
                 _vertices = value;
                 _normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
+            }
+        }
+
+        public TextureVertex[] TextureVertices
+        {
+            get { return _textureVertices; }
+            set
+            {
+                /*
+                if (value.Length != 3)
+                {
+                    throw new ArgumentException("Face must have 3 textureVertices");
+                }
+                */
+
+                _textureVertices = value;
+                //_normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
             }
         }
 
@@ -141,9 +160,35 @@ namespace BuildingGenerator.Shared
             );
         }
         
+        // HACKHACK this will write invalid files if there are no texture vertices in
+        // the faces, need to identify that and write an alternate format
+        public override string ToString()
+        {
+            StringBuilder b = new StringBuilder();
+            b.Append("f");
+
+            for (int i = 0; i < _vertices.Count(); i++)
+            {
+                if (i < _textureVertices.Length)
+                {
+                    b.AppendFormat(" {0}/{1}", _vertices[i].Id, _textureVertices[i].Id);
+                }
+                else
+                {
+                    b.AppendFormat(" {0}", _vertices[i].Id);
+                }
+            }
+            //b.Append("\n");
+            return b.ToString();
+        }
+        
+        /*
         public string ToString()
         {
             return $"f {_vertices[0].Id} {_vertices[1].Id} {_vertices[2].Id}\n";
         }
+        */
+
+        
     }
 }

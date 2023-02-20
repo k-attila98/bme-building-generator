@@ -58,7 +58,7 @@ public class BuildingGenerationOrchestrator
         prefabPlacer.wallPrefab = new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() };
         var placedPrefabs = prefabPlacer.PlacePrefabs(b);
 
-        return serializer.StringifyBuilding(placedPrefabs);
+        return serializer.StringifyObj(placedPrefabs);
 
     }
 
