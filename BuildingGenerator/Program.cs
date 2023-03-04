@@ -17,4 +17,4 @@ settings.wingsStrategy = new RandomizedCountWingsStrategy();
 
 var generator = new BuildingGenerationOrchestrator(settings);
 
-generator.GenerateBuilding();
+generator.GenerateBuilding(false);

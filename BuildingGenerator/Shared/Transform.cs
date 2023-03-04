@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BuildingGenerator.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -73,7 +74,12 @@ namespace BuildingGenerator.Shared
 
             _SetVertexIds();
         }
-        
+        /*
+        public Transform(Obj obj)
+        { 
+            Faces = 
+        }
+        */
         public void Translate(Vector3 vector)
         {
             for (int i = 0; i < Faces.Length; i++)

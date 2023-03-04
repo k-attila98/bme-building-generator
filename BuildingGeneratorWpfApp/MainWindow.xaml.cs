@@ -250,7 +250,8 @@ namespace BuildingGeneratorWpfApp
 
             generator = new BuildingGenerationOrchestrator(settings);
 
-            objStr = generator.GenerateBuildingToDisplay();
+            // TODO: false-t true-ra cserélni ha új prefabokat töltök be
+            objStr = generator.GenerateBuildingToDisplay(false);
 
             DisplayGeneratedBuilding(objStr);
 

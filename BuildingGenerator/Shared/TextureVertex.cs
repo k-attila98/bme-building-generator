@@ -27,6 +27,14 @@ namespace BuildingGenerator.Shared
             set { _position = value; }
         }
 
+        public TextureVertex(){  }
+
+        public TextureVertex(long id)
+        {
+            _id = id;
+            _position = new Vector2(0, 0);
+        }
+
         public void LoadFromStringArray(string[] data)
         {
             if (data.Length < _minimumDataLength)

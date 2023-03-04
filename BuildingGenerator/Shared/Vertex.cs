@@ -25,6 +25,12 @@ namespace BuildingGenerator.Shared
             set { _position = value; } 
         }
 
+        public Vertex()
+        {
+            _id= 0;
+            _position = new Vector3(0, 0, 0);
+        }
+
         public Vertex(Vector3 position)
         {
             //_id = VertexIdProvider.GetNextId();
@@ -36,7 +42,13 @@ namespace BuildingGenerator.Shared
             _id = id;
             _position = position;
         }
-        
+
+        public Vertex(long id)
+        {
+            _id = id;
+            _position = new Vector3(0, 0, 0);
+        }
+
         public Vertex Clone(bool isDeepClone)
         {
             return isDeepClone ?

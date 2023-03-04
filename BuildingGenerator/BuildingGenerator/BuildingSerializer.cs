@@ -93,4 +93,12 @@ public class BuildingSerializer
         Console.WriteLine("Serialization complete!");
         return objFileContent;
     }
+
+    public Transform ReadTransform(string path)
+    { 
+        Obj obj = new Obj();
+        obj.LoadObj(path);
+        return obj.ToTransform();
+
+    }
 }

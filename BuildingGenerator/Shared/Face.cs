@@ -1,6 +1,8 @@
 ﻿using BuildingGenerator.Serialization;
+using BuildingGenerator.Serialization.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -8,12 +10,17 @@ using System.Threading.Tasks;
 
 namespace BuildingGenerator.Shared
 {
-    public class Face
+    public class Face : IFromObjFile
     {
         private Vertex[] _vertices = new Vertex[3];
         private TextureVertex[] _textureVertices = new TextureVertex[0];
         private Vector3 _normal = new Vector3(0, 0, 0);
+
+        private const int _minimumDataLength = 4;
+        private const string _prefix = "f";
         public string UseMtl { get; set; }
+
+        public Face() { }
 
         public Face(Vertex[] vertices)
         {
@@ -159,7 +166,44 @@ namespace BuildingGenerator.Shared
                 MathHelper.RoundToNearestFloatWithDecimals(qv2.Z, 3)
             );
         }
-        
+
+        // TODO: emiatt a függvény miatt átgondolnik, hogy lehet inkább csak az indexeket kéne tárolni a facenek és nem a vertexeket
+        // viszont ez kihathat a többi részre is, mert a facekből gyűjtjük ki a vertexeket, szóval lehet érdemes egy központi tárolóba kiszervezni a vertexeket
+        // és onnan egy resolve függvénnyel kihalászni a dolgokat
+        public void LoadFromStringArray(string[] data)
+        {
+            if (data.Length < _minimumDataLength)
+                throw new ArgumentException("Input array must be of minimum length " + _minimumDataLength, "data");
+
+            if (!data[0].ToLower().Equals(_prefix))
+                throw new ArgumentException("Data prefix must be '" + _prefix + "'", "data");
+
+            int vcount = data.Count() - 1;
+            _vertices = new Vertex[vcount];
+            _textureVertices = new TextureVertex[vcount];
+
+            bool success;
+
+            for (int i = 0; i < vcount; i++)
+            {
+                string[] parts = data[i + 1].Split('/');
+
+                int vindex;
+                success = int.TryParse(parts[0], NumberStyles.Any, CultureInfo.InvariantCulture, out vindex);
+                if (!success) throw new ArgumentException("Could not parse parameter as int");
+                _vertices[i] = new Vertex(vindex);
+
+                if (parts.Count() > 1)
+                {
+                    success = int.TryParse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture, out vindex);
+                    if (success)
+                    {
+                        _textureVertices[i] = new TextureVertex(vindex);
+                    }
+                }
+            }
+        }
+
         // HACKHACK this will write invalid files if there are no texture vertices in
         // the faces, need to identify that and write an alternate format
         public override string ToString()
