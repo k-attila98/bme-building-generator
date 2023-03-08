@@ -18,7 +18,21 @@ public class BuildingGenerationOrchestrator
     private Transform[] roofPrefabs = new Transform[0];
     private Transform floorPrefab = new Transform();
 
+
+    public BuildingGenerationOrchestrator()
+    {
+
+    }
     public BuildingGenerationOrchestrator(BuildingSettings settings, GenerationParams? genParams = null)
+    {
+        this.settings = settings;
+        this.genParams = new GenerationParams
+        {
+            BoundingBox = settings.Bounds
+        };
+    }
+
+    public void AddSettings(BuildingSettings settings, GenerationParams? genParams = null)
     {
         this.settings = settings;
         this.genParams = new GenerationParams

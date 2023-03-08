@@ -4,6 +4,7 @@ using BuildingGenerator.Prefabs.Roofs;
 using BuildingGenerator.Prefabs.Walls;
 using BuildingGenerator.Shared;
 using HelixToolkit.Wpf;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -41,7 +42,7 @@ namespace BuildingGeneratorWpfApp
         private List<string> roofStrategies = StrategyResolver.GetAllRoofStrats();
 
         private string objStr = string.Empty;
-        private BuildingGenerationOrchestrator generator;
+        private BuildingGenerationOrchestrator generator = new BuildingGenerationOrchestrator();
         private BuildingSettings settings = new BuildingSettings();
 
         private bool isWingsNumsValid = true, isStoriesNumsvalid = true, isSizeNumsValid = true;
@@ -49,6 +50,7 @@ namespace BuildingGeneratorWpfApp
         public MainWindow()
         {
             InitializeComponent();
+            //this.DataContext = this;
             //Model3DGroup MdlGrp = null;
 
             //ModelVisual3D device3D = new ModelVisual3D();
@@ -62,6 +64,10 @@ namespace BuildingGeneratorWpfApp
             cbStoryStrat.ItemsSource = storyStrategies;
             cbWallsStrat.ItemsSource = wallsStrategies;
             cbRoofStrat.ItemsSource = roofStrategies;
+
+            aplWalls.PrefabSelectionChanged += new AddedPrefabsList.PrefabSelectionChangedHandler(_SetViewPortToSelectedPrefab);
+            aplRoofs.PrefabSelectionChanged += new AddedPrefabsList.PrefabSelectionChangedHandler(_SetViewPortToSelectedPrefab);
+            aplFloor.PrefabSelectionChanged += new AddedPrefabsList.PrefabSelectionChangedHandler(_SetViewPortToSelectedPrefab);
         }
 
         private void cbWingStrat_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -108,6 +114,21 @@ namespace BuildingGeneratorWpfApp
             btnGenerate.IsEnabled = isWingsNumsValid && isStoriesNumsvalid && isSizeNumsValid;
         }
 
+        private void btnLoadWall_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Wavefront OBJ files (*.obj)|*.obj";
+            ofd.Title = "Select Wavefront OBJ to load Wall prefab";
+
+            if (ofd.ShowDialog() == true)
+            {
+                txtBlockSelectedWall.Text = ofd.FileName;
+                
+                _LoadObjIntoViewPort(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
+                btnAddWall.IsEnabled = true;
+            }
+        }
+
         private void tbStoriesFromTo_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!this.IsLoaded)
@@ -146,6 +167,24 @@ namespace BuildingGeneratorWpfApp
             
             isStoriesNumsvalid = true;
             _ResetErrorInLabel(labelErrorStories);
+        }
+
+        private void btnAddWall_Click(object sender, RoutedEventArgs e)
+        {
+            //generator.DeserializeWallTransformFromObj(txtBlockSelectedWall.Text);
+            aplWalls.Prefabs.Add(txtBlockSelectedWall.Text);
+        }
+
+        private void btnAddRoof_Click(object sender, RoutedEventArgs e)
+        {
+            //generator.DeserializeRoofTransformFromObj(txtBlockSelectedRoof.Text);
+            aplRoofs.Prefabs.Add(txtBlockSelectedRoof.Text);
+        }
+
+        private void btnAddFloor_Click(object sender, RoutedEventArgs e)
+        {
+            //generator.DeserializeFloorTransformFromObj(txtBlockSelectedFloor.Text);
+            aplFloor.Prefabs.Add(txtBlockSelectedFloor.Text);
         }
 
         private void tbSizeWidthHeight_TextChanged(object sender, TextChangedEventArgs e)
@@ -222,6 +261,36 @@ namespace BuildingGeneratorWpfApp
             _ResetErrorInLabel(labelErrorWings);
         }
 
+        private void btnLoadRoof_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Wavefront OBJ files (*.obj)|*.obj";
+            ofd.Title = "Select Wavefront OBJ to load Roof prefab";
+
+            if (ofd.ShowDialog() == true)
+            {
+                txtBlockSelectedRoof.Text = ofd.FileName;
+
+                _LoadObjIntoViewPort(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
+                btnAddRoof.IsEnabled = true;
+            }
+        }
+
+        private void btnLoadFloor_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Wavefront OBJ files (*.obj)|*.obj";
+            ofd.Title = "Select Wavefront OBJ to load Floor prefab";
+
+            if (ofd.ShowDialog() == true)
+            {
+                txtBlockSelectedFloor.Text = ofd.FileName;
+
+                _LoadObjIntoViewPort(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
+                btnAddFloor.IsEnabled = true;
+            }
+        }
+
         private void cbWallsStrat_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             selectedWallsStrat = cbWallsStrat.SelectedItem.ToString() ?? string.Empty;
@@ -237,21 +306,32 @@ namespace BuildingGeneratorWpfApp
 
             // TODO: vhogy feketére színezni az összeset
 
-            viewPort3d.Children.Clear();
-            viewPort3d.Children.Add(new SunLight());
-            viewPort3d.Children.Add(new GridLinesVisual3D() { Width = 10.0, Length = 10.0, MinorDistance = 1.0, MajorDistance = 1.0, Thickness = 0.01 });
-            
+            //_ResetViewPort(ref viewPort3d);
+
+
             settings.storiesStrategy = StrategyResolver.ResolveStoriesStratFromName(selectedStoriesStrat);
             settings.wingsStrategy = StrategyResolver.ResolveWingsStratFromName(selectedWingsStrat);
+            
 
             settings.Size = new Vector2Int(Int32.Parse(tbSizeWidth.Text), Int32.Parse(tbSizeHeight.Text));
             settings.Wings = new Vector2Int(Int32.Parse(tbWingFrom.Text), Int32.Parse(tbWingTo.Text));
             settings.Stories = new Vector2Int(Int32.Parse(tbStoryFrom.Text), Int32.Parse(tbStoryTo.Text));
 
-            generator = new BuildingGenerationOrchestrator(settings);
+            generator.AddSettings(settings);
 
-            // TODO: false-t true-ra cserélni ha új prefabokat töltök be
-            objStr = generator.GenerateBuildingToDisplay(false);
+            foreach(var wallPrefab in aplWalls.Prefabs) 
+            { 
+                generator.DeserializeWallTransformFromObj(wallPrefab);
+            }
+
+            foreach (var roofPrefab in aplRoofs.Prefabs)
+            {
+                generator.DeserializeRoofTransformFromObj(roofPrefab);
+            }
+
+            generator.DeserializeFloorTransformFromObj(aplFloor.Prefabs.ElementAt(0));
+
+            objStr = generator.GenerateBuildingToDisplay(checkBoxUsePrefabs.IsChecked ?? false);
 
             DisplayGeneratedBuilding(objStr);
 
@@ -260,6 +340,18 @@ namespace BuildingGeneratorWpfApp
 
         public void DisplayGeneratedBuilding(string objString)
         {
+            _ResetViewPort(ref viewPort3d, 8.0);
+            _LoadObjIntoViewPort(ref viewPort3d, objString);
+        }
+
+        private void _LoadObjIntoViewPort(ref HelixViewport3D viewPort, string objString)
+        {
+            _ResetViewPort(ref viewPort, 8.0);
+            if (objString == null || objString.Length == 0)
+            {
+                return;
+            }
+
             using (var strStream = new MemoryStream(Encoding.UTF8.GetBytes(objString)))
             {
                 var dispatcher = Dispatcher.CurrentDispatcher;
@@ -271,9 +363,26 @@ namespace BuildingGeneratorWpfApp
                 };
                 Model3DGroup model3DGroup = objReader.Read(strStream);
                 device3D.Content = model3DGroup;
-                viewPort3d.Children.Add(device3D);
+                viewPort.Children.Add(device3D);
 
             }
+        }
+
+        private void _ResetViewPort(ref HelixViewport3D viewPort, double sideLength)
+        {
+            viewPort.Children.Clear();
+            viewPort.Children.Add(new SunLight());
+            viewPort.Children.Add(new GridLinesVisual3D() { Width = sideLength, Length = sideLength, MinorDistance = 1.0, MajorDistance = 1.0, Thickness = 0.01 });
+        }
+
+        private void _SetViewPortToSelectedPrefab(object sender, string newPath)
+        {
+            if (newPath == null || newPath.Length == 0)
+            { 
+                _ResetViewPort(ref prefabViewer, 8.0);
+                return;
+            }
+            _LoadObjIntoViewPort(ref prefabViewer, File.ReadAllText(newPath));
         }
     }
 }
