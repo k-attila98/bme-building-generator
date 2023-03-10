@@ -7,6 +7,7 @@ using BuildingGenerator.Serialization;
 using BuildingGenerator.Shared;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 public class BuildingGenerationOrchestrator
 {
@@ -44,8 +45,8 @@ public class BuildingGenerationOrchestrator
     private void _SetPrefabPlacer(ref BuildingPrefabPlacer prefabPlacer, Transform floorPrefab, Transform[] roofPrefabs, Transform[] wallPrefabs)
     {
         prefabPlacer.floorPrefab = floorPrefab;
-        prefabPlacer.roofPrefab = roofPrefabs.ToArray();
-        prefabPlacer.wallPrefab = wallPrefabs.ToArray();
+        prefabPlacer.roofPrefab = roofPrefabs;
+        prefabPlacer.wallPrefab = wallPrefabs;
     }
     
     public void GenerateBuilding(bool isCustomPrefabs)
@@ -65,7 +66,10 @@ public class BuildingGenerationOrchestrator
         }
         else 
         {
-            _SetPrefabPlacer(ref prefabPlacer, floorPrefab.GetTransform(), new Transform[] { roofPrefab.GetTransform() }, new Transform[] { wallPrefab.GetTransform() });
+            _SetPrefabPlacer(ref prefabPlacer, floorPrefab.GetTransform(), 
+                new Transform[] { roofPrefab.GetTransform(), roofPrefab.GetTransform(), roofPrefab.GetTransform() }, 
+                new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() }
+            );
         }
         var placedPrefabs = prefabPlacer.PlacePrefabs(b);
 
@@ -90,7 +94,10 @@ public class BuildingGenerationOrchestrator
         }
         else
         {
-            _SetPrefabPlacer(ref prefabPlacer, floorPrefab.GetTransform(), new Transform[] { roofPrefab.GetTransform() }, new Transform[] { wallPrefab.GetTransform() });
+            _SetPrefabPlacer(ref prefabPlacer, floorPrefab.GetTransform(), 
+                new Transform[] { roofPrefab.GetTransform(), roofPrefab.GetTransform(), roofPrefab.GetTransform() }, 
+                new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() }
+            );
         }
         var placedPrefabs = prefabPlacer.PlacePrefabs(b);
 
@@ -131,10 +138,12 @@ public class BuildingGenerationOrchestrator
     {
         var serializer = new BuildingSerializer();
         var prefab = serializer.ReadTransform(path);
-        var roofs = wallPrefabs.ToList();
+        var roofs = roofPrefabs.ToList();
         roofs.Add(prefab);
         roofPrefabs = roofs.ToArray();
     }
+
+    
 
     public void DeserializeFloorTransformFromObj(string path)
     {
@@ -142,4 +151,24 @@ public class BuildingGenerationOrchestrator
         var prefab = serializer.ReadTransform(path);
         floorPrefab = prefab;
     }
+
+    public void DeserializeMultipleWallTransformsFromObj(ObservableCollection<string> paths)
+    {
+        wallPrefabs = new Transform[0];
+        foreach (var path in paths)
+        {
+            DeserializeWallTransformFromObj(path);
+        }
+    }
+
+    public void DeserializeMultipleRoofTransformsFromObj(ObservableCollection<string> paths)
+    {
+        roofPrefabs = new Transform[0];
+        foreach (var path in paths)
+        {
+            DeserializeRoofTransformFromObj(path);
+        }
+    }
+
+
 }

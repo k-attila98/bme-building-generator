@@ -109,13 +109,13 @@ namespace BuildingGenerator.Shared
 
             double x, y, z;
 
-            success = double.TryParse(data[1], NumberStyles.Any, CultureInfo.InvariantCulture, out x);
+            success = double.TryParse(data[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out x);
             if (!success) throw new ArgumentException("Could not parse X parameter as double");
 
-            success = double.TryParse(data[2], NumberStyles.Any, CultureInfo.InvariantCulture, out y);
+            success = double.TryParse(data[2], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out y);
             if (!success) throw new ArgumentException("Could not parse Y parameter as double");
 
-            success = double.TryParse(data[3], NumberStyles.Any, CultureInfo.InvariantCulture, out z);
+            success = double.TryParse(data[3], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out z);
             if (!success) throw new ArgumentException("Could not parse Z parameter as double");
 
             _position = new Vector3((float)x, (float)y, (float)z);

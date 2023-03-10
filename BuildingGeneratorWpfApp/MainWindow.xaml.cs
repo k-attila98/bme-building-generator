@@ -319,18 +319,14 @@ namespace BuildingGeneratorWpfApp
 
             generator.AddSettings(settings);
 
-            foreach(var wallPrefab in aplWalls.Prefabs) 
-            { 
-                generator.DeserializeWallTransformFromObj(wallPrefab);
-            }
-
-            foreach (var roofPrefab in aplRoofs.Prefabs)
+            if (checkBoxUsePrefabs.IsChecked ?? false)
             {
-                generator.DeserializeRoofTransformFromObj(roofPrefab);
+                generator.DeserializeMultipleWallTransformsFromObj(aplWalls.Prefabs);
+                generator.DeserializeMultipleRoofTransformsFromObj(aplRoofs.Prefabs);
+                generator.DeserializeFloorTransformFromObj(aplFloor.Prefabs.ElementAt(0));
+
             }
-
-            generator.DeserializeFloorTransformFromObj(aplFloor.Prefabs.ElementAt(0));
-
+            
             objStr = generator.GenerateBuildingToDisplay(checkBoxUsePrefabs.IsChecked ?? false);
 
             DisplayGeneratedBuilding(objStr);

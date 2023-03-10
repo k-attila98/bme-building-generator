@@ -235,18 +235,18 @@ namespace BuildingGenerator.Serialization
             var facesWithProperVertices = new List<Face>();
             foreach (var face in _faces)
             { 
+                var newFace = new Face();
                 foreach (var vertex in face.Vertices)
                 {
-                    var newFace = new Face();
-                    newFace.AddVertex(_vertices.Single(v => v.Id == vertex.Id));
-                    facesWithProperVertices.Add(newFace);
+                    var properVertex = _vertices.Single(v => v.Id == vertex.Id);
+                    newFace.AddVertex(properVertex);
                 }
-                
+                facesWithProperVertices.Add(newFace);
             }
-            transform.Faces = _faces.ToArray();
+            transform.Faces = facesWithProperVertices.ToArray();
             transform.Position = new Vector3(0, 0, 0);
             transform.Width = (float)(Size.XMax - Size.XMin);
-            transform.Height = (float)(Size.ZMax - Size.ZMin);
+            transform.Height = (float)(Size.YMax - Size.YMin);
 
             return transform;
         }

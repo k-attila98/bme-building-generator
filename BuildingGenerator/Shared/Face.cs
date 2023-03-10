@@ -12,7 +12,7 @@ namespace BuildingGenerator.Shared
 {
     public class Face : IFromObjFile
     {
-        private Vertex[] _vertices = new Vertex[3];
+        private Vertex[] _vertices = new Vertex[0];
         private TextureVertex[] _textureVertices = new TextureVertex[0];
         private Vector3 _normal = new Vector3(0, 0, 0);
 
