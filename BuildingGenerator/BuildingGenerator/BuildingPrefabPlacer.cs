@@ -362,9 +362,19 @@ namespace BuildingGenerator.BuildingGenerator
                 return;
             }
 
+            var prefabToBeUsed = roofPrefab[(int)type % roofPrefab.Length].Clone();
+
+            if (type == RoofType.ProceduralPeak)
+            {
+                var width = wing.Stories[level - 1].Bounds.width;
+                var height = wing.Stories[level - 1].Bounds.height;
+
+                prefabToBeUsed.Scale(new Vector3(width, Math.Max(1,width*height/6), height));
+            }
+
             Transform r;
             r = new Transform(
-                roofPrefab[(int)type % roofPrefab.Length].Clone(),
+                prefabToBeUsed,
                 transformPoint,
                 //Quaternion.Euler(0f, rotationOffset[(int)direction].y, 0f)
                 Quaternion.Identity
@@ -373,11 +383,6 @@ namespace BuildingGenerator.BuildingGenerator
 
             if (type == RoofType.ProceduralPeak)
             {
-                var width = wing.Stories[level - 1].Bounds.width;
-                var height = wing.Stories[level - 1].Bounds.height;
-
-                r.Scale(new Vector3(width, 1, height));
-
                 for (int a = wing.Stories[level - 1].Bounds.min.x; a < wing.Stories[level - 1].Bounds.max.x; a++)
                 {
                     for (int b = wing.Stories[level - 1].Bounds.min.y; b < wing.Stories[level - 1].Bounds.max.y; b++)
@@ -387,7 +392,7 @@ namespace BuildingGenerator.BuildingGenerator
                 }
             }
             else
-            { 
+            {
                 placedRoofPositions.Add(r.Position.ToString());
             }
 
