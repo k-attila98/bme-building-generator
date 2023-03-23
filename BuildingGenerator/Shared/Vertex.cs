@@ -97,6 +97,11 @@ namespace BuildingGenerator.Shared
         }
         */
 
+        public void Multiply(Vector3 scale)
+        {
+            _position.Multiply(scale);
+        }
+
         public void LoadFromStringArray(string[] data)
         {
             if (data.Length < _minimumDataLength)

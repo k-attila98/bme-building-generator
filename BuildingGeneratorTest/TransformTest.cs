@@ -1,3 +1,4 @@
+using BuildingGenerator.Prefabs.Roofs;
 using BuildingGenerator.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -449,6 +450,94 @@ namespace BuildingGeneratorTest
                 "f 19 20 21\n" +
                 "f 22 23 24\n";
             Assert.AreEqual(correctSerialization, objFileContent);
+        }
+
+        [TestMethod]
+        //this method should test the scale method of the transform class
+        public void ScaleEvenTest()
+        {
+            //Arrange
+            var transformToTest = new Transform();
+            var testScaleVector = new Vector3(2,2,2);
+
+            Vertex[] vertices = new Vertex[3];
+            vertices[0] = new Vertex(new Vector3(0, 0, 0));
+            vertices[1] = new Vertex(new Vector3(1, 0, 0));
+            vertices[2] = new Vertex(new Vector3(0, 1, 0));
+
+            Face[] faces = new Face[1];
+            faces[0] = new Face(vertices);
+            //faces[0].Vertices = ;
+
+            transformToTest.Faces = faces;
+
+            var resultPositions = new Vector3[3];
+            resultPositions[0] = new Vector3(0, 0, 0);
+            resultPositions[1] = new Vector3(2, 0, 0);
+            resultPositions[2] = new Vector3(0, 2, 0);
+
+            //Act
+            transformToTest.Scale(testScaleVector);
+
+            //Assert
+            Assert.AreEqual(transformToTest.Faces[0].Vertices[0].Position, resultPositions[0], "Scalign failed:\n\texpected: {0}\n\tactual: {1}", resultPositions[0].ToString(), transformToTest.Faces[0].Vertices[0].Position.ToString());
+            Assert.AreEqual(transformToTest.Faces[0].Vertices[1].Position, resultPositions[1], "Scalign failed:\n\texpected: {0}\n\tactual: {1}", resultPositions[1].ToString(), transformToTest.Faces[0].Vertices[1].Position.ToString());
+            Assert.AreEqual(transformToTest.Faces[0].Vertices[2].Position, resultPositions[2], "Scalign failed:\n\texpected: {0}\n\tactual: {1}", resultPositions[2].ToString(), transformToTest.Faces[0].Vertices[2].Position.ToString());
+        }
+
+        [TestMethod]
+        public void ScaleUnevenTest()
+        {
+            //Arrange
+            var transformToTest = new Transform();
+            var testScaleVector = new Vector3(2, 3, 4);
+
+            Vertex[] vertices = new Vertex[3];
+            vertices[0] = new Vertex(new Vector3(0, 0, 0));
+            vertices[1] = new Vertex(new Vector3(1, 0, 0));
+            vertices[2] = new Vertex(new Vector3(0, 1, 0));
+
+            Face[] faces = new Face[1];
+            faces[0] = new Face(vertices);
+            //faces[0].Vertices = ;
+
+            transformToTest.Faces = faces;
+
+            var resultPositions = new Vector3[3];
+            resultPositions[0] = new Vector3(0, 0, 0);
+            resultPositions[1] = new Vector3(2, 0, 0);
+            resultPositions[2] = new Vector3(0, 3, 0);
+
+            //Act
+            transformToTest.Scale(testScaleVector);
+
+            //Assert
+            Assert.AreEqual(transformToTest.Faces[0].Vertices[0].Position, resultPositions[0], "Scalign failed:\n\texpected: {0}\n\tactual: {1}", resultPositions[0].ToString(), transformToTest.Faces[0].Vertices[0].Position.ToString());
+            Assert.AreEqual(transformToTest.Faces[0].Vertices[1].Position, resultPositions[1], "Scalign failed:\n\texpected: {0}\n\tactual: {1}", resultPositions[1].ToString(), transformToTest.Faces[0].Vertices[1].Position.ToString());
+            Assert.AreEqual(transformToTest.Faces[0].Vertices[2].Position, resultPositions[2], "Scalign failed:\n\texpected: {0}\n\tactual: {1}", resultPositions[2].ToString(), transformToTest.Faces[0].Vertices[2].Position.ToString());
+        }
+
+        [TestMethod]
+        public void ScaleRoofTest()
+        { 
+            //Arrange
+            BasicPyramidRoof roof = new BasicPyramidRoof();
+            Vector3 scalingVector = new Vector3(3, 2, 1);
+            Transform transformToTest = new Transform(roof.GetTransform(), new Vector3(0,0,0), Quaternion.Identity);
+
+            var resultPositions = new Vector3[3];
+            resultPositions[0] = new Vector3(6, 0, 0);
+            resultPositions[1] = new Vector3(6, 0, 2);
+            resultPositions[2] = new Vector3(3, 2, 1);
+
+            //Act
+            transformToTest.Scale(scalingVector);
+
+            //Assert
+            Assert.AreEqual(transformToTest.Faces[0].Vertices[1].Position, resultPositions[0], "Scalign failed:\n\texpected: {0}\n\tactual: {1}", resultPositions[0].ToString(), transformToTest.Faces[0].Vertices[1].Position.ToString());
+            Assert.AreEqual(transformToTest.Faces[1].Vertices[1].Position, resultPositions[1], "Scalign failed:\n\texpected: {0}\n\tactual: {1}", resultPositions[1].ToString(), transformToTest.Faces[1].Vertices[1].Position.ToString());
+            Assert.AreEqual(transformToTest.Faces[2].Vertices[2].Position, resultPositions[2], "Scalign failed:\n\texpected: {0}\n\tactual: {1}", resultPositions[2].ToString(), transformToTest.Faces[2].Vertices[2].Position.ToString());
+
         }
     }
 }

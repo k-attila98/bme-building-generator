@@ -65,6 +65,20 @@ namespace BuildingGenerator.Shared
             m_Z = m_Z + vectorToAdd.z;
         }
 
+        public void Multiply(Vector3 multiplier)
+        {
+            m_X = m_X * multiplier.x;
+            m_Y = m_Y * multiplier.y;
+            m_Z = m_Z * multiplier.z;
+        }
+
+        public void Multiply(Vector3Int multiplier)
+        {
+            m_X = m_X * multiplier.x;
+            m_Y = m_Y * multiplier.y;
+            m_Z = m_Z * multiplier.z;
+        }
+
         public string ToString()
         {
             // Cultureinfo stuff needed because of the decimal dot is needed

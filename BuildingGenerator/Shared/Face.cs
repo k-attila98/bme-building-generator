@@ -125,6 +125,14 @@ namespace BuildingGenerator.Shared
             return normal;
         }
 
+        public void Scale(Vector3 scale)
+        {
+            for (int i = 0; i < _vertices.Length; i++)
+            {
+                _vertices[i].Multiply(scale);
+            }
+            _normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
+        }
 
         public void Translate(Vector3Int vector)
         {

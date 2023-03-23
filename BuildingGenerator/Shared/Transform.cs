@@ -98,6 +98,14 @@ namespace BuildingGenerator.Shared
             }
         }
 
+        public void Scale(Vector3 scale)
+        {
+            for (int i = 0; i < Faces.Length; i++)
+            {
+                Faces[i].Scale(scale);
+            }
+        }
+
         private void _SetVertexIds()
         {
             foreach (var face in Faces)
@@ -141,5 +149,22 @@ namespace BuildingGenerator.Shared
             }
             return result;
         }
+
+        //This method should make a clone of itself and return it
+        public Transform Clone()
+        {
+            Transform clone = new Transform();
+            clone.Name = Name;
+            clone.Position = Position;
+            clone.Width = Width;
+            clone.Height = Height;
+            clone.Faces = new Face[Faces.Length];
+            for (int i = 0; i < Faces.Length; i++)
+            {
+                clone.Faces[i] = Faces[i].Clone(true);
+            }
+            return clone;
+        }
+        
     }
 }

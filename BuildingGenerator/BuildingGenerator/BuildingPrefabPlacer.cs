@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
@@ -273,7 +274,7 @@ namespace BuildingGenerator.BuildingGenerator
             {
                 for (int y = wing.Bounds.min.y; y < wing.Bounds.max.y; y++)
                 {
-                    _PlaceRoof(x, y, wing.Stories.Length, wingFolder, wing.GetRoof.Type, wing.GetRoof.Direction);
+                    _PlaceRoof(x, y, wing.Stories.Length, wing, wingFolder);
                 }
             }
         }
@@ -284,7 +285,7 @@ namespace BuildingGenerator.BuildingGenerator
             {
                 for (int y = wing.Stories[wing.Stories.Length - 1].Bounds.min.y; y < wing.Stories[wing.Stories.Length - 1].Bounds.max.y; y++)
                 {
-                    _PlaceRoof(x, y, wing.Stories.Length, wingFolder, wing.GetRoof.Type, wing.GetRoof.Direction);
+                    _PlaceRoof(x, y, wing.Stories.Length, wing, wingFolder);
                 }
             }
         }
@@ -330,7 +331,7 @@ namespace BuildingGenerator.BuildingGenerator
                 {
                     for (int y = story.Bounds.min.y; y < story.Bounds.max.y; y++)
                     {
-                        _PlaceRoof(x, y, story.Level + 1, wingFolder, wing.GetRoof.Type, wing.GetRoof.Direction);
+                        _PlaceRoof(x, y, story.Level + 1, wing, wingFolder);
                     }
                 }
             }
@@ -338,13 +339,18 @@ namespace BuildingGenerator.BuildingGenerator
             _RenderRoofOnTopWithDynamicSize(wing, wingFolder);
         }
 
-        private void _PlaceRoof(int x, int y, int level, Transform wingFolder, RoofType type, RoofDirection direction)
+        private void _PlaceRoof(int x, int y, int level, Wing wing, Transform wingFolder)
         {
+            //int level = wing.Stories.Length;
+            RoofType type = wing.GetRoof.Type;
+            RoofDirection direction = wing.GetRoof.Direction;
+            float roofWidth = roofPrefab[(int)type % roofPrefab.Length].Width;
+
             var transformPoint = wingFolder.TransformPoint(
                     new Vector3(
-                            x * roofPrefab[(int)type].Width,
+                            x * roofWidth,
                             level * wallHeight, //+ (type == RoofType.Point ? -0.3f : 0f),
-                            y * roofPrefab[(int)type].Width
+                            y * roofWidth
                         )
                     );
 
@@ -358,14 +364,33 @@ namespace BuildingGenerator.BuildingGenerator
 
             Transform r;
             r = new Transform(
-                roofPrefab[(int)type],
+                roofPrefab[(int)type % roofPrefab.Length].Clone(),
                 transformPoint,
                 //Quaternion.Euler(0f, rotationOffset[(int)direction].y, 0f)
                 Quaternion.Identity
                 );
             r.SetParent(wingFolder);
 
-            placedRoofPositions.Add(r.Position.ToString());
+            if (type == RoofType.ProceduralPeak)
+            {
+                var width = wing.Stories[level - 1].Bounds.width;
+                var height = wing.Stories[level - 1].Bounds.height;
+
+                r.Scale(new Vector3(width, 1, height));
+
+                for (int a = wing.Stories[level - 1].Bounds.min.x; a < wing.Stories[level - 1].Bounds.max.x; a++)
+                {
+                    for (int b = wing.Stories[level - 1].Bounds.min.y; b < wing.Stories[level - 1].Bounds.max.y; b++)
+                    {
+                        placedRoofPositions.Add(new Vector3(a * roofWidth, r.Position.y, b * roofWidth).ToString());
+                    }
+                }
+            }
+            else
+            { 
+                placedRoofPositions.Add(r.Position.ToString());
+            }
+
             placedPrefabs.Add(r);
         }
 

@@ -87,8 +87,13 @@ namespace BuildingGeneratorWpfApp
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            generator.SerializeBuildingFromStr(objStr);
+            //generator.SerializeBuildingFromStr(objStr);
+            //TODO: viewportnak van export függvénye, lehet azt kéne használni inkább
+            //TODO: a fájl nevét kicseérlni hogy ne relatív path legyen (lehet így nem működik még nem próbáltam)
+            viewPort3d.Export($"../../../../BuildingGenerator/Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss")}.obj");
             btnSave.IsEnabled = false;
+
+            //TODO: ugyanez igaz importra is
         }
 
         private void cbStoryStrat_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -123,8 +128,9 @@ namespace BuildingGeneratorWpfApp
             if (ofd.ShowDialog() == true)
             {
                 txtBlockSelectedWall.Text = ofd.FileName;
-                
-                _LoadObjIntoViewPort(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
+                ObjReader reader = new ObjReader();
+
+                _LoadObjIntoViewPortByObjString(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
                 btnAddWall.IsEnabled = true;
             }
         }
@@ -271,7 +277,7 @@ namespace BuildingGeneratorWpfApp
             {
                 txtBlockSelectedRoof.Text = ofd.FileName;
 
-                _LoadObjIntoViewPort(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
+                _LoadObjIntoViewPortByObjString(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
                 btnAddRoof.IsEnabled = true;
             }
         }
@@ -286,7 +292,7 @@ namespace BuildingGeneratorWpfApp
             {
                 txtBlockSelectedFloor.Text = ofd.FileName;
 
-                _LoadObjIntoViewPort(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
+                _LoadObjIntoViewPortByObjString(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
                 btnAddFloor.IsEnabled = true;
             }
         }
@@ -309,8 +315,12 @@ namespace BuildingGeneratorWpfApp
             //_ResetViewPort(ref viewPort3d);
 
 
-            settings.storiesStrategy = StrategyResolver.ResolveStoriesStratFromName(selectedStoriesStrat);
             settings.wingsStrategy = StrategyResolver.ResolveWingsStratFromName(selectedWingsStrat);
+            settings.wingStrategy = StrategyResolver.ResolveWingStratFromName(selectedWingStrat);
+            settings.storiesStrategy = StrategyResolver.ResolveStoriesStratFromName(selectedStoriesStrat);
+            settings.storyStrategy = StrategyResolver.ResolveStoryStratFromName(selectedStoryStrat);
+            settings.wallsStrategy = StrategyResolver.ResolveWallsStratFromName(selectedWallsStrat);
+            settings.roofStrategy = StrategyResolver.ResolveRoofStratFromName(selectedRoofStrat);
             
 
             settings.Size = new Vector2Int(Int32.Parse(tbSizeWidth.Text), Int32.Parse(tbSizeHeight.Text));
@@ -337,10 +347,10 @@ namespace BuildingGeneratorWpfApp
         public void DisplayGeneratedBuilding(string objString)
         {
             _ResetViewPort(ref viewPort3d, 8.0);
-            _LoadObjIntoViewPort(ref viewPort3d, objString);
+            _LoadObjIntoViewPortByObjString(ref viewPort3d, objString);
         }
 
-        private void _LoadObjIntoViewPort(ref HelixViewport3D viewPort, string objString)
+        private void _LoadObjIntoViewPortByObjString(ref HelixViewport3D viewPort, string objString)
         {
             _ResetViewPort(ref viewPort, 8.0);
             if (objString == null || objString.Length == 0)
@@ -349,6 +359,30 @@ namespace BuildingGeneratorWpfApp
             }
 
             using (var strStream = new MemoryStream(Encoding.UTF8.GetBytes(objString)))
+            {
+                var dispatcher = Dispatcher.CurrentDispatcher;
+
+                ModelVisual3D device3D = new ModelVisual3D();
+                ObjReader objReader = new ObjReader(dispatcher)
+                {
+                    SwitchYZ = true
+                };
+                Model3DGroup model3DGroup = objReader.Read(strStream);
+                device3D.Content = model3DGroup;
+                viewPort.Children.Add(device3D);
+
+            }
+        }
+
+        private void _LoadObjIntoViewPortByPath(ref HelixViewport3D viewPort, string path)
+        {
+            _ResetViewPort(ref viewPort, 8.0);
+            if (path == null || path.Length == 0)
+            {
+                return;
+            }
+
+            using (var strStream = new MemoryStream(File.ReadAllBytes(path)))
             {
                 var dispatcher = Dispatcher.CurrentDispatcher;
 
@@ -378,7 +412,7 @@ namespace BuildingGeneratorWpfApp
                 _ResetViewPort(ref prefabViewer, 8.0);
                 return;
             }
-            _LoadObjIntoViewPort(ref prefabViewer, File.ReadAllText(newPath));
+            _LoadObjIntoViewPortByObjString(ref prefabViewer, File.ReadAllText(newPath));
         }
     }
 }

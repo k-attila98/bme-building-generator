@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BuildingGeneratorWpfApp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="915" Width="1682" ResizeMode="NoResize">
+        Title="Building Generator" Height="915" Width="1682" ResizeMode="NoResize">
     <Grid Background="#FF1F1F1F">
         <TabControl Background="Black">
 
@@ -124,9 +124,13 @@
 
             <TabItem Header="Prefabs" Background="Gray">
                 <Grid Background="#FF1F1F1F">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="57*"/>
+                        <ColumnDefinition Width="362*"/>
+                    </Grid.ColumnDefinitions>
 
 
-                    <HelixToolkit:HelixViewport3D x:Name="prefabViewer" ZoomExtentsWhenLoaded="True" Margin="11,36,0,0" Height="360" VerticalAlignment="Top" HorizontalAlignment="Left" Width="360" Grid.ColumnSpan="3">
+                    <HelixToolkit:HelixViewport3D x:Name="prefabViewer" ZoomExtentsWhenLoaded="True" Margin="11,36,0,0" Height="360" VerticalAlignment="Top" HorizontalAlignment="Left" Width="360" Grid.ColumnSpan="2">
                         <!-- Remember to add light to the scene -->
                         <HelixToolkit:SunLight/>
                         <ModelVisual3D>
@@ -145,21 +149,59 @@
                         </ModelVisual3D>
                         <HelixToolkit:GridLinesVisual3D Width="5" Length="5" MinorDistance="1" MajorDistance="1" Thickness="0.01"/>
                     </HelixToolkit:HelixViewport3D>
-                    <Button x:Name="btnLoadWall" Content="Load wall..." HorizontalAlignment="Left" Margin="494,88,0,0" VerticalAlignment="Top" Height="27" Width="75" Click="btnLoadWall_Click"/>
-                    <Button x:Name="btnAddWall" Content="Add wall" HorizontalAlignment="Left" Margin="605,88,0,0" VerticalAlignment="Top" Height="27" Width="75" IsEnabled="False" Click="btnAddWall_Click"/>
-                    <TextBlock TextWrapping="WrapWithOverflow" x:Name="txtBlockSelectedWall" Text="&#xA;" HorizontalAlignment="Left" Height="47" VerticalAlignment="Top" Width="576" Margin="852,88,0,0" Foreground="White" Background="#FF101010"/>
-                    <Label Content="Selected file:" HorizontalAlignment="Left" Height="27" VerticalAlignment="Top" Width="78" Margin="760,88,0,0" Foreground="White"/>
-                    <Button x:Name="btnLoadRoof" Content="Load roof..." HorizontalAlignment="Left" Margin="494,156,0,0" VerticalAlignment="Top" Height="27" Width="75" Click="btnLoadRoof_Click"/>
-                    <Button x:Name="btnAddRoof" Content="Add roof" HorizontalAlignment="Left" Margin="605,156,0,0" VerticalAlignment="Top" Height="27" Width="75" IsEnabled="False" Click="btnAddRoof_Click"/>
-                    <TextBlock TextWrapping="WrapWithOverflow" x:Name="txtBlockSelectedRoof" Text="&#xA;" HorizontalAlignment="Left" Height="47" VerticalAlignment="Top" Width="576" Margin="852,156,0,0" Foreground="White" Background="#FF101010"/>
-                    <Label Content="Selected file:" HorizontalAlignment="Left" Height="27" VerticalAlignment="Top" Width="78" Margin="760,156,0,0" Foreground="White"/>
-                    <Button x:Name="btnLoadFloor" Content="Load floor..." HorizontalAlignment="Left" Margin="494,228,0,0" VerticalAlignment="Top" Height="27" Width="75" Click="btnLoadFloor_Click"/>
-                    <Button x:Name="btnAddFloor" Content="Add floor" HorizontalAlignment="Left" Margin="605,228,0,0" VerticalAlignment="Top" Height="27" Width="75" IsEnabled="False" Click="btnAddFloor_Click"/>
-                    <TextBlock TextWrapping="WrapWithOverflow" x:Name="txtBlockSelectedFloor" Text="&#xA;" HorizontalAlignment="Left" Height="47" VerticalAlignment="Top" Width="576" Margin="852,228,0,0" Foreground="White" Background="#FF101010"/>
-                    <Label Content="Selected file:" HorizontalAlignment="Left" Height="27" VerticalAlignment="Top" Width="78" Margin="760,228,0,0" Foreground="White"/>
-                    <local:AddedPrefabsList x:Name="aplWalls" HorizontalAlignment="Left" Margin="130,573,0,0" VerticalAlignment="Top"/>
-                    <local:AddedPrefabsList x:Name="aplRoofs" HorizontalAlignment="Center" Margin="0,573,0,0" VerticalAlignment="Top"/>
-                    <local:AddedPrefabsList x:Name="aplFloor" HorizontalAlignment="Left" Margin="1140,573,0,0" VerticalAlignment="Top"/>
+                    <Button x:Name="btnLoadWall" Content="Load wall..." HorizontalAlignment="Left" Margin="266,88,0,0" VerticalAlignment="Top" Height="27" Width="75" Click="btnLoadWall_Click" Grid.Column="1"/>
+                    <Button x:Name="btnAddWall" Content="Add wall" HorizontalAlignment="Left" Margin="377,88,0,0" VerticalAlignment="Top" Height="27" Width="75" IsEnabled="False" Click="btnAddWall_Click" Grid.Column="1"/>
+                    <TextBlock TextWrapping="WrapWithOverflow" x:Name="txtBlockSelectedWall" Text="&#xA;" HorizontalAlignment="Left" Height="47" VerticalAlignment="Top" Width="576" Margin="624,88,0,0" Foreground="White" Background="#FF101010" Grid.Column="1"/>
+                    <Label Content="Selected file:" HorizontalAlignment="Left" Height="27" VerticalAlignment="Top" Width="78" Margin="532,88,0,0" Foreground="White" Grid.Column="1"/>
+                    <Button x:Name="btnLoadRoof" Content="Load roof..." HorizontalAlignment="Left" Margin="266,156,0,0" VerticalAlignment="Top" Height="27" Width="75" Click="btnLoadRoof_Click" Grid.Column="1"/>
+                    <Button x:Name="btnAddRoof" Content="Add roof" HorizontalAlignment="Left" Margin="377,156,0,0" VerticalAlignment="Top" Height="27" Width="75" IsEnabled="False" Click="btnAddRoof_Click" Grid.Column="1"/>
+                    <TextBlock TextWrapping="WrapWithOverflow" x:Name="txtBlockSelectedRoof" Text="&#xA;" HorizontalAlignment="Left" Height="47" VerticalAlignment="Top" Width="576" Margin="624,156,0,0" Foreground="White" Background="#FF101010" Grid.Column="1"/>
+                    <Label Content="Selected file:" HorizontalAlignment="Left" Height="27" VerticalAlignment="Top" Width="78" Margin="532,156,0,0" Foreground="White" Grid.Column="1"/>
+                    <Button x:Name="btnLoadFloor" Content="Load floor..." HorizontalAlignment="Left" Margin="266,228,0,0" VerticalAlignment="Top" Height="27" Width="75" Click="btnLoadFloor_Click" Grid.Column="1"/>
+                    <Button x:Name="btnAddFloor" Content="Add floor" HorizontalAlignment="Left" Margin="377,228,0,0" VerticalAlignment="Top" Height="27" Width="75" IsEnabled="False" Click="btnAddFloor_Click" Grid.Column="1"/>
+                    <TextBlock TextWrapping="WrapWithOverflow" x:Name="txtBlockSelectedFloor" Text="&#xA;" HorizontalAlignment="Left" Height="47" VerticalAlignment="Top" Width="576" Margin="624,228,0,0" Foreground="White" Background="#FF101010" Grid.Column="1"/>
+                    <Label Content="Selected file:" HorizontalAlignment="Left" Height="27" VerticalAlignment="Top" Width="78" Margin="532,228,0,0" Foreground="White" Grid.Column="1"/>
+                    <local:AddedPrefabsList x:Name="aplWalls" HorizontalAlignment="Left" Margin="130,573,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <local:AddedPrefabsList x:Name="aplRoofs" HorizontalAlignment="Left" Margin="410,573,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                    <local:AddedPrefabsList x:Name="aplFloor" HorizontalAlignment="Left" Margin="912,573,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Prefab texturing" Background="Gray">
+                <Grid Background="#FF1F1F1F">
+
+                    <HelixToolkit:HelixViewport3D x:Name="prefabTextureViewer" ZoomExtentsWhenLoaded="True" Margin="11,36,0,0" Height="360" VerticalAlignment="Top" HorizontalAlignment="Left" Width="360" Grid.ColumnSpan="2">
+                        <!-- Remember to add light to the scene -->
+                        <HelixToolkit:SunLight/>
+                        <ModelVisual3D>
+                            <ModelVisual3D.Content>
+                                <GeometryModel3D>
+                                    <GeometryModel3D.Geometry>
+                                        <MeshGeometry3D x:Name="meshMain3"
+                                            Positions="0,0,0 1,0,0 0,1,0 1,1,0 0,0,1 1,0,1 0,1,1 1,1,1"
+                                            TriangleIndices="2 3 1  2 1 0  7 1 3  7 5 1  6 5 7  6 4 5  6 2 0  2 0 4  2 7 3  2 6 7  0 1 5  0 5 4"/>
+                                    </GeometryModel3D.Geometry>
+                                    <GeometryModel3D.Material>
+                                        <DiffuseMaterial x:Name="matDiffuseMain3" Brush="Gray"/>
+                                    </GeometryModel3D.Material>
+                                </GeometryModel3D>
+                            </ModelVisual3D.Content>
+                        </ModelVisual3D>
+                        <HelixToolkit:GridLinesVisual3D Width="5" Length="5" MinorDistance="1" MajorDistance="1" Thickness="0.01"/>
+                    </HelixToolkit:HelixViewport3D>
+
+                    <local:AddedPrefabsList x:Name="aplWallsTexturing" HorizontalAlignment="Left" Margin="130,573,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <local:AddedPrefabsList x:Name="aplRoofsTexturing" HorizontalAlignment="Left" Margin="630,573,0,0" VerticalAlignment="Top"/>
+                    <local:AddedPrefabsList x:Name="aplFloorTexturing" HorizontalAlignment="Left" Margin="1130,573,0,0" VerticalAlignment="Top"/>
+                    <Button x:Name="btnLoadTexture" Content="Load texture on selected prefab..." HorizontalAlignment="Left" Margin="441,100,0,0" VerticalAlignment="Top" Height="27" Width="194"/>
+                    <Button x:Name="btnAddTexture" Content="Apply texture" HorizontalAlignment="Left" Margin="665,100,0,0" VerticalAlignment="Top" Height="27" Width="75" IsEnabled="False"/>
+                    <TextBlock TextWrapping="WrapWithOverflow" x:Name="txtBlockSelectedTexture" Text="&#xA;" HorizontalAlignment="Left" Height="47" VerticalAlignment="Top" Width="576" Margin="886,100,0,0" Foreground="White" Background="#FF101010"/>
+                    <Label Content="Selected file:" HorizontalAlignment="Center" Height="27" VerticalAlignment="Top" Width="78" Margin="0,100,0,0" Foreground="White" Grid.Column="1"/>
+                    <Slider x:Name="sliderRotation" HorizontalAlignment="Left" Margin="585,216,0,0" VerticalAlignment="Top" Width="360"/>
+                    <Slider x:Name="sliderScale" HorizontalAlignment="Left" Margin="584,268,0,0" VerticalAlignment="Top" Width="360"/>
+                    <Label Content="Rotation" HorizontalAlignment="Left" Margin="441,207,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20"/>
+                    <Label Content="Scale" HorizontalAlignment="Left" Margin="441,259,0,0" VerticalAlignment="Top" FontSize="20" Foreground="White"/>
+
                 </Grid>
             </TabItem>
         </TabControl>

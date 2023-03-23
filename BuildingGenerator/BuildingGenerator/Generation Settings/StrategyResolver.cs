@@ -178,7 +178,9 @@ namespace BuildingGenerator.BuildingGenerator.Generation_Settings
             return new List<string>()
             {
                 "DefaultWingsStrategy",
-                "RandomizedCountWingsStrategy"
+                "RandomizedCountWingsStrategy",
+                "TShapedWingsStrategy",
+                "ZigzagShapedWingsStrategy"
             };
         }
 
@@ -223,7 +225,8 @@ namespace BuildingGenerator.BuildingGenerator.Generation_Settings
         {
             return new List<string>()
             {
-                "DefaultRoofStrategy"
+                "DefaultRoofStrategy",
+                "ProceduralPeakRoofStrategy"
             };
         }
     }

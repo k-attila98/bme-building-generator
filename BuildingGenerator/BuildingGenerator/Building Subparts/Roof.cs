@@ -25,7 +25,8 @@ public enum RoofType
     Point,
     Peak,
     Slope,
-    Flat
+    Flat,
+    ProceduralPeak
 }
 
 public enum RoofDirection
