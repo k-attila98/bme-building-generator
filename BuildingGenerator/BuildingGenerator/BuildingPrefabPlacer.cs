@@ -364,12 +364,29 @@ namespace BuildingGenerator.BuildingGenerator
 
             var prefabToBeUsed = roofPrefab[(int)type % roofPrefab.Length].Clone();
 
+            // TODO: kiegészíteni ha jön új típus
+            RectInt roofBounds = new RectInt((int)transformPoint.x, (int)transformPoint.z, 1, 1);
             if (type == RoofType.ProceduralPeak)
             {
-                var width = wing.Stories[level - 1].Bounds.width;
-                var height = wing.Stories[level - 1].Bounds.height;
+                if (wing.Stories.Length == level)
+                {
+                    roofBounds = wing.Stories[level - 1].Bounds;
+                }
+                else if(level > 1 && wing.Stories.Length > level)
+                {
+                    
+                    while (!roofBounds.Overlaps_Improved(wing.Stories[level].Bounds) && roofBounds.Overlaps_Improved(wing.Stories[level-1].Bounds))
+                    {
+                        roofBounds.width += 1;
+                    }
+                    while (!roofBounds.Overlaps_Improved(wing.Stories[level].Bounds) && roofBounds.Overlaps_Improved(wing.Stories[level-1].Bounds))
+                    {
+                        roofBounds.height += 1;
+                    }
+                    
+                }
 
-                prefabToBeUsed.Scale(new Vector3(width, Math.Max(1,width*height/6), height));
+                prefabToBeUsed.Scale(new Vector3(roofBounds.width, Math.Max(1, roofBounds.width * roofBounds.height / 6), roofBounds.height));
             }
 
             Transform r;
@@ -381,11 +398,12 @@ namespace BuildingGenerator.BuildingGenerator
                 );
             r.SetParent(wingFolder);
 
+            // TODO: kiegészíteni ha jön új típus
             if (type == RoofType.ProceduralPeak)
             {
-                for (int a = wing.Stories[level - 1].Bounds.min.x; a < wing.Stories[level - 1].Bounds.max.x; a++)
+                for (int a = roofBounds.min.x; a < roofBounds.max.x; a++)
                 {
-                    for (int b = wing.Stories[level - 1].Bounds.min.y; b < wing.Stories[level - 1].Bounds.max.y; b++)
+                    for (int b = roofBounds.min.y; b < roofBounds.max.y; b++)
                     {
                         placedRoofPositions.Add(new Vector3(a * roofWidth, r.Position.y, b * roofWidth).ToString());
                     }

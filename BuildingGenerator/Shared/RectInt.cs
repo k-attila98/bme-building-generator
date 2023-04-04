@@ -79,6 +79,28 @@ namespace BuildingGenerator.Shared
                 && other.yMax > yMin;
         }
 
+        public bool Overlaps_Improved(RectInt other)
+        {
+            if (this.position.x + this.width * 0.5f < other.position.x - other.width * 0.5f)
+            {
+                return false;
+            }
+            if (other.position.x + other.width * 0.5f < this.position.x - this.width * 0.5f)
+            {
+                return false;
+            }
+            if (this.position.y + this.height * 0.5f < other.position.y - other.height * 0.5f)
+            {
+                return false;
+            }
+            if (other.position.y + other.height * 0.5f < this.position.y - this.height * 0.5f)
+            {
+                return false;
+            }
+            return true;
+        }
+
+
         public bool OverlapsWithEdges(RectInt other)
         {
             return other.xMin <= xMax
@@ -129,7 +151,7 @@ namespace BuildingGenerator.Shared
 
         public RectInt Intersect(RectInt other)
         {
-            if (!Overlaps(other) || xMin == other.xMin || yMin == other.yMin)
+            if (!Overlaps_Improved(other) || xMin == other.xMin || yMin == other.yMin)
             {
                 return new RectInt(0, 0, 0, 0);
             }

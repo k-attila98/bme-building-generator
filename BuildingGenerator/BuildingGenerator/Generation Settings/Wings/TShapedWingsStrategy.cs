@@ -20,7 +20,8 @@ public class TShapedWingsStrategy : WingsStrategy
         {
             if (i > 0)
             {
-                int wingsXOffsetInt = (-settings.Bounds.yMax / 2);
+
+                int wingsXOffsetInt = (-settings.Bounds.yMax / 2) + settings.Bounds.xMax / 2;
                 int wingsYOffsetInt = settings.Bounds.yMax;
 
                 genParams.BoundingBox = new RectInt(new Vector2Int(wingsXOffsetInt, wingsYOffsetInt), new Vector2Int(settings.Bounds.size.y, settings.Bounds.size.x));
