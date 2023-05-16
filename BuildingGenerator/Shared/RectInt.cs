@@ -71,6 +71,15 @@ namespace BuildingGenerator.Shared
                 && y < yMax;
         }
 
+        // this function should be true if another rectint has all parts inside this rectint
+        public bool Contains(RectInt other)
+        {
+            return other.xMin >= xMin
+                && other.yMin >= yMin
+                && other.xMax <= xMax
+                && other.yMax <= yMax;
+        }
+
         public bool Overlaps(RectInt other)
         {
             return other.xMin < xMax
@@ -100,6 +109,177 @@ namespace BuildingGenerator.Shared
             return true;
         }
 
+        
+        public RectInt[] SubtractAndDivide(RectInt other)
+        {
+            RectInt[] result = new RectInt[0];
+
+            result = SubtractEnclosed(other);
+            if (result.Length == 4)
+            {
+                return result;
+            }
+            result = SubtractOnEdge(other);
+            if(result.Length == 3)
+            {
+                return result;
+            }
+            result = SubtractOnCorner(other);
+            return result;
+        }
+
+        public RectInt[] SubtractOnCorner(RectInt other)
+        {
+            List<RectInt> rects = new List<RectInt>();
+            // other intersects with bottom right corner
+            if (other.xMin > xMin && other.yMin < yMin)
+            {
+                rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
+                rects.Add(new RectInt(other.xMin, other.yMax, xMax - other.xMin, yMax - other.yMax));
+            }
+            // other intersects with top right corner
+            else if (other.xMin > xMin && other.yMin > yMin)
+            {
+                rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
+                rects.Add(new RectInt(other.xMin, yMin, xMax - other.xMin, yMin - other.yMin));
+            }
+            // other intersects with top left corner
+            else if (other.xMin < xMin && other.yMin > yMin)
+            {
+                rects.Add(new RectInt(other.xMax, yMin, xMax - other.xMax, height));
+                rects.Add(new RectInt(xMin, yMin, other.xMax - xMin, other.yMin - yMin));
+            }
+            // other intersects with bottom left corner
+            if (other.xMin < xMin && other.yMin < yMin)
+            {
+                rects.Add(new RectInt(other.xMax, yMin, xMax - other.xMax, height));
+                rects.Add(new RectInt(xMin, other.yMax, other.xMax - xMin, yMax - other.yMax));
+            }
+            return rects.ToArray();
+        }
+
+        public RectInt[] SubtractOnEdge(RectInt other)
+        {
+            List<RectInt> rects = new List<RectInt>();
+            //other only intersect with the bottom edge
+            if (other.xMin > xMin && other.xMax < xMax && other.yMax < yMax)
+            {
+                // left, upright
+                rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
+                // middle, above the other
+                rects.Add(new RectInt(other.xMin, other.yMax, other.width, height - other.yMax));
+                // right, upright
+                rects.Add(new RectInt(other.xMax, yMin, xMax - other.xMax, height));
+
+            }
+            // right edge
+            else if (other.xMin > xMin && other.yMax < yMax && other.yMin > yMin)
+            {
+                // bottom, sideways
+                rects.Add(new RectInt(xMin, yMin, width, other.yMin - yMin));
+                // middle, sideways
+                rects.Add(new RectInt(xMin, other.yMin, xMax - other.xMin, other.height));
+                // top, sideways
+                rects.Add(new RectInt(xMin, other.yMax, width, yMax - other.yMax));
+            }
+            // top edge
+            else if (other.xMin > xMin && other.xMax < xMax && other.yMin < yMin)
+            {
+                // left, upright
+                rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
+                // bottom, sideways
+                rects.Add(new RectInt(other.xMin, yMin, other.width, height - other.yMin));
+                // right, sideways
+                rects.Add(new RectInt(other.xMax, yMin, xMax - other.xMax, height));
+            }
+            // left edge
+            else if (other.xMax < xMax && other.yMax < yMax && other.yMin > yMin)
+            {
+                // bottom, sideways
+                rects.Add(new RectInt(xMin, yMin, width, other.yMin - yMin));
+                // middle, sideways
+                rects.Add(new RectInt(other.xMax, other.yMin, xMax - other.xMax, other.height));
+                // top, sideways
+                rects.Add(new RectInt(xMin, other.yMax, width, yMax - other.yMax));
+            }
+            return rects.ToArray();
+        }
+
+        public RectInt[] SubtractEnclosed(RectInt other)
+        {
+            List<RectInt> rects = new List<RectInt>();
+            if(other.xMin > xMin && other.xMax < xMax && other.yMin > yMin && other.yMax < yMax)
+            {
+                // bottom sideways
+                rects.Add(new RectInt(xMin, yMin, width, other.yMin - yMin));
+                // right, upright
+                rects.Add(new RectInt(other.xMax, other.yMin, xMax - other.xMax, other.height));
+                // top, sideways
+                rects.Add(new RectInt(xMin, other.yMax, width, yMax - other.yMax));
+                // middle, sideways
+                rects.Add(new RectInt(xMin, other.yMin, other.xMin - xMin, other.height));
+            };
+
+            return rects.ToArray();
+        }
+
+
+        /*
+        public RectInt[] SubtractKeepLeft(RectInt other)
+        {
+            //int newXMin, newYMin;
+            List<RectInt> rects = new List<RectInt>();
+            if (other.xMin > xMin)
+            {
+                rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
+                //newXMin = other.xMin - xMin;
+
+            }
+            if (other.xMax < xMax)
+            {
+                rects.Add(new RectInt(other.xMax, Math.Max(yMin, other.yMin), xMax - other.xMax, _GetCorrectHeigth(other)));
+            }
+            if (other.yMin > yMin)
+            {
+                rects.Add(new RectInt(xMin, yMin, width, other.yMin - yMin));
+            }
+            if (other.yMax < yMax)
+            {
+                rects.Add(new RectInt(Math.Max(xMin,other.xMin), other.yMax, _GetCorrectWidth(other), yMax - other.yMax));
+            }
+            return rects.ToArray();
+        }
+        */
+        /*
+        private int _GetCorrectWidth(RectInt rect)
+        {
+            return (rect.width < width && rect.xMax < xMax && rect.xMin > xMin) ? rect.width : Math.Min(width, (rect.xMax > xMax ? xMax - rect.xMin : xMax - rect.xMax));
+        }
+
+        private int _GetCorrectHeigth(RectInt rect)
+        {
+            return (rect.height < height && rect.yMax < yMax && rect.yMin > yMin) ? rect.height : Math.Min(height, (rect.yMax > yMax ? yMax - rect.yMin : yMax - rect.yMax));
+        }
+        */
+        /*
+        public RectInt[] DivideExceptArea(RectInt exceptionArea)
+        {
+            List<RectInt> result = new List<RectInt>();
+            for (int x = xMin; x < xMax; x++)
+            {
+                for (int y = yMin; y < yMax; y++)
+                {
+                    if (Contains(x, y) && !exceptionArea.Contains(x, y))
+                    { 
+                        
+                    }
+                }
+
+            }
+
+            return result.ToArray();
+        }
+        */
 
         public bool OverlapsWithEdges(RectInt other)
         {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Numerics;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Vector3 = BuildingGenerator.Shared.Vector3;
@@ -310,33 +311,79 @@ namespace BuildingGenerator.BuildingGenerator
                     storiesThatNeedRoof.Add(lowerStory);
                 }
             }
-            /*
-            var storiesArray = storiesThatNeedRoof.ToArray();
-            for (int i = 0; i < storiesArray.Length; i++)
-            {
-                var story = storiesArray[i];
-                for (int x = story.Bounds.min.x; x < story.Bounds.max.x; x++)
-                {
-                    for (int y = story.Bounds.min.y; y < story.Bounds.max.y; y++)
-                    {
-                        PlaceRoof(x, y, story.Level + 1, wingFolder, wing.GetRoof.Type, wing.GetRoof.Direction);
-                    }
-                }
-            }
-            */
 
             foreach (var story in storiesThatNeedRoof)
             {
-                for (int x = story.Bounds.min.x; x < story.Bounds.max.x; x++)
+                var roofLevel = story.Level + 1;
+                if (wing.GetRoof.Type == RoofType.ProceduralPeak)
                 {
-                    for (int y = story.Bounds.min.y; y < story.Bounds.max.y; y++)
+                    if (roofLevel > 0 && wing.Stories.Length > roofLevel)
+                    { 
+                        var dividedBounds = story.Bounds.SubtractAndDivide(wing.Stories[roofLevel].Bounds);
+                        foreach (var bounds in dividedBounds)
+                        {
+                            _PlaceScaledRoofOnBounds(roofLevel, bounds, wing, wingFolder);
+                        }   
+                    }
+                    else if (wing.Stories.Length == roofLevel)
                     {
-                        _PlaceRoof(x, y, story.Level + 1, wing, wingFolder);
+                        var roofBounds = wing.Stories[story.Level].Bounds;
+                        _PlaceScaledRoofOnBounds(roofLevel, roofBounds, wing, wingFolder);
+                    }
+                }
+                else
+                { 
+                    for (int x = story.Bounds.min.x; x < story.Bounds.max.x; x++)
+                    {
+                        for (int y = story.Bounds.min.y; y < story.Bounds.max.y; y++)
+                        {
+                            _PlaceRoof(x, y, roofLevel, wing, wingFolder);
+                        }
                     }
                 }
             }
 
             _RenderRoofOnTopWithDynamicSize(wing, wingFolder);
+        }
+
+        private void _PlaceScaledRoofOnBounds(int level, RectInt roofBounds, Wing wing, Transform wingFolder)
+        {
+            RoofDirection direction = wing.GetRoof.Direction;
+            RoofType type = wing.GetRoof.Type;
+            float roofWidth = roofPrefab[(int)type % roofPrefab.Length].Width;
+
+            var transformPoint = wingFolder.TransformPoint(
+                    new Vector3(
+                            roofBounds.xMin * roofWidth,
+                            level * wallHeight,
+                            roofBounds.yMin * roofWidth
+                        )
+                    );
+
+            var prefabToBeUsed = roofPrefab[(int)type % roofPrefab.Length].Clone();
+
+            prefabToBeUsed.Scale(new Vector3(roofBounds.width, Math.Max(1, roofBounds.width * roofBounds.height / 6), roofBounds.height));
+
+            Transform r;
+            r = new Transform(
+                prefabToBeUsed,
+                transformPoint,
+                //Quaternion.Euler(0f, rotationOffset[(int)direction].y, 0f)
+                Quaternion.Identity
+                );
+            r.SetParent(wingFolder);
+
+
+            for (int a = roofBounds.min.x; a < roofBounds.max.x; a++)
+            {
+                for (int b = roofBounds.min.y; b < roofBounds.max.y; b++)
+                {
+                    placedRoofPositions.Add(new Vector3(a * roofWidth, r.Position.y, b * roofWidth).ToString());
+                }
+            }
+
+            placedPrefabs.Add(r);
+
         }
 
         private void _PlaceRoof(int x, int y, int level, Wing wing, Transform wingFolder)
@@ -349,7 +396,7 @@ namespace BuildingGenerator.BuildingGenerator
             var transformPoint = wingFolder.TransformPoint(
                     new Vector3(
                             x * roofWidth,
-                            level * wallHeight, //+ (type == RoofType.Point ? -0.3f : 0f),
+                            level * wallHeight,
                             y * roofWidth
                         )
                     );
@@ -364,31 +411,6 @@ namespace BuildingGenerator.BuildingGenerator
 
             var prefabToBeUsed = roofPrefab[(int)type % roofPrefab.Length].Clone();
 
-            // TODO: kiegészíteni ha jön új típus
-            RectInt roofBounds = new RectInt((int)transformPoint.x, (int)transformPoint.z, 1, 1);
-            if (type == RoofType.ProceduralPeak)
-            {
-                if (wing.Stories.Length == level)
-                {
-                    roofBounds = wing.Stories[level - 1].Bounds;
-                }
-                else if(level > 1 && wing.Stories.Length > level)
-                {
-                    
-                    while (!roofBounds.Overlaps_Improved(wing.Stories[level].Bounds) && roofBounds.Overlaps_Improved(wing.Stories[level-1].Bounds))
-                    {
-                        roofBounds.width += 1;
-                    }
-                    while (!roofBounds.Overlaps_Improved(wing.Stories[level].Bounds) && roofBounds.Overlaps_Improved(wing.Stories[level-1].Bounds))
-                    {
-                        roofBounds.height += 1;
-                    }
-                    
-                }
-
-                prefabToBeUsed.Scale(new Vector3(roofBounds.width, Math.Max(1, roofBounds.width * roofBounds.height / 6), roofBounds.height));
-            }
-
             Transform r;
             r = new Transform(
                 prefabToBeUsed,
@@ -398,22 +420,8 @@ namespace BuildingGenerator.BuildingGenerator
                 );
             r.SetParent(wingFolder);
 
-            // TODO: kiegészíteni ha jön új típus
-            if (type == RoofType.ProceduralPeak)
-            {
-                for (int a = roofBounds.min.x; a < roofBounds.max.x; a++)
-                {
-                    for (int b = roofBounds.min.y; b < roofBounds.max.y; b++)
-                    {
-                        placedRoofPositions.Add(new Vector3(a * roofWidth, r.Position.y, b * roofWidth).ToString());
-                    }
-                }
-            }
-            else
-            {
-                placedRoofPositions.Add(r.Position.ToString());
-            }
-
+            placedRoofPositions.Add(r.Position.ToString());
+            
             placedPrefabs.Add(r);
         }
 

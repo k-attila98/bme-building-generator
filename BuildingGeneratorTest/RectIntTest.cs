@@ -277,5 +277,113 @@ namespace BuildingGeneratorTest
             Assert.IsTrue(rect1.ContainsWithEdges(3,4));
         }
 
+        [TestMethod]
+        public void TestSubtractBottomRight()
+        {
+            var rect1 = new RectInt(0, 0, 4, 3);
+            var rect2 = new RectInt(3, -2, 4, 3);
+
+            var bounds = rect1.SubtractAndDivide(rect2);
+
+            Assert.AreEqual(2, bounds.Length);
+
+            Assert.AreEqual(bounds[0].width, 3);
+            Assert.AreEqual(bounds[0].height, 3);
+            Assert.AreEqual(bounds[0].x, 0);
+            Assert.AreEqual(bounds[0].y, 0);
+
+            Assert.AreEqual(bounds[1].width, 1);
+            Assert.AreEqual(bounds[1].height, 2);
+            Assert.AreEqual(bounds[1].x, 3);
+            Assert.AreEqual(bounds[1].y, 1);
+
+        }
+
+        [TestMethod]
+        public void TestSubtractBottomEdge()
+        {
+            var rect1 = new RectInt(0, 0, 4, 2);
+            var rect2 = new RectInt(1, -1, 2, 2);
+
+            var bounds = rect1.SubtractAndDivide(rect2);
+
+            Assert.AreEqual(3, bounds.Length);
+
+            Assert.AreEqual(1, bounds[0].width);
+            Assert.AreEqual(2, bounds[0].height);
+            Assert.AreEqual(0, bounds[0].x);
+            Assert.AreEqual(0, bounds[0].y);
+
+            Assert.AreEqual(2, bounds[1].width);
+            Assert.AreEqual(1, bounds[1].height);
+            Assert.AreEqual(1, bounds[1].x);
+            Assert.AreEqual(1, bounds[1].y);
+
+            Assert.AreEqual(1, bounds[2].width);
+            Assert.AreEqual(2, bounds[2].height);
+            Assert.AreEqual(3, bounds[2].x);
+            Assert.AreEqual(0, bounds[2].y);
+        }
+
+        [TestMethod]
+        public void TestSubtractLeftEdge()
+        {
+            var rect1 = new RectInt(0, 0, 4, 3);
+            var rect2 = new RectInt(-1, 1, 2, 1);
+
+            var bounds = rect1.SubtractAndDivide(rect2);
+
+            Assert.AreEqual(3, bounds.Length);
+
+            Assert.AreEqual(4, bounds[0].width);
+            Assert.AreEqual(1, bounds[0].height);
+            Assert.AreEqual(0, bounds[0].x);
+            Assert.AreEqual(0, bounds[0].y);
+
+            Assert.AreEqual(3, bounds[1].width);
+            Assert.AreEqual(1, bounds[1].height);
+            Assert.AreEqual(1, bounds[1].x);
+            Assert.AreEqual(1, bounds[1].y);
+
+            Assert.AreEqual(4, bounds[2].width);
+            Assert.AreEqual(1, bounds[2].height);
+            Assert.AreEqual(0, bounds[2].x);
+            Assert.AreEqual(2, bounds[2].y);
+        }
+
+        [TestMethod]
+        public void TestSubtractFullyEnclosed()
+        {
+            var rect1 = new RectInt(0, 0, 4, 3);
+            var rect2 = new RectInt(2, 1, 1, 1);
+
+            var bounds = rect1.SubtractAndDivide(rect2);
+
+            Assert.AreEqual(4, bounds.Length);
+
+            Assert.AreEqual(4, bounds[0].width);
+            Assert.AreEqual(1, bounds[0].height);
+            Assert.AreEqual(0, bounds[0].x);
+            Assert.AreEqual(0, bounds[0].y);
+
+            Assert.AreEqual(1, bounds[1].width);
+            Assert.AreEqual(1, bounds[1].height);
+            Assert.AreEqual(3, bounds[1].x);
+            Assert.AreEqual(1, bounds[1].y);
+
+            Assert.AreEqual(4, bounds[2].width);
+            Assert.AreEqual(1, bounds[2].height);
+            Assert.AreEqual(0, bounds[2].x);
+            Assert.AreEqual(2, bounds[2].y);
+
+            Assert.AreEqual(2, bounds[3].width);
+            Assert.AreEqual(1, bounds[3].height);
+            Assert.AreEqual(0, bounds[3].x);
+            Assert.AreEqual(1, bounds[3].y);
+
+
+        }
+
+        // TODO: még teszteseteket írni a subtractanddividera
     }
 }
