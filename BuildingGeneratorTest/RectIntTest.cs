@@ -385,5 +385,98 @@ namespace BuildingGeneratorTest
         }
 
         // TODO: még teszteseteket írni a subtractanddividera
+        [TestMethod]
+
+        public void TestSubtractOnBottomLeftCorner()
+        {
+            var rect1 = new RectInt(0, 0, 4, 3);
+            var rect2 = new RectInt(0, 0, 1, 2);
+
+            var bounds = rect1.SubtractAndDivide(rect2);
+
+            Assert.AreEqual(2, bounds.Length);
+
+            Assert.AreEqual(3, bounds[0].width);
+            Assert.AreEqual(3, bounds[0].height);
+            Assert.AreEqual(1, bounds[0].x);
+            Assert.AreEqual(0, bounds[0].y);
+
+            Assert.AreEqual(1, bounds[1].width);
+            Assert.AreEqual(1, bounds[1].height);
+            Assert.AreEqual(0, bounds[1].x);
+            Assert.AreEqual(2, bounds[1].y);
+
+
+        }
+
+        [TestMethod]
+        public void TestSubtractOnBottomRightCorner()
+        {
+            var rect1 = new RectInt(0, 0, 4, 3);
+            var rect2 = new RectInt(2, 0, 2, 2);
+
+            var bounds = rect1.SubtractAndDivide(rect2);
+
+            Assert.AreEqual(2, bounds.Length);
+
+            Assert.AreEqual(2, bounds[0].width);
+            Assert.AreEqual(3, bounds[0].height);
+            Assert.AreEqual(0, bounds[0].x);
+            Assert.AreEqual(0, bounds[0].y);
+
+            Assert.AreEqual(2, bounds[1].width);
+            Assert.AreEqual(1, bounds[1].height);
+            Assert.AreEqual(2, bounds[1].x);
+            Assert.AreEqual(2, bounds[1].y);
+
+
+        }
+
+        [TestMethod]
+        public void TestSubtractOnTopRightCorner()
+        {
+            var rect1 = new RectInt(0, 0, 4, 3);
+            var rect2 = new RectInt(2, 2, 2, 1);
+
+            var bounds = rect1.SubtractAndDivide(rect2);
+
+            Assert.AreEqual(2, bounds.Length);
+
+            Assert.AreEqual(2, bounds[0].width);
+            Assert.AreEqual(3, bounds[0].height);
+            Assert.AreEqual(0, bounds[0].x);
+            Assert.AreEqual(0, bounds[0].y);
+
+            Assert.AreEqual(2, bounds[1].width);
+            Assert.AreEqual(2, bounds[1].height);
+            Assert.AreEqual(2, bounds[1].x);
+            Assert.AreEqual(0, bounds[1].y);
+
+
+        }
+
+        [TestMethod]
+        public void TestSubtractOnTopLeftCorner()
+        {
+            var rect1 = new RectInt(0, 0, 4, 3);
+            var rect2 = new RectInt(0, 2, 3, 1);
+
+            var bounds = rect1.SubtractAndDivide(rect2);
+
+            Assert.AreEqual(2, bounds.Length);
+
+            Assert.AreEqual(1, bounds[0].width);
+            Assert.AreEqual(3, bounds[0].height);
+            Assert.AreEqual(3, bounds[0].x);
+            Assert.AreEqual(0, bounds[0].y);
+
+            Assert.AreEqual(3, bounds[1].width);
+            Assert.AreEqual(2, bounds[1].height);
+            Assert.AreEqual(0, bounds[1].x);
+            Assert.AreEqual(0, bounds[1].y);
+
+
+        }
+
     }
 }

@@ -141,7 +141,7 @@ namespace BuildingGenerator.Shared
             else if (other.xMin > xMin && other.yMin > yMin)
             {
                 rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
-                rects.Add(new RectInt(other.xMin, yMin, xMax - other.xMin, yMin - other.yMin));
+                rects.Add(new RectInt(other.xMin, yMin, xMax - other.xMin, other.yMin - yMin));
             }
             // other intersects with top left corner
             else if (other.xMin < xMin && other.yMin > yMin)
@@ -150,7 +150,31 @@ namespace BuildingGenerator.Shared
                 rects.Add(new RectInt(xMin, yMin, other.xMax - xMin, other.yMin - yMin));
             }
             // other intersects with bottom left corner
-            if (other.xMin < xMin && other.yMin < yMin)
+            else if (other.xMin < xMin && other.yMin < yMin)
+            {
+                rects.Add(new RectInt(other.xMax, yMin, xMax - other.xMax, height));
+                rects.Add(new RectInt(xMin, other.yMax, other.xMax - xMin, yMax - other.yMax));
+            }
+            // other ends on bottom right corner
+            else if (other.xMin > xMin && other.yMin == yMin && other.xMax == xMax && other.yMax < yMax)
+            {
+                rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
+                rects.Add(new RectInt(other.xMin, other.yMax, xMax - other.xMin, yMax - other.yMax));
+            }
+            // other ends on top right corner
+            else if (other.xMin > xMin && other.yMin > yMin && other.xMax == xMax && other.yMax == yMax)
+            {
+                rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
+                rects.Add(new RectInt(other.xMin, yMin, xMax - other.xMin, other.yMin - yMin));
+            }
+            // other ends on top left corner
+            else if (other.xMin == xMin && other.yMin > yMin && other.xMax < xMax && other.yMax == yMax)
+            {
+                rects.Add(new RectInt(other.xMax, yMin, xMax - other.xMax, height));
+                rects.Add(new RectInt(xMin, yMin, other.xMax - xMin, other.yMin - yMin));
+            }
+            // other ends on bottom left corner
+            else if (other.xMin == xMin && other.yMin == yMin && other.xMax < xMax && other.yMax < yMax)
             {
                 rects.Add(new RectInt(other.xMax, yMin, xMax - other.xMax, height));
                 rects.Add(new RectInt(xMin, other.yMax, other.xMax - xMin, yMax - other.yMax));
@@ -331,7 +355,7 @@ namespace BuildingGenerator.Shared
 
         public RectInt Intersect(RectInt other)
         {
-            if (!Overlaps_Improved(other) || xMin == other.xMin || yMin == other.yMin)
+            if (!Overlaps(other) || xMin == other.xMin || yMin == other.yMin)
             {
                 return new RectInt(0, 0, 0, 0);
             }

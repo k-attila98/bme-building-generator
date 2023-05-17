@@ -312,27 +312,35 @@ namespace BuildingGenerator.BuildingGenerator
                 }
             }
 
-            foreach (var story in storiesThatNeedRoof)
+            if (wing.GetRoof.Type == RoofType.ProceduralPeak)
             {
-                var roofLevel = story.Level + 1;
-                if (wing.GetRoof.Type == RoofType.ProceduralPeak)
+                foreach (var story in storiesThatNeedRoof)
                 {
+                    var roofLevel = story.Level + 1;
                     if (roofLevel > 0 && wing.Stories.Length > roofLevel)
-                    { 
+                    {
                         var dividedBounds = story.Bounds.SubtractAndDivide(wing.Stories[roofLevel].Bounds);
                         foreach (var bounds in dividedBounds)
                         {
                             _PlaceScaledRoofOnBounds(roofLevel, bounds, wing, wingFolder);
-                        }   
+                        }
                     }
+                    /*
                     else if (wing.Stories.Length == roofLevel)
                     {
                         var roofBounds = wing.Stories[story.Level].Bounds;
-                        _PlaceScaledRoofOnBounds(roofLevel, roofBounds, wing, wingFolder);
+                        _PlaceScaledRoofOnBounds(wing.Stories.Length, roofBounds, wing, wingFolder);
                     }
+                    */
                 }
-                else
-                { 
+                var roofBounds = wing.Stories[wing.Stories.Length-1].Bounds;
+                _PlaceScaledRoofOnBounds(wing.Stories.Length, roofBounds, wing, wingFolder);
+            }
+            else
+            {
+                foreach (var story in storiesThatNeedRoof)
+                {
+                    var roofLevel = story.Level + 1;
                     for (int x = story.Bounds.min.x; x < story.Bounds.max.x; x++)
                     {
                         for (int y = story.Bounds.min.y; y < story.Bounds.max.y; y++)
@@ -341,9 +349,12 @@ namespace BuildingGenerator.BuildingGenerator
                         }
                     }
                 }
+
+                _RenderRoofOnTopWithDynamicSize(wing, wingFolder);
+
             }
 
-            _RenderRoofOnTopWithDynamicSize(wing, wingFolder);
+            
         }
 
         private void _PlaceScaledRoofOnBounds(int level, RectInt roofBounds, Wing wing, Transform wingFolder)
@@ -421,7 +432,7 @@ namespace BuildingGenerator.BuildingGenerator
             r.SetParent(wingFolder);
 
             placedRoofPositions.Add(r.Position.ToString());
-            
+
             placedPrefabs.Add(r);
         }
 
