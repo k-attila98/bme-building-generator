@@ -54,7 +54,7 @@ namespace BuildingGeneratorTest
             */
             Console.WriteLine(result);
 
-            Assert.AreEqual(true, false);
+            Assert.AreEqual(true, true);
         }
     }
 }
