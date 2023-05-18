@@ -125,7 +125,34 @@ namespace BuildingGenerator.Shared
                 return result;
             }
             result = SubtractOnCorner(other);
+            
+            if(result.Length == 2)
+            {
+                return result;
+            }
+            result = SubtractOnHalf(other);
+            
             return result;
+        }
+
+        public RectInt[] SubtractOnHalf(RectInt other)
+        {
+            List<RectInt> rects = new List<RectInt>();
+            // other on top of right half
+            if (other.xMin > xMin && other.yMin < yMin)
+                rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
+            // other on top of left half
+            else if (other.xMin <= xMin && other.yMin <= yMin && other.yMax >= yMax)
+                rects.Add(new RectInt(other.xMax, yMin, xMax - other.xMax, height));
+            // other on top of bottom half
+            else if (other.xMin <= xMin && other.yMin <= yMin && other.xMax >= xMax)
+                rects.Add(new RectInt(xMin, other.yMax, width, yMax - other.yMax));
+            // other on top of top half
+            else if (other.xMin <= xMin && other.yMin > yMin && other.yMax > yMax)
+                rects.Add(new RectInt(xMin, yMin, width, other.yMin - yMin));
+            
+
+            return rects.ToArray();
         }
 
         public RectInt[] SubtractOnCorner(RectInt other)
@@ -141,6 +168,7 @@ namespace BuildingGenerator.Shared
             else if (other.xMin > xMin && other.yMin > yMin)
             {
                 rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
+                //if(other.yMin > yMin)
                 rects.Add(new RectInt(other.xMin, yMin, xMax - other.xMin, other.yMin - yMin));
             }
             // other intersects with top left corner
@@ -155,26 +183,27 @@ namespace BuildingGenerator.Shared
                 rects.Add(new RectInt(other.xMax, yMin, xMax - other.xMax, height));
                 rects.Add(new RectInt(xMin, other.yMax, other.xMax - xMin, yMax - other.yMax));
             }
+
             // other ends on bottom right corner
-            else if (other.xMin > xMin && other.yMin == yMin && other.xMax == xMax && other.yMax < yMax)
+            else if (other.xMin > xMin && other.yMin <= yMin && other.xMax >= xMax && other.yMax < yMax)
             {
                 rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
                 rects.Add(new RectInt(other.xMin, other.yMax, xMax - other.xMin, yMax - other.yMax));
             }
             // other ends on top right corner
-            else if (other.xMin > xMin && other.yMin > yMin && other.xMax == xMax && other.yMax == yMax)
+            else if (other.xMin > xMin && other.yMin > yMin && other.xMax >= xMax && other.yMax >= yMax)
             {
                 rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
                 rects.Add(new RectInt(other.xMin, yMin, xMax - other.xMin, other.yMin - yMin));
             }
             // other ends on top left corner
-            else if (other.xMin == xMin && other.yMin > yMin && other.xMax < xMax && other.yMax == yMax)
+            else if (other.xMin <= xMin && other.yMin > yMin && other.xMax < xMax && other.yMax >= yMax)
             {
                 rects.Add(new RectInt(other.xMax, yMin, xMax - other.xMax, height));
                 rects.Add(new RectInt(xMin, yMin, other.xMax - xMin, other.yMin - yMin));
             }
             // other ends on bottom left corner
-            else if (other.xMin == xMin && other.yMin == yMin && other.xMax < xMax && other.yMax < yMax)
+            else if (other.xMin <= xMin && other.yMin <= yMin && other.xMax < xMax && other.yMax < yMax)
             {
                 rects.Add(new RectInt(other.xMax, yMin, xMax - other.xMax, height));
                 rects.Add(new RectInt(xMin, other.yMax, other.xMax - xMin, yMax - other.yMax));
@@ -207,12 +236,12 @@ namespace BuildingGenerator.Shared
                 rects.Add(new RectInt(xMin, other.yMax, width, yMax - other.yMax));
             }
             // top edge
-            else if (other.xMin > xMin && other.xMax < xMax && other.yMin < yMin)
+            else if (other.xMin > xMin && other.xMax < xMax && other.yMin > yMin)
             {
                 // left, upright
                 rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
                 // bottom, sideways
-                rects.Add(new RectInt(other.xMin, yMin, other.width, height - other.yMin));
+                rects.Add(new RectInt(other.xMin, yMin, other.width, other.yMin - yMin));
                 // right, sideways
                 rects.Add(new RectInt(other.xMax, yMin, xMax - other.xMax, height));
             }

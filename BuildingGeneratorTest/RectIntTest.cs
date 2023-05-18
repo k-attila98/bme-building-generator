@@ -478,5 +478,69 @@ namespace BuildingGeneratorTest
 
         }
 
+        [TestMethod]
+        public void TestSubtractOnTopEdge()
+        {
+            var rect1 = new RectInt(0, 0, 4, 3);
+            var rect2 = new RectInt(2, 1, 1, 2);
+
+            var bounds = rect1.SubtractAndDivide(rect2);
+
+            Assert.AreEqual(3, bounds.Length);
+
+            Assert.AreEqual(2, bounds[0].width);
+            Assert.AreEqual(3, bounds[0].height);
+            Assert.AreEqual(0, bounds[0].x);
+            Assert.AreEqual(0, bounds[0].y);
+
+            Assert.AreEqual(1, bounds[1].width);
+            Assert.AreEqual(1, bounds[1].height);
+            Assert.AreEqual(2, bounds[1].x);
+            Assert.AreEqual(0, bounds[1].y);
+
+            Assert.AreEqual(1, bounds[2].width);
+            Assert.AreEqual(3, bounds[2].height);
+            Assert.AreEqual(3, bounds[2].x);
+            Assert.AreEqual(0, bounds[2].y);
+
+
+        }
+
+        [TestMethod]
+        public void TestSubtractHalf1()
+        {
+            var rect1 = new RectInt(0, 0, 1, 3);
+            var rect2 = new RectInt(0, -1, 2, 2);
+
+            var bounds = rect1.SubtractAndDivide(rect2);
+
+            Assert.AreEqual(1, bounds.Length);
+
+            Assert.AreEqual(1, bounds[0].width);
+            Assert.AreEqual(2, bounds[0].height);
+            Assert.AreEqual(0, bounds[0].x);
+            Assert.AreEqual(1, bounds[0].y);
+
+
+        }
+
+        [TestMethod]
+        public void TestSubtractHalf2()
+        {
+            var rect1 = new RectInt(0, 0, 1, 3);
+            var rect2 = new RectInt(0, 2, 1, 3);
+
+            var bounds = rect1.SubtractAndDivide(rect2);
+
+            Assert.AreEqual(1, bounds.Length);
+
+            Assert.AreEqual(1, bounds[0].width);
+            Assert.AreEqual(2, bounds[0].height);
+            Assert.AreEqual(0, bounds[0].x);
+            Assert.AreEqual(0, bounds[0].y);
+
+
+        }
+
     }
 }
