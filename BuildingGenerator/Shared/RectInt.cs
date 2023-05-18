@@ -87,28 +87,6 @@ namespace BuildingGenerator.Shared
                 && other.yMin < yMax
                 && other.yMax > yMin;
         }
-
-        public bool Overlaps_Improved(RectInt other)
-        {
-            if (this.position.x + this.width * 0.5f < other.position.x - other.width * 0.5f)
-            {
-                return false;
-            }
-            if (other.position.x + other.width * 0.5f < this.position.x - this.width * 0.5f)
-            {
-                return false;
-            }
-            if (this.position.y + this.height * 0.5f < other.position.y - other.height * 0.5f)
-            {
-                return false;
-            }
-            if (other.position.y + other.height * 0.5f < this.position.y - this.height * 0.5f)
-            {
-                return false;
-            }
-            return true;
-        }
-
         
         public RectInt[] SubtractAndDivide(RectInt other)
         {
@@ -276,64 +254,6 @@ namespace BuildingGenerator.Shared
             return rects.ToArray();
         }
 
-
-        /*
-        public RectInt[] SubtractKeepLeft(RectInt other)
-        {
-            //int newXMin, newYMin;
-            List<RectInt> rects = new List<RectInt>();
-            if (other.xMin > xMin)
-            {
-                rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
-                //newXMin = other.xMin - xMin;
-
-            }
-            if (other.xMax < xMax)
-            {
-                rects.Add(new RectInt(other.xMax, Math.Max(yMin, other.yMin), xMax - other.xMax, _GetCorrectHeigth(other)));
-            }
-            if (other.yMin > yMin)
-            {
-                rects.Add(new RectInt(xMin, yMin, width, other.yMin - yMin));
-            }
-            if (other.yMax < yMax)
-            {
-                rects.Add(new RectInt(Math.Max(xMin,other.xMin), other.yMax, _GetCorrectWidth(other), yMax - other.yMax));
-            }
-            return rects.ToArray();
-        }
-        */
-        /*
-        private int _GetCorrectWidth(RectInt rect)
-        {
-            return (rect.width < width && rect.xMax < xMax && rect.xMin > xMin) ? rect.width : Math.Min(width, (rect.xMax > xMax ? xMax - rect.xMin : xMax - rect.xMax));
-        }
-
-        private int _GetCorrectHeigth(RectInt rect)
-        {
-            return (rect.height < height && rect.yMax < yMax && rect.yMin > yMin) ? rect.height : Math.Min(height, (rect.yMax > yMax ? yMax - rect.yMin : yMax - rect.yMax));
-        }
-        */
-        /*
-        public RectInt[] DivideExceptArea(RectInt exceptionArea)
-        {
-            List<RectInt> result = new List<RectInt>();
-            for (int x = xMin; x < xMax; x++)
-            {
-                for (int y = yMin; y < yMax; y++)
-                {
-                    if (Contains(x, y) && !exceptionArea.Contains(x, y))
-                    { 
-                        
-                    }
-                }
-
-            }
-
-            return result.ToArray();
-        }
-        */
-
         public bool OverlapsWithEdges(RectInt other)
         {
             return other.xMin <= xMax
@@ -388,28 +308,6 @@ namespace BuildingGenerator.Shared
             {
                 return new RectInt(0, 0, 0, 0);
             }
-            
-
-            /*
-            if (xMin == other.xMin || yMin == other.yMin)
-            {
-                return new RectInt(
-                    Math.Max(xMin, other.xMin),
-                    Math.Max(yMin, other.yMin),
-                    1,
-                    1
-                );
-            }
-            if (yMin == other.yMin)
-            {
-                return new RectInt(
-                    Math.Max(xMin, other.xMin),
-                    Math.Max(yMin, other.yMin),
-                    0,
-                    Math.Min(yMax, other.yMax) - Math.Max(yMin, other.yMin)
-                );
-            }
-            */
 
             return new RectInt(
                 Math.Max(xMin, other.xMin),
