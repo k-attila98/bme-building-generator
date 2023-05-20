@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Generated building OBJ files
+.BuildingGenerator/Generated/
+/BuildingGenerator/Generated
