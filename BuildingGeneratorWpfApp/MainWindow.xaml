@@ -169,6 +169,10 @@
 
             <TabItem Header="Prefab texturing" Background="Gray">
                 <Grid Background="#FF1F1F1F">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="159*"/>
+                        <ColumnDefinition Width="1517*"/>
+                    </Grid.ColumnDefinitions>
 
                     <HelixToolkit:HelixViewport3D x:Name="prefabTextureViewer" ZoomExtentsWhenLoaded="True" Margin="11,36,0,0" Height="360" VerticalAlignment="Top" HorizontalAlignment="Left" Width="360" Grid.ColumnSpan="2">
                         <!-- Remember to add light to the scene -->
@@ -191,16 +195,16 @@
                     </HelixToolkit:HelixViewport3D>
 
                     <local:AddedPrefabsList x:Name="aplWallsTexturing" HorizontalAlignment="Left" Margin="130,573,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-                    <local:AddedPrefabsList x:Name="aplRoofsTexturing" HorizontalAlignment="Left" Margin="630,573,0,0" VerticalAlignment="Top"/>
-                    <local:AddedPrefabsList x:Name="aplFloorTexturing" HorizontalAlignment="Left" Margin="1130,573,0,0" VerticalAlignment="Top"/>
-                    <Button x:Name="btnLoadTexture" Content="Load texture on selected prefab..." HorizontalAlignment="Left" Margin="441,100,0,0" VerticalAlignment="Top" Height="27" Width="194"/>
-                    <Button x:Name="btnAddTexture" Content="Apply texture" HorizontalAlignment="Left" Margin="665,100,0,0" VerticalAlignment="Top" Height="27" Width="75" IsEnabled="False"/>
-                    <TextBlock TextWrapping="WrapWithOverflow" x:Name="txtBlockSelectedTexture" Text="&#xA;" HorizontalAlignment="Left" Height="47" VerticalAlignment="Top" Width="576" Margin="886,100,0,0" Foreground="White" Background="#FF101010"/>
-                    <Label Content="Selected file:" HorizontalAlignment="Center" Height="27" VerticalAlignment="Top" Width="78" Margin="0,100,0,0" Foreground="White" Grid.Column="1"/>
-                    <Slider x:Name="sliderRotation" HorizontalAlignment="Left" Margin="585,216,0,0" VerticalAlignment="Top" Width="360"/>
-                    <Slider x:Name="sliderScale" HorizontalAlignment="Left" Margin="584,268,0,0" VerticalAlignment="Top" Width="360"/>
-                    <Label Content="Rotation" HorizontalAlignment="Left" Margin="441,207,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20"/>
-                    <Label Content="Scale" HorizontalAlignment="Left" Margin="441,259,0,0" VerticalAlignment="Top" FontSize="20" Foreground="White"/>
+                    <local:AddedPrefabsList x:Name="aplRoofsTexturing" HorizontalAlignment="Left" Margin="471,573,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                    <local:AddedPrefabsList x:Name="aplFloorTexturing" HorizontalAlignment="Left" Margin="971,573,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                    <Button x:Name="btnLoadTexture" Content="Load texture on selected prefab..." HorizontalAlignment="Left" Margin="282,100,0,0" VerticalAlignment="Top" Height="27" Width="194" Click="btnLoadTexture_Click" Grid.Column="1"/>
+                    <Button x:Name="btnAddTexture" Content="Apply texture" HorizontalAlignment="Left" Margin="506,100,0,0" VerticalAlignment="Top" Height="27" Width="75" IsEnabled="False" Grid.Column="1" Click="btnAddTexture_Click"/>
+                    <TextBlock TextWrapping="WrapWithOverflow" x:Name="txtBlockSelectedTexture" Text="&#xA;" HorizontalAlignment="Left" Height="47" VerticalAlignment="Top" Width="576" Margin="727,100,0,0" Foreground="White" Background="#FF101010" Grid.Column="1"/>
+                    <Label Content="Selected file:" HorizontalAlignment="Left" Height="27" VerticalAlignment="Top" Width="78" Margin="640,100,0,0" Foreground="White" Grid.Column="1"/>
+                    <Slider x:Name="sliderRotation" HorizontalAlignment="Left" Margin="426,216,0,0" VerticalAlignment="Top" Width="360" Grid.Column="1"/>
+                    <Slider x:Name="sliderScale" HorizontalAlignment="Left" Margin="425,268,0,0" VerticalAlignment="Top" Width="360" Grid.Column="1"/>
+                    <Label Content="Rotation" HorizontalAlignment="Left" Margin="282,207,0,0" VerticalAlignment="Top" Foreground="White" FontSize="20" Grid.Column="1"/>
+                    <Label Content="Scale" HorizontalAlignment="Left" Margin="282,259,0,0" VerticalAlignment="Top" FontSize="20" Foreground="White" Grid.Column="1"/>
 
                 </Grid>
             </TabItem>

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -68,6 +69,10 @@ namespace BuildingGeneratorWpfApp
             aplWalls.PrefabSelectionChanged += new AddedPrefabsList.PrefabSelectionChangedHandler(_SetViewPortToSelectedPrefab);
             aplRoofs.PrefabSelectionChanged += new AddedPrefabsList.PrefabSelectionChangedHandler(_SetViewPortToSelectedPrefab);
             aplFloor.PrefabSelectionChanged += new AddedPrefabsList.PrefabSelectionChangedHandler(_SetViewPortToSelectedPrefab);
+
+            aplWallsTexturing.PrefabSelectionChanged += new AddedPrefabsList.PrefabSelectionChangedHandler(_SetTexturingViewPortToSelectedPrefab);
+            aplRoofsTexturing.PrefabSelectionChanged += new AddedPrefabsList.PrefabSelectionChangedHandler(_SetTexturingViewPortToSelectedPrefab);
+            aplFloorTexturing.PrefabSelectionChanged += new AddedPrefabsList.PrefabSelectionChangedHandler(_SetTexturingViewPortToSelectedPrefab);
         }
 
         private void cbWingStrat_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -87,11 +92,30 @@ namespace BuildingGeneratorWpfApp
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            //generator.SerializeBuildingFromStr(objStr);
-            //TODO: viewportnak van export függvénye, lehet azt kéne használni inkább
             //TODO: a fájl nevét kicseérlni hogy ne relatív path legyen (lehet így nem működik még nem próbáltam)
-            viewPort3d.Export($"../../../../BuildingGenerator/Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss")}.obj");
+           
+            viewPort3d.Children.Remove(viewPort3d.Children.FirstOrDefault(c => c.GetType() == typeof(SunLight)));
+            viewPort3d.Children.Remove(viewPort3d.Children.FirstOrDefault(c => c.GetType() == typeof(GridLinesVisual3D)));
+
+            string path = $"../../../../BuildingGenerator/Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss")}.obj";
+            var dir = System.IO.Path.GetDirectoryName(path) ?? ".";
+            var filename = System.IO.Path.GetFileName(path);
+            var objExporter = new ObjExporter
+            {
+                TextureFolder = dir,
+                FileCreator = f => File.Create(System.IO.Path.Combine(dir, f)),
+                SwitchYZ = true
+            };
+            using (var stream = File.Create(path))
+            {
+                objExporter.MaterialsFile = System.IO.Path.ChangeExtension(filename, ".mtl");
+                objExporter.Export(viewPort3d.Viewport, stream);
+            }
+            
             btnSave.IsEnabled = false;
+
+            viewPort3d.Children.Add(new SunLight());
+            viewPort3d.Children.Add(new GridLinesVisual3D() { Width = 8.0, Length = 8.0, MinorDistance = 1.0, MajorDistance = 1.0, Thickness = 0.01 });
 
             //TODO: ugyanez igaz importra is
         }
@@ -179,18 +203,21 @@ namespace BuildingGeneratorWpfApp
         {
             //generator.DeserializeWallTransformFromObj(txtBlockSelectedWall.Text);
             aplWalls.Prefabs.Add(txtBlockSelectedWall.Text);
+            aplWallsTexturing.Prefabs.Add(txtBlockSelectedWall.Text);
         }
 
         private void btnAddRoof_Click(object sender, RoutedEventArgs e)
         {
             //generator.DeserializeRoofTransformFromObj(txtBlockSelectedRoof.Text);
             aplRoofs.Prefabs.Add(txtBlockSelectedRoof.Text);
+            aplRoofsTexturing.Prefabs.Add(txtBlockSelectedRoof.Text);
         }
 
         private void btnAddFloor_Click(object sender, RoutedEventArgs e)
         {
             //generator.DeserializeFloorTransformFromObj(txtBlockSelectedFloor.Text);
             aplFloor.Prefabs.Add(txtBlockSelectedFloor.Text);
+            aplFloorTexturing.Prefabs.Add(txtBlockSelectedFloor.Text);
         }
 
         private void tbSizeWidthHeight_TextChanged(object sender, TextChangedEventArgs e)
@@ -300,6 +327,29 @@ namespace BuildingGeneratorWpfApp
         private void cbWallsStrat_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             selectedWallsStrat = cbWallsStrat.SelectedItem.ToString() ?? string.Empty;
+        }
+
+        private void btnLoadTexture_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Image files (*.jpg, *.jpeg, *.png)|*.jpg;*.jpeg;*.png";
+            ofd.Title = "Select picture to be used as a texture on the selected prefab";
+
+            if (ofd.ShowDialog() == true)
+            {
+                txtBlockSelectedTexture.Text = ofd.FileName;
+                //ObjReader reader = new ObjReader();
+                _LoadTextureOntoObj(sender, ofd.FileName);
+
+
+                //_LoadObjIntoViewPortByObjString(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
+                btnAddTexture.IsEnabled = true;
+            }
+        }
+
+        private void btnAddTexture_Click(object sender, RoutedEventArgs e)
+        {
+            
         }
 
         private void cbRoofStrat_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -413,6 +463,43 @@ namespace BuildingGeneratorWpfApp
                 return;
             }
             _LoadObjIntoViewPortByObjString(ref prefabViewer, File.ReadAllText(newPath));
+        }
+
+        private void _SetTexturingViewPortToSelectedPrefab(object sender, string newPath)
+        {
+            if (newPath == null || newPath.Length == 0)
+            {
+                _ResetViewPort(ref prefabViewer, 8.0);
+                return;
+            }
+            _LoadObjIntoViewPortByObjString(ref prefabTextureViewer, File.ReadAllText(newPath));
+        }
+
+        private void _LoadTextureOntoObj(object sender, string imagePath)
+        {
+            if (imagePath == null || imagePath.Length == 0)
+            {
+                _ResetViewPort(ref prefabTextureViewer, 8.0);
+                return;
+            }
+
+            var material = MaterialHelper.CreateImageMaterial(imagePath);
+            //prefabTextureViewer.Children.First().Material = material;
+            // ezt nem így kéne, hanem a kiválasztott obj-t betölteni és azt meshelementre konvertálni majd a
+            // viewerbe betölteni
+            //_LoadObjIntoViewPortByObjString(ref prefabTextureViewer, File.ReadAllText(objPath));
+            var prefab = prefabTextureViewer.Children.FirstOrDefault(c =>
+                c.GetType() == typeof(ModelVisual3D)
+            );
+            var asd = (ModelVisual3D) prefab;
+            MeshElement3D mesh;
+            mesh.Content = asd.Content;
+
+            //MeshElement3D mesh = (MeshElement3D)prefab;
+            //mesh.Material= material;
+
+            prefabTextureViewer.Children.Add(mesh);
+
         }
     }
 }
