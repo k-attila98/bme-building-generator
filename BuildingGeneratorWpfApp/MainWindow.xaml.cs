@@ -48,6 +48,8 @@ namespace BuildingGeneratorWpfApp
 
         private bool isWingsNumsValid = true, isStoriesNumsvalid = true, isSizeNumsValid = true;
 
+        string selectedTexturingPrefabPath = "";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -320,6 +322,7 @@ namespace BuildingGeneratorWpfApp
                 txtBlockSelectedFloor.Text = ofd.FileName;
 
                 _LoadObjIntoViewPortByObjString(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
+                selectedTexturingPrefabPath = ofd.FileName;
                 btnAddFloor.IsEnabled = true;
             }
         }
@@ -339,7 +342,8 @@ namespace BuildingGeneratorWpfApp
             {
                 txtBlockSelectedTexture.Text = ofd.FileName;
                 //ObjReader reader = new ObjReader();
-                _LoadTextureOntoObj(sender, ofd.FileName);
+                //_LoadTextureOntoObj(sender, ofd.FileName);
+                _LoadObjIntoViewPortByObjStringAndTexturePath(ref prefabTextureViewer, File.ReadAllText(selectedTexturingPrefabPath), ofd.FileName);
 
 
                 //_LoadObjIntoViewPortByObjString(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
@@ -424,6 +428,40 @@ namespace BuildingGeneratorWpfApp
             }
         }
 
+        private void _LoadObjIntoViewPortByObjStringAndTexturePath(ref HelixViewport3D viewPort, string objString, string texturePath)
+        {
+            _ResetViewPort(ref viewPort, 8.0);
+            if (objString == null || objString.Length == 0)
+            {
+                return;
+            }
+
+            using (var strStream = new MemoryStream(Encoding.UTF8.GetBytes(objString)))
+            {
+                var dispatcher = Dispatcher.CurrentDispatcher;
+
+                ModelVisual3D device3D = new ModelVisual3D();
+                ObjReader objReader = new ObjReader(dispatcher)
+                {
+                    SwitchYZ = true,
+                    DefaultMaterial = new DiffuseMaterial(
+                        new ImageBrush(
+                            new BitmapImage(
+                                new Uri(texturePath, UriKind.Absolute)
+                                )
+                            ) { TileMode = TileMode.None, Stretch = Stretch.Fill, ViewportUnits = BrushMappingMode.Absolute }
+                        )
+                };
+                //objReader.TexturePath = texturePath; new ImageBrush(new BitmapImage(new Uri(texturePath, UriKind.Absolute)))
+                //objReader.DefaultMaterial = new DiffuseMaterial(new SolidColorBrush(Colors.Red));
+                //objReader.;
+                Model3DGroup model3DGroup = objReader.Read(strStream);
+                device3D.Content = model3DGroup;
+                viewPort.Children.Add(device3D);
+
+            }
+        }
+
         private void _LoadObjIntoViewPortByPath(ref HelixViewport3D viewPort, string path)
         {
             _ResetViewPort(ref viewPort, 8.0);
@@ -435,7 +473,6 @@ namespace BuildingGeneratorWpfApp
             using (var strStream = new MemoryStream(File.ReadAllBytes(path)))
             {
                 var dispatcher = Dispatcher.CurrentDispatcher;
-
                 ModelVisual3D device3D = new ModelVisual3D();
                 ObjReader objReader = new ObjReader(dispatcher)
                 {
@@ -473,8 +510,10 @@ namespace BuildingGeneratorWpfApp
                 return;
             }
             _LoadObjIntoViewPortByObjString(ref prefabTextureViewer, File.ReadAllText(newPath));
+            selectedTexturingPrefabPath = newPath;
         }
 
+        /*
         private void _LoadTextureOntoObj(object sender, string imagePath)
         {
             if (imagePath == null || imagePath.Length == 0)
@@ -483,23 +522,41 @@ namespace BuildingGeneratorWpfApp
                 return;
             }
 
-            var material = MaterialHelper.CreateImageMaterial(imagePath);
-            //prefabTextureViewer.Children.First().Material = material;
-            // ezt nem így kéne, hanem a kiválasztott obj-t betölteni és azt meshelementre konvertálni majd a
-            // viewerbe betölteni
-            //_LoadObjIntoViewPortByObjString(ref prefabTextureViewer, File.ReadAllText(objPath));
+            var material = MaterialHelper.CreateImageMaterial(imagePath, 1);
             var prefab = prefabTextureViewer.Children.FirstOrDefault(c =>
                 c.GetType() == typeof(ModelVisual3D)
             );
-            var asd = (ModelVisual3D) prefab;
-            MeshElement3D mesh;
-            mesh.Content = asd.Content;
+            
 
-            //MeshElement3D mesh = (MeshElement3D)prefab;
-            //mesh.Material= material;
-
-            prefabTextureViewer.Children.Add(mesh);
 
         }
+        */
+
+        // this private function should take az imagepath as parameter
+        // and load this image as a texture onto the selected prefab
+        // which is in the prefabTextureViewer
+        private void _LoadTextureOntoObj(object sender, string imagePath)
+        {
+            if (imagePath == null || imagePath.Length == 0)
+            {
+                _ResetViewPort(ref prefabTextureViewer, 8.0);
+                return;
+            }
+
+            var material = MaterialHelper.CreateImageMaterial(imagePath, 1);
+            var prefab = prefabTextureViewer.Children.FirstOrDefault(c =>
+                           c.GetType() == typeof(ModelVisual3D)
+                                      );
+
+            if (prefab == null)
+            {
+                return;
+            }
+
+            var model = (prefab as ModelVisual3D).Content as GeometryModel3D;
+            model.Material = material;
+            model.BackMaterial = material;
+        }
+
     }
 }

@@ -198,7 +198,7 @@ namespace BuildingGenerator.Shared
                 // left, upright
                 rects.Add(new RectInt(xMin, yMin, other.xMin - xMin, height));
                 // middle, above the other
-                rects.Add(new RectInt(other.xMin, other.yMax, other.width, height - other.yMax));
+                rects.Add(new RectInt(other.xMin, other.yMax, other.width, yMax - other.yMax));
                 // right, upright
                 rects.Add(new RectInt(other.xMax, yMin, xMax - other.xMax, height));
 
@@ -209,7 +209,7 @@ namespace BuildingGenerator.Shared
                 // bottom, sideways
                 rects.Add(new RectInt(xMin, yMin, width, other.yMin - yMin));
                 // middle, sideways
-                rects.Add(new RectInt(xMin, other.yMin, xMax - other.xMin, other.height));
+                rects.Add(new RectInt(xMin, other.yMin, other.xMin - xMin, other.height));
                 // top, sideways
                 rects.Add(new RectInt(xMin, other.yMax, width, yMax - other.yMax));
             }
