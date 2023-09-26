@@ -1,4 +1,5 @@
-﻿using BuildingGenerator.Serialization;
+﻿using BuildingGenerator.Prefabs;
+using BuildingGenerator.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,11 @@ namespace BuildingGenerator.Shared
         public float Height { get; set; }
 
         public Face[] Faces { get; set; }
+
+        public string UseMtl { get; set; }
+        public string Mtl { get; set; }
+        public Extent Size { get; set; }
+        public string LoadPath { get; set; }
 
         public Transform()
         {
@@ -65,11 +71,16 @@ namespace BuildingGenerator.Shared
             Width = prefab.Width;
             Height = prefab.Height;
             Faces = prefab.Faces.Length > 0 ? new Face[prefab.Faces.Length] : new Face[0];
+            Mtl = prefab.Mtl;
+            UseMtl = prefab.UseMtl;
+            LoadPath = prefab.LoadPath;
             for (int i = 0; i < prefab.Faces.Length; i++)
             {
                 Faces[i] = prefab.Faces[i].Clone(false);
                 Faces[i].Rotate(rotation);
                 Faces[i].Translate(position);
+                Faces[i].Mtl = Mtl;
+                Faces[i].UseMtl = UseMtl;
             }
 
             _SetVertexIds();
@@ -159,6 +170,9 @@ namespace BuildingGenerator.Shared
             clone.Width = Width;
             clone.Height = Height;
             clone.Faces = new Face[Faces.Length];
+            clone.Mtl = Mtl;
+            clone.UseMtl = UseMtl;
+            clone.LoadPath = LoadPath;
             for (int i = 0; i < Faces.Length; i++)
             {
                 clone.Faces[i] = Faces[i].Clone(true);

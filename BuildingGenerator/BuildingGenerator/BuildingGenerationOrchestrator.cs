@@ -71,7 +71,7 @@ public class BuildingGenerationOrchestrator
                 new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() }
             );
         }
-        var placedPrefabs = prefabPlacer.PlacePrefabs(b);
+        var (placedPrefabs, placedRoofs, placedWalls, placedFloors) = prefabPlacer.PlacePrefabs(b);
 
         serializer.SaveBuilding(placedPrefabs);
 
@@ -99,10 +99,37 @@ public class BuildingGenerationOrchestrator
                 new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() }
             );
         }
-        var placedPrefabs = prefabPlacer.PlacePrefabs(b);
+        var (placedPrefabs, placedRoofs, placedWalls, placedFloors) = prefabPlacer.PlacePrefabs(b);
 
-        return serializer.StringifyObj(placedPrefabs);
+        return serializer.StringifyObj(placedRoofs, placedWalls, placedFloors);
+        //return serializer.StringifyObj(placedPrefabs);
+    }
 
+    public Dictionary<string, string> GenerateBuildingToDisplayForTexturing(bool isCustomPrefabs)
+    {
+        VertexIdProvider.Reset();
+        b = BuildingGeneration.Generate(settings, genParams != null ? genParams : new GenerationParams());
+        var prefabPlacer = new BuildingPrefabPlacer();
+        var serializer = new BuildingSerializer();
+
+        var floorPrefab = new BasicFloor();
+        var roofPrefab = new BasicPyramidRoof();
+        var wallPrefab = new BasicWall();
+
+        if (isCustomPrefabs)
+        {
+            _SetPrefabPlacer(ref prefabPlacer, this.floorPrefab, roofPrefabs, wallPrefabs);
+        }
+        else
+        {
+            _SetPrefabPlacer(ref prefabPlacer, floorPrefab.GetTransform(),
+                new Transform[] { roofPrefab.GetTransform(), roofPrefab.GetTransform(), roofPrefab.GetTransform() },
+                new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() }
+            );
+        }
+        var (placedPrefabs, placedRoofs, placedWalls, placedFloors) = prefabPlacer.PlacePrefabs(b);
+
+        return serializer.StringifyObjSorted(placedPrefabs);
     }
 
     public void SerializeBuildingFromStr(string bldgStr)
@@ -121,6 +148,8 @@ public class BuildingGenerationOrchestrator
             ret += line;
             ret += "\n";
         }
+
+        
 
         return ret;
     }

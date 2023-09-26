@@ -21,12 +21,15 @@ namespace BuildingGenerator.BuildingGenerator
         private float wallWidth = 2f;
 
         private List<Transform> placedPrefabs = new List<Transform>();
+        private List<Transform> placedRoofs = new List<Transform>();
+        private List<Transform> placedFloors = new List<Transform>();
+        private List<Transform> placedWalls = new List<Transform>();
         private Dictionary<int, Story[]> storiesByLevel = new Dictionary<int, Story[]>();
 
         private HashSet<string> placedFloorPositions = new HashSet<string>();
         private HashSet<string> placedRoofPositions = new HashSet<string>();
 
-        public List<Transform> PlacePrefabs(Building bldg)
+        public (List<Transform>, List<Transform>, List<Transform>, List<Transform>) PlacePrefabs(Building bldg)
         {
             if (wallPrefab.Length == 0 || roofPrefab.Length == 0 || floorPrefab == null)
             {
@@ -53,7 +56,7 @@ namespace BuildingGenerator.BuildingGenerator
                 _RenderRoofToEveryDynamicSizedStory(wing, roofFolder);
             }
 
-            return placedPrefabs;
+            return (placedPrefabs, placedRoofs, placedWalls, placedFloors);
         }
 
         private void _SetStoriesByLevel(Building bldg)
@@ -187,10 +190,12 @@ namespace BuildingGenerator.BuildingGenerator
             }
 
             Transform f = new Transform(floorPrefab, transformPoint, Quaternion.Identity);
+            f.Name = "floor";
             f.SetParent(storyFolder);
 
             placedFloorPositions.Add(f.Position.ToString());
             placedPrefabs.Add(f);
+            placedFloors.Add(f);
         }
 
         private void _PlaceSouthWall(int x, int y, int level, Transform storyFolder, Transform wall)
@@ -210,6 +215,7 @@ namespace BuildingGenerator.BuildingGenerator
             w.SetParent(storyFolder);
 
             placedPrefabs.Add(w);
+            placedWalls.Add(w);
         }
 
         private void _PlaceEastWall(int x, int y, int level, Transform storyFolder, Transform wall)
@@ -229,6 +235,7 @@ namespace BuildingGenerator.BuildingGenerator
             w.SetParent(storyFolder);
 
             placedPrefabs.Add(w);
+            placedWalls.Add(w);
         }
 
         private void _PlaceNorthWall(int x, int y, int level, Transform storyFolder, Transform wall)
@@ -248,6 +255,7 @@ namespace BuildingGenerator.BuildingGenerator
             w.SetParent(storyFolder);
 
             placedPrefabs.Add(w);
+            placedWalls.Add(w);
         }
 
         private void _PlaceWestWall(int x, int y, int level, Transform storyFolder, Transform wall)
@@ -267,6 +275,7 @@ namespace BuildingGenerator.BuildingGenerator
             w.SetParent(storyFolder);
 
             placedPrefabs.Add(w);
+            placedWalls.Add(w);
         }
 
         private void _RenderRoofOnTop(Wing wing, Transform wingFolder)
@@ -430,10 +439,12 @@ namespace BuildingGenerator.BuildingGenerator
                 Quaternion.Identity
                 );
             r.SetParent(wingFolder);
+            r.Name = "roof";
 
             placedRoofPositions.Add(r.Position.ToString());
 
             placedPrefabs.Add(r);
+            placedRoofs.Add(r);
         }
 
         /**

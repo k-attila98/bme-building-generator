@@ -29,10 +29,28 @@ namespace BuildingGenerator.Shared
 
         public TextureVertex(){  }
 
+        public TextureVertex(Vector2 position) 
+        {
+            _position = position;
+        }
+
+        public TextureVertex(long id, Vector2 position) 
+        { 
+            _id = id;
+            _position = position;
+        }
+
         public TextureVertex(long id)
         {
             _id = id;
             _position = new Vector2(0, 0);
+        }
+
+        public TextureVertex Clone(bool isDeepClone)
+        {
+            return isDeepClone ?
+                new TextureVertex(_id, new Vector2(_position.x, _position.y)) :
+                new TextureVertex(new Vector2(_position.x, _position.y));
         }
 
         public void LoadFromStringArray(string[] data)
@@ -54,7 +72,7 @@ namespace BuildingGenerator.Shared
             if (!success) throw new ArgumentException("Could not parse Y parameter as double");
 
             _position = new Vector2((float)x, (float)y);
-            _id = VertexIdProvider.GetNextId();
+            //_id = VertexIdProvider.GetNextId();
         }
 
         public override string ToString()

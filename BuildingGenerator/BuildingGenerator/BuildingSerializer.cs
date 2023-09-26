@@ -28,6 +28,28 @@ public class BuildingSerializer
             Console.WriteLine("Serialization complete!");
         }
     }
+    /*
+    public void SaveBuilding(List<Transform> placedRoofs, List<Transform> placedWalls, List<Transform> placedFloors)
+    {
+        Console.WriteLine("Serializing building...");
+        using (StreamWriter writer = new StreamWriter(File.Open($"../../../Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss")}.obj", System.IO.FileMode.Create)))
+        {
+
+            foreach (var prefab in placedPrefabs)
+            {
+                writer.Write(prefab.VerticesToString());
+                Console.WriteLine("Serialized " + prefab.Name + "\n");
+            }
+
+            foreach (var prefab in placedPrefabs)
+            {
+                writer.Write(prefab.FacesToString());
+            }
+
+            Console.WriteLine("Serialization complete!");
+        }
+    }
+    */
 
     public void SaveBuildingObj(List<Transform> placedPrefabs)
     {
@@ -68,6 +90,7 @@ public class BuildingSerializer
     {
         string objFileContent = "";
         Console.WriteLine("Serializing building...");
+
         foreach (var prefab in placedPrefabs)
         {
             objFileContent += prefab.VerticesToString();
@@ -81,6 +104,27 @@ public class BuildingSerializer
         Console.WriteLine("Serialization complete!");
         return objFileContent;
     }
+    
+    public Dictionary<string, string> StringifyObjSorted(List<Transform> placedPrefabs)
+    {
+        string objFileContent = "";
+        Console.WriteLine("Serializing building...");
+
+        //Obj obj = new Obj(placedPrefabs);
+        //objFileContent = obj.WriteObjString(null);
+
+        Dictionary<string, string> stringifiedSortedPrefabs = new Dictionary<string, string>();
+        Dictionary<string, List<Transform>> sorted = SortTransformsByTexture(placedPrefabs);
+
+        foreach (var key in sorted.Keys)
+        {
+            VertexIdProvider.Reset();
+            stringifiedSortedPrefabs.Add(key, StringifyObj(sorted[key]));
+        }
+
+        Console.WriteLine("Serialization complete!");
+        return stringifiedSortedPrefabs;
+    }
 
     public string StringifyObj(List<Transform> placedPrefabs)
     {
@@ -93,6 +137,56 @@ public class BuildingSerializer
         Console.WriteLine("Serialization complete!");
         return objFileContent;
     }
+
+
+    public string StringifyObj(List<Transform> placedRoofs, List<Transform> placedWalls, List<Transform> placedFloors)
+    {
+        string objFileContent = "";
+        Console.WriteLine("Serializing building...");
+
+        Obj obj = new Obj(placedFloors);
+        objFileContent = obj.WriteObjString(null);
+        obj = new Obj(placedWalls);
+        objFileContent += obj.WriteObjString(null);
+        obj = new Obj(placedRoofs);
+        objFileContent += obj.WriteObjString(null);
+
+        Console.WriteLine("Serialization complete!");
+        return objFileContent;
+    }
+
+    public Dictionary<string, List<Transform>> SortTransformsByTexture(List<Transform> transformsToSort)
+    {
+        Dictionary<string, List<Transform>> sortedTransforms = new Dictionary<string, List<Transform>>();
+        foreach (var transform in transformsToSort)
+        {
+            if (transform.Mtl == null)
+            {
+                if (sortedTransforms.ContainsKey("null"))
+                {
+                    sortedTransforms["null"].Add(transform);
+                }
+                else
+                {
+                    sortedTransforms.Add("null", new List<Transform> { transform });
+                }
+                continue;
+            }
+            var materialPath = Path.Combine(Path.GetDirectoryName(transform.LoadPath) ?? ".", transform.UseMtl + ".png");
+
+            if (sortedTransforms.ContainsKey(materialPath))
+            {
+                sortedTransforms[materialPath].Add(transform);
+            }
+            else
+            {
+                sortedTransforms.Add(materialPath, new List<Transform> { transform });
+            }
+        }
+
+        return sortedTransforms;
+    }
+    
 
     public Transform ReadTransform(string path)
     { 

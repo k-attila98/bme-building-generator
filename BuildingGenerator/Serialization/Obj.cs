@@ -19,6 +19,8 @@ namespace BuildingGenerator.Serialization
 
         public Extent Size { get; set; }
 
+        public string LoadPath { get; set; }
+
         public Obj(){  }
 
         public Obj(List<Transform> placedPrefabs)
@@ -30,17 +32,20 @@ namespace BuildingGenerator.Serialization
                     foreach (var vertex in face.Vertices)
                     {
                         _vertices.Add(vertex);
+                        vertex.Id = VertexIdProvider.GetNextId();
+                        
                     }
 
                     foreach (var textureVertex in face.TextureVertices)
                     {
                         _textureVertices.Add(textureVertex);
+                        textureVertex.Id = _textureVertices.Count;
                     }
                     _faces.Add(face);
                 }
             }
-
-
+            Mtl = placedPrefabs.ElementAt(0).Mtl;
+            UseMtl = placedPrefabs.ElementAt(0).UseMtl;
         }
 
         private void _WriteHeader(StreamWriter writer, string[] headerStrings)
@@ -99,9 +104,10 @@ namespace BuildingGenerator.Serialization
                 {
                     writer.WriteLine("mtllib " + Mtl);
                 }
-
+                
                 _vertices.ForEach(v => writer.WriteLine(v));
                 _textureVertices.ForEach(tv => writer.WriteLine(tv));
+
                 string lastUseMtl = "";
                 foreach (Face face in _faces)
                 {
@@ -112,6 +118,7 @@ namespace BuildingGenerator.Serialization
                     }
                     writer.WriteLine(face);
                 }
+
                 writer.Flush();
                 strStream.Position = 0; 
 
@@ -131,6 +138,7 @@ namespace BuildingGenerator.Serialization
 
         public void LoadObj(string path)
         {
+            this.LoadPath = path;
             LoadObj(File.ReadAllLines(path));
         }
 
@@ -149,10 +157,10 @@ namespace BuildingGenerator.Serialization
                 _ProcessLine(line);
             }
 
-            updateSize();
+            _UpdateSize();
         }
 
-        private void updateSize()
+        private void _UpdateSize()
         {
             // If there are no vertices then size should be 0.
             if (_vertices.Count == 0)
@@ -191,7 +199,7 @@ namespace BuildingGenerator.Serialization
                 switch (parts[0])
                 {
                     case "usemtl":
-                        UseMtl = parts[1];
+                        UseMtl = parts[1]; // TODO: patht megcsinálni, mert a generált obj-hoz még a relatív van ami hibás és nem találja
                         break;
                     case "mtllib":
                         Mtl = parts[1];
@@ -241,12 +249,21 @@ namespace BuildingGenerator.Serialization
                     var properVertex = _vertices.Single(v => v.Id == vertex.Id);
                     newFace.AddVertex(properVertex);
                 }
+                foreach (var textureVertex in face.TextureVertices)
+                {
+                    var properTextureVertex = _textureVertices.Single(tv => tv.Id == textureVertex.Id);
+                    newFace.AddTextureVertex(properTextureVertex);
+                }
                 facesWithProperVertices.Add(newFace);
             }
             transform.Faces = facesWithProperVertices.ToArray();
             transform.Position = new Vector3(0, 0, 0);
             transform.Width = (float)(Size.XMax - Size.XMin);
             transform.Height = (float)(Size.YMax - Size.YMin);
+            transform.Mtl = Mtl;
+            transform.UseMtl = UseMtl;
+            transform.Size = Size;
+            transform.LoadPath = LoadPath;
 
             return transform;
         }

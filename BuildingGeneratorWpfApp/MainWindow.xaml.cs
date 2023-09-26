@@ -2,6 +2,7 @@
 using BuildingGenerator.Prefabs.Floors;
 using BuildingGenerator.Prefabs.Roofs;
 using BuildingGenerator.Prefabs.Walls;
+using BuildingGenerator.Serialization;
 using BuildingGenerator.Shared;
 using HelixToolkit.Wpf;
 using Microsoft.Win32;
@@ -32,7 +33,6 @@ namespace BuildingGeneratorWpfApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string MODEL_PATH = "E:\\Attila\\egyetem cuccok\\9. felev\\onlab2\\BuildingGenerator\\BuildingGenerator\\Generated\\building-2022-12-11T00-01-02.obj";
         private string selectedWingsStrat, selectedWingStrat, selectedStoriesStrat, selectedStoryStrat, selectedWallsStrat, selectedRoofStrat;
 
         private List<string> wingsStrategies = StrategyResolver.GetAllWingsStrats();
@@ -53,13 +53,6 @@ namespace BuildingGeneratorWpfApp
         public MainWindow()
         {
             InitializeComponent();
-            //this.DataContext = this;
-            //Model3DGroup MdlGrp = null;
-
-            //ModelVisual3D device3D = new ModelVisual3D();
-            //device3D.Content = Display3d(MODEL_PATH);
-            // Add to view port
-            //viewPort3d.Children.Add(device3D);
 
             cbWingsStrat.ItemsSource = wingsStrategies;
             cbWingStrat.ItemsSource = wingStrategies;
@@ -95,31 +88,47 @@ namespace BuildingGeneratorWpfApp
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             //TODO: a fájl nevét kicseérlni hogy ne relatív path legyen (lehet így nem működik még nem próbáltam)
-           
-            viewPort3d.Children.Remove(viewPort3d.Children.FirstOrDefault(c => c.GetType() == typeof(SunLight)));
-            viewPort3d.Children.Remove(viewPort3d.Children.FirstOrDefault(c => c.GetType() == typeof(GridLinesVisual3D)));
-
             string path = $"../../../../BuildingGenerator/Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss")}.obj";
-            var dir = System.IO.Path.GetDirectoryName(path) ?? ".";
-            var filename = System.IO.Path.GetFileName(path);
-            var objExporter = new ObjExporter
+
+            _SaveViewPortContent(ref viewPort3d, path);
+            //TODO: ugyanez igaz importra is
+        }
+
+        private void _RenameMtl(string dir, ObjExporter objExporter)
+        {
+            
+        }
+
+        private void _SaveViewPortContent(ref HelixViewport3D viewPort, string pathOfSave)
+        {
+            viewPort.Children.Remove(viewPort.Children.FirstOrDefault(c => c.GetType() == typeof(SunLight)));
+            viewPort.Children.Remove(viewPort.Children.FirstOrDefault(c => c.GetType() == typeof(GridLinesVisual3D)));
+
+            var dir = System.IO.Path.GetDirectoryName(pathOfSave) ?? ".";
+            System.IO.Directory.CreateDirectory(dir);
+            var filename = System.IO.Path.GetFileName(pathOfSave);
+
+            Guid guidName = Guid.NewGuid();
+
+            var objExporter = new CustomObjExporter()
             {
                 TextureFolder = dir,
                 FileCreator = f => File.Create(System.IO.Path.Combine(dir, f)),
-                SwitchYZ = true
+                SwitchYZ = true,
+                TextureFileName = guidName.ToString()
             };
-            using (var stream = File.Create(path))
+
+
+            using (var stream = File.Create(pathOfSave))
             {
                 objExporter.MaterialsFile = System.IO.Path.ChangeExtension(filename, ".mtl");
-                objExporter.Export(viewPort3d.Viewport, stream);
+                objExporter.Export(viewPort.Viewport, stream);
             }
-            
+
             btnSave.IsEnabled = false;
 
-            viewPort3d.Children.Add(new SunLight());
-            viewPort3d.Children.Add(new GridLinesVisual3D() { Width = 8.0, Length = 8.0, MinorDistance = 1.0, MajorDistance = 1.0, Thickness = 0.01 });
-
-            //TODO: ugyanez igaz importra is
+            viewPort.Children.Add(new SunLight());
+            viewPort.Children.Add(new GridLinesVisual3D() { Width = 8.0, Length = 8.0, MinorDistance = 1.0, MajorDistance = 1.0, Thickness = 0.01 });
         }
 
         private void cbStoryStrat_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -156,7 +165,7 @@ namespace BuildingGeneratorWpfApp
                 txtBlockSelectedWall.Text = ofd.FileName;
                 ObjReader reader = new ObjReader();
 
-                _LoadObjIntoViewPortByObjString(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
+                _LoadObjIntoViewPortByPath(ref prefabViewer, ofd.FileName);
                 btnAddWall.IsEnabled = true;
             }
         }
@@ -196,28 +205,25 @@ namespace BuildingGeneratorWpfApp
                 return;
             }
 
-            
+
             isStoriesNumsvalid = true;
             _ResetErrorInLabel(labelErrorStories);
         }
 
         private void btnAddWall_Click(object sender, RoutedEventArgs e)
         {
-            //generator.DeserializeWallTransformFromObj(txtBlockSelectedWall.Text);
             aplWalls.Prefabs.Add(txtBlockSelectedWall.Text);
             aplWallsTexturing.Prefabs.Add(txtBlockSelectedWall.Text);
         }
 
         private void btnAddRoof_Click(object sender, RoutedEventArgs e)
         {
-            //generator.DeserializeRoofTransformFromObj(txtBlockSelectedRoof.Text);
             aplRoofs.Prefabs.Add(txtBlockSelectedRoof.Text);
             aplRoofsTexturing.Prefabs.Add(txtBlockSelectedRoof.Text);
         }
 
         private void btnAddFloor_Click(object sender, RoutedEventArgs e)
         {
-            //generator.DeserializeFloorTransformFromObj(txtBlockSelectedFloor.Text);
             aplFloor.Prefabs.Add(txtBlockSelectedFloor.Text);
             aplFloorTexturing.Prefabs.Add(txtBlockSelectedFloor.Text);
         }
@@ -250,7 +256,7 @@ namespace BuildingGeneratorWpfApp
                 return;
             }
 
-            
+
             isSizeNumsValid = true;
             _ResetErrorInLabel(labelErrorWidthHeight);
         }
@@ -291,7 +297,7 @@ namespace BuildingGeneratorWpfApp
                 return;
             }
 
-            
+
             isWingsNumsValid = true;
             _ResetErrorInLabel(labelErrorWings);
         }
@@ -306,7 +312,7 @@ namespace BuildingGeneratorWpfApp
             {
                 txtBlockSelectedRoof.Text = ofd.FileName;
 
-                _LoadObjIntoViewPortByObjString(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
+                _LoadObjIntoViewPortByPath(ref prefabViewer, ofd.FileName);
                 btnAddRoof.IsEnabled = true;
             }
         }
@@ -321,7 +327,7 @@ namespace BuildingGeneratorWpfApp
             {
                 txtBlockSelectedFloor.Text = ofd.FileName;
 
-                _LoadObjIntoViewPortByObjString(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
+                _LoadObjIntoViewPortByPath(ref prefabViewer, ofd.FileName);
                 selectedTexturingPrefabPath = ofd.FileName;
                 btnAddFloor.IsEnabled = true;
             }
@@ -341,19 +347,19 @@ namespace BuildingGeneratorWpfApp
             if (ofd.ShowDialog() == true)
             {
                 txtBlockSelectedTexture.Text = ofd.FileName;
-                //ObjReader reader = new ObjReader();
-                //_LoadTextureOntoObj(sender, ofd.FileName);
                 _LoadObjIntoViewPortByObjStringAndTexturePath(ref prefabTextureViewer, File.ReadAllText(selectedTexturingPrefabPath), ofd.FileName);
-
-
-                //_LoadObjIntoViewPortByObjString(ref prefabViewer, generator.DeserializePrefabFromObj(ofd.FileName));
                 btnAddTexture.IsEnabled = true;
             }
         }
 
         private void btnAddTexture_Click(object sender, RoutedEventArgs e)
         {
-            
+            string textureFilename = System.IO.Path.GetFileNameWithoutExtension(txtBlockSelectedTexture.Text);
+            string prefabFilename = System.IO.Path.GetFileNameWithoutExtension(selectedTexturingPrefabPath);
+            string prefabDir = System.IO.Path.GetDirectoryName(selectedTexturingPrefabPath) ?? ".";
+            string texturedPrefabPath = System.IO.Path.Combine(prefabDir, $"{prefabFilename}-{textureFilename}/{prefabFilename}-{textureFilename}.obj") ;
+
+            _SaveViewPortContent(ref prefabTextureViewer, texturedPrefabPath);
         }
 
         private void cbRoofStrat_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -363,19 +369,13 @@ namespace BuildingGeneratorWpfApp
 
         private void Generate_Click(object sender, RoutedEventArgs e)
         {
-
-            // TODO: vhogy feketére színezni az összeset
-
-            //_ResetViewPort(ref viewPort3d);
-
-
             settings.wingsStrategy = StrategyResolver.ResolveWingsStratFromName(selectedWingsStrat);
             settings.wingStrategy = StrategyResolver.ResolveWingStratFromName(selectedWingStrat);
             settings.storiesStrategy = StrategyResolver.ResolveStoriesStratFromName(selectedStoriesStrat);
             settings.storyStrategy = StrategyResolver.ResolveStoryStratFromName(selectedStoryStrat);
             settings.wallsStrategy = StrategyResolver.ResolveWallsStratFromName(selectedWallsStrat);
             settings.roofStrategy = StrategyResolver.ResolveRoofStratFromName(selectedRoofStrat);
-            
+
 
             settings.Size = new Vector2Int(Int32.Parse(tbSizeWidth.Text), Int32.Parse(tbSizeHeight.Text));
             settings.Wings = new Vector2Int(Int32.Parse(tbWingFrom.Text), Int32.Parse(tbWingTo.Text));
@@ -390,10 +390,16 @@ namespace BuildingGeneratorWpfApp
                 generator.DeserializeFloorTransformFromObj(aplFloor.Prefabs.ElementAt(0));
 
             }
-            
-            objStr = generator.GenerateBuildingToDisplay(checkBoxUsePrefabs.IsChecked ?? false);
 
-            DisplayGeneratedBuilding(objStr);
+            //objStr = generator.GenerateBuildingToDisplay(checkBoxUsePrefabs.IsChecked ?? false);
+            var objsToTexture = generator.GenerateBuildingToDisplayForTexturing(checkBoxUsePrefabs.IsChecked ?? false);
+
+            //VertexIdProvider.Reset();
+            _ResetViewPort(ref viewPort3d, 8.0);
+            foreach (var key in objsToTexture.Keys)
+            {
+                _AddObjIntoViewPortByObjStringAndTexturePath(ref viewPort3d, objsToTexture[key], key);
+            }
 
             btnSave.IsEnabled = true;
         }
@@ -428,6 +434,28 @@ namespace BuildingGeneratorWpfApp
             }
         }
 
+        private void _LoadObjIntoViewPortByPath(ref HelixViewport3D viewPort, string path)
+        {
+            _ResetViewPort(ref viewPort, 8.0);
+            if (path == null || path.Length == 0)
+            {
+                return;
+            }
+
+            var dispatcher = Dispatcher.CurrentDispatcher;
+
+            ModelVisual3D device3D = new ModelVisual3D();
+            ObjReader objReader = new ObjReader(dispatcher)
+            {
+                SwitchYZ = true
+            };
+            Model3DGroup model3DGroup = objReader.Read(path);
+            device3D.Content = model3DGroup;
+            viewPort.Children.Add(device3D);
+
+
+        }
+
         private void _LoadObjIntoViewPortByObjStringAndTexturePath(ref HelixViewport3D viewPort, string objString, string texturePath)
         {
             _ResetViewPort(ref viewPort, 8.0);
@@ -445,43 +473,59 @@ namespace BuildingGeneratorWpfApp
                 {
                     SwitchYZ = true,
                     DefaultMaterial = new DiffuseMaterial(
-                        new ImageBrush(
-                            new BitmapImage(
-                                new Uri(texturePath, UriKind.Absolute)
+                            new ImageBrush(
+                                new BitmapImage(
+                                    new Uri(texturePath, UriKind.Absolute)
+                                    )
                                 )
-                            ) { TileMode = TileMode.None, Stretch = Stretch.Fill, ViewportUnits = BrushMappingMode.Absolute }
+                            { TileMode = TileMode.None, Stretch = Stretch.Fill, ViewportUnits = BrushMappingMode.Absolute }
                         )
+
                 };
-                //objReader.TexturePath = texturePath; new ImageBrush(new BitmapImage(new Uri(texturePath, UriKind.Absolute)))
-                //objReader.DefaultMaterial = new DiffuseMaterial(new SolidColorBrush(Colors.Red));
-                //objReader.;
                 Model3DGroup model3DGroup = objReader.Read(strStream);
+                
                 device3D.Content = model3DGroup;
                 viewPort.Children.Add(device3D);
 
             }
         }
 
-        private void _LoadObjIntoViewPortByPath(ref HelixViewport3D viewPort, string path)
+        private void _AddObjIntoViewPortByObjStringAndTexturePath(ref HelixViewport3D viewPort, string objString, string texturePath)
         {
-            _ResetViewPort(ref viewPort, 8.0);
-            if (path == null || path.Length == 0)
+
+            if (objString == null || objString.Length == 0)
             {
                 return;
             }
 
-            using (var strStream = new MemoryStream(File.ReadAllBytes(path)))
+            using (var strStream = new MemoryStream(Encoding.UTF8.GetBytes(objString)))
             {
                 var dispatcher = Dispatcher.CurrentDispatcher;
+                ObjReader objReader = null;
                 ModelVisual3D device3D = new ModelVisual3D();
-                ObjReader objReader = new ObjReader(dispatcher)
-                {
-                    SwitchYZ = true
-                };
+                if (texturePath != "null")
+                    objReader = new ObjReader(dispatcher)
+                    {
+                        SwitchYZ = true,
+                        DefaultMaterial = new DiffuseMaterial(
+                                new ImageBrush(
+                                    new BitmapImage(
+                                        new Uri(texturePath, UriKind.Absolute)
+                                        )
+                                    )
+                                { TileMode = TileMode.None, Stretch = Stretch.Fill, ViewportUnits = BrushMappingMode.Absolute }
+                            )
+
+                    };
+                else
+                    objReader = new ObjReader(dispatcher)
+                    {
+                        SwitchYZ = true
+                    };
                 Model3DGroup model3DGroup = objReader.Read(strStream);
+
                 device3D.Content = model3DGroup;
                 viewPort.Children.Add(device3D);
-
             }
         }
 
@@ -495,11 +539,11 @@ namespace BuildingGeneratorWpfApp
         private void _SetViewPortToSelectedPrefab(object sender, string newPath)
         {
             if (newPath == null || newPath.Length == 0)
-            { 
+            {
                 _ResetViewPort(ref prefabViewer, 8.0);
                 return;
             }
-            _LoadObjIntoViewPortByObjString(ref prefabViewer, File.ReadAllText(newPath));
+            _LoadObjIntoViewPortByPath(ref prefabViewer, newPath);
         }
 
         private void _SetTexturingViewPortToSelectedPrefab(object sender, string newPath)
@@ -509,54 +553,17 @@ namespace BuildingGeneratorWpfApp
                 _ResetViewPort(ref prefabViewer, 8.0);
                 return;
             }
-            _LoadObjIntoViewPortByObjString(ref prefabTextureViewer, File.ReadAllText(newPath));
+            _LoadObjIntoViewPortByPath(ref prefabTextureViewer, newPath);
             selectedTexturingPrefabPath = newPath;
         }
 
         /*
-        private void _LoadTextureOntoObj(object sender, string imagePath)
-        {
-            if (imagePath == null || imagePath.Length == 0)
-            {
-                _ResetViewPort(ref prefabTextureViewer, 8.0);
-                return;
-            }
-
-            var material = MaterialHelper.CreateImageMaterial(imagePath, 1);
-            var prefab = prefabTextureViewer.Children.FirstOrDefault(c =>
-                c.GetType() == typeof(ModelVisual3D)
-            );
-            
-
-
+        private void asd()
+        { 
+            HelixToolkit.Wpf.ObjExporter asd = new HelixToolkit.Wpf.ObjExporter();
+            asd.Export(viewPort3d.Children.ElementAt(0).Content, "C:\\Users\\michal\\Desktop\\test.obj");
         }
-        */
-
-        // this private function should take az imagepath as parameter
-        // and load this image as a texture onto the selected prefab
-        // which is in the prefabTextureViewer
-        private void _LoadTextureOntoObj(object sender, string imagePath)
-        {
-            if (imagePath == null || imagePath.Length == 0)
-            {
-                _ResetViewPort(ref prefabTextureViewer, 8.0);
-                return;
-            }
-
-            var material = MaterialHelper.CreateImageMaterial(imagePath, 1);
-            var prefab = prefabTextureViewer.Children.FirstOrDefault(c =>
-                           c.GetType() == typeof(ModelVisual3D)
-                                      );
-
-            if (prefab == null)
-            {
-                return;
-            }
-
-            var model = (prefab as ModelVisual3D).Content as GeometryModel3D;
-            model.Material = material;
-            model.BackMaterial = material;
-        }
+            */
 
     }
 }

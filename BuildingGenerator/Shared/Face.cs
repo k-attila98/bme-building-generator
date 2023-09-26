@@ -19,6 +19,7 @@ namespace BuildingGenerator.Shared
         private const int _minimumDataLength = 4;
         private const string _prefix = "f";
         public string UseMtl { get; set; }
+        public string Mtl { get; set; }
 
         public Face() { }
 
@@ -29,6 +30,17 @@ namespace BuildingGenerator.Shared
                 throw new ArgumentException("Face must have 3 vertices");
             }
             _vertices = vertices;
+            _normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
+        }
+
+        public Face(Vertex[] vertices, TextureVertex[] textureVertices)
+        {
+            if (vertices.Length != 3 || textureVertices.Length != 3)
+            {
+                throw new ArgumentException("Face must have 3 vertices/texture vertices");
+            }
+            _vertices = vertices;
+            _textureVertices = textureVertices;
             _normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
         }
         public Vertex[] Vertices {
@@ -50,15 +62,7 @@ namespace BuildingGenerator.Shared
             get { return _textureVertices; }
             set
             {
-                /*
-                if (value.Length != 3)
-                {
-                    throw new ArgumentException("Face must have 3 textureVertices");
-                }
-                */
-
                 _textureVertices = value;
-                //_normal = _CalculateNormal(_vertices[0], _vertices[1], _vertices[2]);
             }
         }
 
@@ -79,6 +83,16 @@ namespace BuildingGenerator.Shared
             }
         }
 
+        public void AddTextureVertex(TextureVertex textureVertex)
+        {
+            if (_textureVertices.Length < 3)
+            {
+                List<TextureVertex> textureVertices = _textureVertices.ToList();
+                textureVertices.Add(textureVertex);
+                _textureVertices = textureVertices.ToArray();
+            }
+        }
+
         public void SetVertexIds()
         {
             foreach (var vertex in _vertices)
@@ -95,7 +109,13 @@ namespace BuildingGenerator.Shared
             {
                 vertices.Add(vertex.Clone(isDeepClone));
             }
-            Face face = new Face(vertices.ToArray());
+
+            List<TextureVertex> textureVertices = new List<TextureVertex>();
+            foreach (var textureVertex in _textureVertices)
+            {
+                textureVertices.Add(textureVertex.Clone(isDeepClone));
+            }
+            Face face = new Face(vertices.ToArray(), textureVertices.ToArray());
             return face;
         }
 
