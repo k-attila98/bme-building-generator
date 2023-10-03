@@ -94,11 +94,6 @@ namespace BuildingGeneratorWpfApp
             //TODO: ugyanez igaz importra is
         }
 
-        private void _RenameMtl(string dir, ObjExporter objExporter)
-        {
-            
-        }
-
         private void _SaveViewPortContent(ref HelixViewport3D viewPort, string pathOfSave)
         {
             viewPort.Children.Remove(viewPort.Children.FirstOrDefault(c => c.GetType() == typeof(SunLight)));
@@ -367,7 +362,7 @@ namespace BuildingGeneratorWpfApp
             selectedRoofStrat = cbRoofStrat.SelectedItem.ToString() ?? string.Empty;
         }
 
-        private void Generate_Click(object sender, RoutedEventArgs e)
+        private void _ResolveGeneratingStrategies()
         {
             settings.wingsStrategy = StrategyResolver.ResolveWingsStratFromName(selectedWingsStrat);
             settings.wingStrategy = StrategyResolver.ResolveWingStratFromName(selectedWingStrat);
@@ -375,13 +370,36 @@ namespace BuildingGeneratorWpfApp
             settings.storyStrategy = StrategyResolver.ResolveStoryStratFromName(selectedStoryStrat);
             settings.wallsStrategy = StrategyResolver.ResolveWallsStratFromName(selectedWallsStrat);
             settings.roofStrategy = StrategyResolver.ResolveRoofStratFromName(selectedRoofStrat);
+        }
 
-
+        private void _SetGenerationParams()
+        {
             settings.Size = new Vector2Int(Int32.Parse(tbSizeWidth.Text), Int32.Parse(tbSizeHeight.Text));
             settings.Wings = new Vector2Int(Int32.Parse(tbWingFrom.Text), Int32.Parse(tbWingTo.Text));
             settings.Stories = new Vector2Int(Int32.Parse(tbStoryFrom.Text), Int32.Parse(tbStoryTo.Text));
+        }
 
+        private void _SetupGenerator()
+        {
+            _ResolveGeneratingStrategies();
+            _SetGenerationParams();
             generator.AddSettings(settings);
+        }
+
+        private void _GenerateBuildingWithTextures()
+        {
+            var objsToTexture = generator.GenerateBuildingToDisplayForTexturing(checkBoxUsePrefabs.IsChecked ?? false);
+
+            _ResetViewPort(ref viewPort3d, 8.0);
+            foreach (var key in objsToTexture.Keys)
+            {
+                _AddObjIntoViewPortByObjStringAndTexturePath(ref viewPort3d, objsToTexture[key], key);
+            }
+        }
+
+        private void Generate_Click(object sender, RoutedEventArgs e)
+        {
+            _SetupGenerator();
 
             if (checkBoxUsePrefabs.IsChecked ?? false)
             {
@@ -391,15 +409,7 @@ namespace BuildingGeneratorWpfApp
 
             }
 
-            //objStr = generator.GenerateBuildingToDisplay(checkBoxUsePrefabs.IsChecked ?? false);
-            var objsToTexture = generator.GenerateBuildingToDisplayForTexturing(checkBoxUsePrefabs.IsChecked ?? false);
-
-            //VertexIdProvider.Reset();
-            _ResetViewPort(ref viewPort3d, 8.0);
-            foreach (var key in objsToTexture.Keys)
-            {
-                _AddObjIntoViewPortByObjStringAndTexturePath(ref viewPort3d, objsToTexture[key], key);
-            }
+            _GenerateBuildingWithTextures();
 
             btnSave.IsEnabled = true;
         }
@@ -556,14 +566,5 @@ namespace BuildingGeneratorWpfApp
             _LoadObjIntoViewPortByPath(ref prefabTextureViewer, newPath);
             selectedTexturingPrefabPath = newPath;
         }
-
-        /*
-        private void asd()
-        { 
-            HelixToolkit.Wpf.ObjExporter asd = new HelixToolkit.Wpf.ObjExporter();
-            asd.Export(viewPort3d.Children.ElementAt(0).Content, "C:\\Users\\michal\\Desktop\\test.obj");
-        }
-            */
-
     }
 }

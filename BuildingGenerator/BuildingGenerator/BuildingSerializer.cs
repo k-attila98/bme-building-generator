@@ -28,28 +28,6 @@ public class BuildingSerializer
             Console.WriteLine("Serialization complete!");
         }
     }
-    /*
-    public void SaveBuilding(List<Transform> placedRoofs, List<Transform> placedWalls, List<Transform> placedFloors)
-    {
-        Console.WriteLine("Serializing building...");
-        using (StreamWriter writer = new StreamWriter(File.Open($"../../../Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss")}.obj", System.IO.FileMode.Create)))
-        {
-
-            foreach (var prefab in placedPrefabs)
-            {
-                writer.Write(prefab.VerticesToString());
-                Console.WriteLine("Serialized " + prefab.Name + "\n");
-            }
-
-            foreach (var prefab in placedPrefabs)
-            {
-                writer.Write(prefab.FacesToString());
-            }
-
-            Console.WriteLine("Serialization complete!");
-        }
-    }
-    */
 
     public void SaveBuildingObj(List<Transform> placedPrefabs)
     {
@@ -70,18 +48,6 @@ public class BuildingSerializer
             Console.WriteLine("Serialization complete!");
         }
     }
-
-    /*
-    public void SaveBuilding(string objStr)
-    {
-        Console.WriteLine("Serializing building...");
-        using (StreamWriter writer = new StreamWriter(File.Open($"../../../../BuildingGenerator/Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss")}.obj", System.IO.FileMode.Create)))
-        {
-            writer.Write(objStr);
-            Console.WriteLine("Serialization complete!");
-        }
-    }
-    */
 
     /**
      * Needed for the wpf app, need to return the string instead of writing it to a file for displaying it on the screen
@@ -110,11 +76,9 @@ public class BuildingSerializer
         string objFileContent = "";
         Console.WriteLine("Serializing building...");
 
-        //Obj obj = new Obj(placedPrefabs);
-        //objFileContent = obj.WriteObjString(null);
 
         Dictionary<string, string> stringifiedSortedPrefabs = new Dictionary<string, string>();
-        Dictionary<string, List<Transform>> sorted = SortTransformsByTexture(placedPrefabs);
+        Dictionary<string, List<Transform>> sorted = _SortTransformsByTexture(placedPrefabs);
 
         foreach (var key in sorted.Keys)
         {
@@ -138,7 +102,6 @@ public class BuildingSerializer
         return objFileContent;
     }
 
-
     public string StringifyObj(List<Transform> placedRoofs, List<Transform> placedWalls, List<Transform> placedFloors)
     {
         string objFileContent = "";
@@ -155,7 +118,7 @@ public class BuildingSerializer
         return objFileContent;
     }
 
-    public Dictionary<string, List<Transform>> SortTransformsByTexture(List<Transform> transformsToSort)
+    private Dictionary<string, List<Transform>> _SortTransformsByTexture(List<Transform> transformsToSort)
     {
         Dictionary<string, List<Transform>> sortedTransforms = new Dictionary<string, List<Transform>>();
         foreach (var transform in transformsToSort)

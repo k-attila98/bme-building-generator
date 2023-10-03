@@ -300,15 +300,8 @@ namespace BuildingGenerator.BuildingGenerator
             }
         }
 
-        private void _RenderRoofToEveryDynamicSizedStory(Wing wing, Transform wingFolder)
+        private List<Story> _GetStoriesThatNeedRoof(Wing wing)
         {
-
-            if (wing.Stories.Length == 1)
-            {
-                _RenderRoofOnTop(wing, wingFolder);
-                return;
-            }
-
             var storiesThatNeedRoof = new List<Story>();
             for (int i = 0; i < wing.Stories.Length - 1; i++)
             {
@@ -320,30 +313,40 @@ namespace BuildingGenerator.BuildingGenerator
                     storiesThatNeedRoof.Add(lowerStory);
                 }
             }
+            return storiesThatNeedRoof;
+        }
+        private void _PlaceProceduralSizedRoof(List<Story> storiesThatNeedRoof, Wing wing, Transform wingFolder)
+        {
+            foreach (var story in storiesThatNeedRoof)
+            {
+                var roofLevel = story.Level + 1;
+                if (roofLevel > 0 && wing.Stories.Length > roofLevel)
+                {
+                    var dividedBounds = story.Bounds.SubtractAndDivide(wing.Stories[roofLevel].Bounds);
+                    foreach (var bounds in dividedBounds)
+                    {
+                        _PlaceScaledRoofOnBounds(roofLevel, bounds, wing, wingFolder);
+                    }
+                }
+            }
+            var roofBounds = wing.Stories[wing.Stories.Length - 1].Bounds;
+            _PlaceScaledRoofOnBounds(wing.Stories.Length, roofBounds, wing, wingFolder);
+        }
+
+        private void _RenderRoofToEveryDynamicSizedStory(Wing wing, Transform wingFolder)
+        {
+
+            if (wing.Stories.Length == 1)
+            {
+                _RenderRoofOnTop(wing, wingFolder);
+                return;
+            }
+
+            var storiesThatNeedRoof = _GetStoriesThatNeedRoof(wing);
 
             if (wing.GetRoof.Type == RoofType.ProceduralPeak)
             {
-                foreach (var story in storiesThatNeedRoof)
-                {
-                    var roofLevel = story.Level + 1;
-                    if (roofLevel > 0 && wing.Stories.Length > roofLevel)
-                    {
-                        var dividedBounds = story.Bounds.SubtractAndDivide(wing.Stories[roofLevel].Bounds);
-                        foreach (var bounds in dividedBounds)
-                        {
-                            _PlaceScaledRoofOnBounds(roofLevel, bounds, wing, wingFolder);
-                        }
-                    }
-                    /*
-                    else if (wing.Stories.Length == roofLevel)
-                    {
-                        var roofBounds = wing.Stories[story.Level].Bounds;
-                        _PlaceScaledRoofOnBounds(wing.Stories.Length, roofBounds, wing, wingFolder);
-                    }
-                    */
-                }
-                var roofBounds = wing.Stories[wing.Stories.Length-1].Bounds;
-                _PlaceScaledRoofOnBounds(wing.Stories.Length, roofBounds, wing, wingFolder);
+                _PlaceProceduralSizedRoof(storiesThatNeedRoof, wing, wingFolder);
             }
             else
             {
@@ -406,9 +409,14 @@ namespace BuildingGenerator.BuildingGenerator
 
         }
 
+        private bool _IsRoofPermitted(Vector3 positionToCheck)
+        {
+            return (placedFloorPositions.Contains(positionToCheck.ToString())
+                || placedRoofPositions.Contains(positionToCheck.ToString()));
+        }
+
         private void _PlaceRoof(int x, int y, int level, Wing wing, Transform wingFolder)
         {
-            //int level = wing.Stories.Length;
             RoofType type = wing.GetRoof.Type;
             RoofDirection direction = wing.GetRoof.Direction;
             float roofWidth = roofPrefab[(int)type % roofPrefab.Length].Width;
@@ -421,10 +429,7 @@ namespace BuildingGenerator.BuildingGenerator
                         )
                     );
 
-            if (
-                placedFloorPositions.Contains(transformPoint.ToString())
-                || placedRoofPositions.Contains(transformPoint.ToString())
-               )
+            if (_IsRoofPermitted(transformPoint))
             {
                 return;
             }
