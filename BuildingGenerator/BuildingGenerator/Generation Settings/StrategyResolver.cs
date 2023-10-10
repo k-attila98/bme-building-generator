@@ -180,7 +180,8 @@ namespace BuildingGenerator.BuildingGenerator.Generation_Settings
                 "DefaultWingsStrategy",
                 "RandomizedCountWingsStrategy",
                 "TShapedWingsStrategy",
-                "ZigzagShapedWingsStrategy"
+                "ZigzagShapedWingsStrategy",
+                "UShapedWingsStrategy"
             };
         }
 
