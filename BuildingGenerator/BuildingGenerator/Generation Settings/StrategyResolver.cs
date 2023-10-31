@@ -121,16 +121,6 @@ namespace BuildingGenerator.BuildingGenerator.Generation_Settings
 
         public static WallsStrategy ResolveWallsStratFromName(string wallsStratName)
         {
-            /*
-            switch (wallsStratName)
-            {
-                case "DefaultWallsStrategy": return new DefaultWallsStrategy();
-                case "ParametrizedWallsStrategy": return new ParametrizedWallsStrategy();
-                case "MultiStoryParametrizedWallsStrategy": return new MultiStoryParametrizedWallsStrategy();
-                default: throw new Exception("Could not resolve Walls Strategy from name!");
-            }
-            */
-
             if (!GetAllWallsStrats().Contains(wallsStratName))
             {
                 throw new ArgumentException("Could not resolve Walls Strategy from name!");
@@ -149,14 +139,6 @@ namespace BuildingGenerator.BuildingGenerator.Generation_Settings
 
         public static RoofStrategy ResolveRoofStratFromName(string roofStratName)
         {
-            /*
-            switch (roofStratName)
-            {
-                case "DefaultRoofStrategy": return new DefaultRoofStrategy();
-                default: throw new Exception("Could not resolve Roof Strategy from name!");
-            }
-            */
-
             if (!GetAllRoofStrats().Contains(roofStratName))
             {
                 throw new ArgumentException("Could not resolve Roof Strategy from name!");
@@ -208,7 +190,8 @@ namespace BuildingGenerator.BuildingGenerator.Generation_Settings
         {
             return new List<string>()
             {
-                "DefaultStoryStrategy"
+                "DefaultStoryStrategy",
+                "HangingFlooredStoryStrategy"
             };
         }
 
@@ -218,7 +201,8 @@ namespace BuildingGenerator.BuildingGenerator.Generation_Settings
             {
                 "DefaultWallsStrategy",
                 "ParametrizedWallsStrategy",
-                "MultiStoryParametrizedWallsStrategy"
+                "MultiStoryParametrizedWallsStrategy",
+                "BalconyWallsStrategy"
             };
         }
 

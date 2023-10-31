@@ -53,6 +53,7 @@ public class BuildingGenerationOrchestrator
         var floorPrefab = new BasicFloor();
         var roofPrefab = new BasicPyramidRoof();
         var wallPrefab = new BasicWall();
+        var halfWall = new HalfWall();
 
         if (isCustomPrefabs)
         {
@@ -62,7 +63,7 @@ public class BuildingGenerationOrchestrator
         {
             _SetPrefabPlacer(ref prefabPlacer, floorPrefab.GetTransform(),
                 new Transform[] { roofPrefab.GetTransform(), roofPrefab.GetTransform(), roofPrefab.GetTransform() },
-                new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() }
+                new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform(), halfWall.GetTransform() }
             );
         }
     }

@@ -5,5 +5,6 @@ public enum Wall
 {
     Standard,
     Window,
-    Door
+    Door,
+    Half
 }

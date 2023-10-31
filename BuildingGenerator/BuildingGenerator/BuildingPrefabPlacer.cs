@@ -125,19 +125,23 @@ namespace BuildingGenerator.BuildingGenerator
             return false;
         }
 
-        private void _RenderStory(Story story, Wing wing, Transform wingFolder)
+        private void _PlaceFloors(int startX, int startY, int endX, int endY, int level, Transform storyFolder)
         {
-            Transform storyFolder = new Transform("Story " + story.Level);
-            storyFolder.SetParent(wingFolder);
-
-            RectInt[] intersections = _GetIntersectionsOnLevelForStory(story.Level, story);
-
-            for (int x = story.Bounds.min.x; x < story.Bounds.max.x; x++)
+            for (int x = startX; x < endX; x++)
             {
-                for (int y = story.Bounds.min.y; y < story.Bounds.max.y; y++)
+                for (int y = startY; y < endY; y++)
                 {
+                    _PlaceFloor(x, y, level, storyFolder);
+                }
+            }
+        }
 
-                    _PlaceFloor(x, y, story.Level, storyFolder);
+        private void _PlaceWalls(int startX, int startY, int endX, int endY, int level, RectInt[] intersections, Story story, Transform storyFolder)
+        {
+            for (int x = startX; x < endX; x++)
+            {
+                for (int y = startY; y < endY; y++)
+                {
 
                     if (_IsWallClipping(x, y, intersections))
                     {
@@ -145,35 +149,95 @@ namespace BuildingGenerator.BuildingGenerator
                     }
 
                     //south wall
-                    if (y == story.Bounds.min.y)
+                    if (y == startY)
                     {
-                        Transform wall = wallPrefab[(int)story.Walls[x - story.Bounds.min.x]];
-                        _PlaceSouthWall(x, y, story.Level, storyFolder, wall);
+                        Transform wall = wallPrefab[(int)story.Walls[x - startX]];
+                        _PlaceSouthWall(x, y, level, storyFolder, wall);
                     }
 
                     //east wall
-                    if (x == story.Bounds.min.x + story.Bounds.size.x - 1)
+                    if (x == startX + story.Bounds.size.x - 1)
                     {
-                        Transform wall = wallPrefab[(int)story.Walls[story.Bounds.size.x + y - story.Bounds.min.y]];
-                        _PlaceEastWall(x, y, story.Level, storyFolder, wall);
+                        Transform wall = wallPrefab[(int)story.Walls[story.Bounds.size.x + y - startY]];
+                        _PlaceEastWall(x, y, level, storyFolder, wall);
                     }
 
                     //north wall
-                    if (y == story.Bounds.min.y + story.Bounds.size.y - 1)
+                    if (y == startY + story.Bounds.size.y - 1)
                     {
-                        Transform wall = wallPrefab[(int)story.Walls[story.Bounds.size.x * 2 + story.Bounds.size.y - (x - story.Bounds.min.x + 1)]];
-                        _PlaceNorthWall(x, y, story.Level, storyFolder, wall);
+                        Transform wall = wallPrefab[(int)story.Walls[story.Bounds.size.x * 2 + story.Bounds.size.y - (x - startX + 1)]];
+                        _PlaceNorthWall(x, y, level, storyFolder, wall);
                     }
 
                     //west wall
-                    if (x == story.Bounds.min.x)
+                    if (x == startX)
                     {
-                        Transform wall = wallPrefab[(int)story.Walls[(story.Bounds.size.x + story.Bounds.size.y) * 2 - (y - story.Bounds.min.y + 1)]];
-                        _PlaceWestWall(x, y, story.Level, storyFolder, wall);
+                        Transform wall = wallPrefab[(int)story.Walls[(story.Bounds.size.x + story.Bounds.size.y) * 2 - (y - startY + 1)]];
+                        _PlaceWestWall(x, y, level, storyFolder, wall);
                     }
 
                 }
             }
+        }
+
+        private void _PlaceHalfWalls(int startX, int startY, int endX, int endY, int level, RectInt[] intersections, Story story, Transform storyFolder)
+        {
+            for (int x = startX; x < endX; x++)
+            {
+                for (int y = startY; y < endY; y++)
+                {
+                    Transform wall = wallPrefab[3];
+                    if (_IsWallClipping(x, y, intersections))
+                    {
+                        continue;
+                    }
+
+                    //south wall
+                    if (y == startY)
+                    {
+                        _PlaceSouthWall(x, y, level, storyFolder, wall);
+                    }
+
+                    //east wall
+                    if (x == startX + story.Bounds.size.x+1)
+                    {
+                        _PlaceEastWall(x, y, level, storyFolder, wall);
+                    }
+
+                    //north wall
+                    if (y == startY + story.Bounds.size.y+1)
+                    {
+                        _PlaceNorthWall(x, y, level, storyFolder, wall);
+                    }
+
+                    //west wall
+                    if (x == startX)
+                    {
+                        _PlaceWestWall(x, y, level, storyFolder, wall);
+                    }
+
+                }
+            }
+        }
+
+        private void _RenderStory(Story story, Wing wing, Transform wingFolder)
+        {
+            Transform storyFolder = new Transform("Story " + story.Level);
+            storyFolder.SetParent(wingFolder);
+
+            RectInt[] intersections = _GetIntersectionsOnLevelForStory(story.Level, story);
+
+            _PlaceWalls(story.Bounds.min.x, story.Bounds.min.y, story.Bounds.max.x, story.Bounds.max.y, story.Level, intersections, story, storyFolder);
+            if (story.IsHangingFloors)
+            { 
+                _PlaceFloors(story.Bounds.min.x - 1, story.Bounds.min.y - 1, story.Bounds.max.x + 1, story.Bounds.max.y + 1, story.Level, storyFolder);
+                _PlaceHalfWalls(story.Bounds.min.x - 1, story.Bounds.min.y - 1, story.Bounds.max.x + 1, story.Bounds.max.y + 1, story.Level, intersections, story, storyFolder);
+            }
+            else
+            {
+                _PlaceFloors(story.Bounds.min.x, story.Bounds.min.y, story.Bounds.max.x, story.Bounds.max.y, story.Level, storyFolder);
+            }
+
         }
 
         private void _PlaceFloor(int x, int y, int level, Transform storyFolder)
@@ -204,12 +268,12 @@ namespace BuildingGenerator.BuildingGenerator
                 wall,
                 storyFolder.TransformPoint(
                         new Vector3(
-                        x * wallWidth,
+                        x * wallWidth + wallWidth,
                         level * wallHeight,
                         y * wallWidth
                         )
                     ),
-                Quaternion.Identity
+                Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, MathHelper.GetRadFromDeg(180))
             );
             w.Name = "south wall";
             w.SetParent(storyFolder);
@@ -244,12 +308,12 @@ namespace BuildingGenerator.BuildingGenerator
                 wall,
                 storyFolder.TransformPoint(
                     new Vector3(
-                        x * wallWidth + wallWidth,
+                        x * wallWidth, //+ wallWidth,
                         level * wallHeight,
                         y * wallWidth + wallWidth
                         )
                     ),
-                Quaternion.CreateFromAxisAngle(System.Numerics.Vector3.UnitY, MathHelper.GetRadFromDeg(180))
+                Quaternion.Identity
             );
             w.Name = "north wall";
             w.SetParent(storyFolder);

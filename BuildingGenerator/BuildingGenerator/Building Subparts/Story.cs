@@ -8,18 +8,21 @@ public class Story
     public int Level { get; private set; }
     public Wall[] Walls { get; private set; }
     public RectInt Bounds { get; private set; }
+    public bool IsHangingFloors { get; private set; }
 
-    public Story(int level, Wall[] walls)
+    public Story(int level, Wall[] walls, bool isHangningFloors)
     {
         this.Level = level;
         this.Walls = walls;
+        this.IsHangingFloors = isHangningFloors;
     }
     
-    public Story(int level, Wall[] walls, RectInt bounds)
+    public Story(int level, Wall[] walls, RectInt bounds, bool isHangningFloors)
     {
         this.Level = level;
         this.Walls = walls;
         this.Bounds = bounds;
+        this.IsHangingFloors = isHangningFloors;
     }
 
     public override string ToString()
