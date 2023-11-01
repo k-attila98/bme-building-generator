@@ -25,14 +25,14 @@ public class UShapedWingsStrategy : WingsStrategy
                     genParams.BoundingBox = settings.Bounds;
                     break;
                 case 1:
-                    int wingsXOffset1 = (-settings.Bounds.yMax); //+ settings.Bounds.xMax / 2;
-                    int wingsYOffset1 = settings.Bounds.yMax - settings.Bounds.xMax / 2 - settings.Bounds.xMax % 2;
+                    int wingsXOffset1 = settings.Bounds.xMax - settings.Bounds.xMax / 2 - settings.Bounds.xMax % 2;
+                    int wingsYOffset1 = settings.Bounds.yMax;
                     genParams.BoundingBox = new RectInt(new Vector2Int(wingsXOffset1, wingsYOffset1), new Vector2Int(settings.Bounds.size.y, settings.Bounds.size.x));
                     break;
                 case 2:
-                    int wingsXOffset2 = -settings.Bounds.yMax;
-                    int wingsYOffset2 = -settings.Bounds.xMax / 2;
-                    genParams.BoundingBox = new RectInt(new Vector2Int(wingsXOffset2, wingsYOffset2), new Vector2Int(settings.Bounds.size.y, settings.Bounds.size.x));
+                    int wingsXOffset2 = settings.Bounds.yMax - settings.Bounds.xMax % 2;
+                    int wingsYOffset2 = 0;
+                    genParams.BoundingBox = new RectInt(new Vector2Int(wingsXOffset2, wingsYOffset2), new Vector2Int(settings.Bounds.size.x, settings.Bounds.size.y));
                     break;
                 default:
                     break;

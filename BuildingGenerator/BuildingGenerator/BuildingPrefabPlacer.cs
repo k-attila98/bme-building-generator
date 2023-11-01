@@ -96,6 +96,24 @@ namespace BuildingGenerator.BuildingGenerator
             return intersections.ToArray();
         }
 
+        private RectInt[] _GetBalconyIntersectionsOnLevelForStory(int level, Story story, Story modifiedStory)
+        {
+            var stories = storiesByLevel[level];
+            List<RectInt> intersections = new List<RectInt>();
+
+            // on the given level we should filter out the story which we are generating, or it will intersect with itself
+            var otherStories = stories.Except(stories.Where(s => s.Bounds == story.Bounds));
+
+            foreach (var otherStory in otherStories)
+            {
+                var newStoryBounds = new RectInt(otherStory.Bounds.min.x - 1, otherStory.Bounds.min.y - 1, otherStory.Bounds.width + 2, otherStory.Bounds.height + 2);
+                var story2 = new Story(otherStory.Level, otherStory.Walls, newStoryBounds, otherStory.IsHangingFloors);
+                intersections.Add(modifiedStory.Bounds.Intersect(story2.Bounds));
+            }
+
+            return intersections.ToArray();
+        }
+
         private void _RenderWing(Wing wing)
         {
             Transform wingFolder = new Transform("Wing");
@@ -180,18 +198,23 @@ namespace BuildingGenerator.BuildingGenerator
             }
         }
 
-        private void _PlaceHalfWalls(int startX, int startY, int endX, int endY, int level, RectInt[] intersections, Story story, Transform storyFolder)
+        private void _PlaceHalfWalls(int startX, int startY, int endX, int endY, int level, Story story, Transform storyFolder)
         {
+            // the +1s are needed because the start values are shifted by -1, we compensate when passing endX and endY
+            // then we have to go 1 further here to have an overhang part as well
+            var newStoryBounds = new RectInt(startX, startY, endX+1, endY+1);
+            var story2 = new Story(level, story.Walls, newStoryBounds, story.IsHangingFloors);
+            RectInt[] intersections2 = _GetBalconyIntersectionsOnLevelForStory(level, story, story2);
             for (int x = startX; x < endX; x++)
             {
                 for (int y = startY; y < endY; y++)
                 {
-                    Transform wall = wallPrefab[3];
-                    if (_IsWallClipping(x, y, intersections))
+                    if (_IsWallClipping(x, y, intersections2))
                     {
                         continue;
                     }
 
+                    Transform wall = wallPrefab[3];
                     //south wall
                     if (y == startY)
                     {
@@ -231,7 +254,7 @@ namespace BuildingGenerator.BuildingGenerator
             if (story.IsHangingFloors)
             { 
                 _PlaceFloors(story.Bounds.min.x - 1, story.Bounds.min.y - 1, story.Bounds.max.x + 1, story.Bounds.max.y + 1, story.Level, storyFolder);
-                _PlaceHalfWalls(story.Bounds.min.x - 1, story.Bounds.min.y - 1, story.Bounds.max.x + 1, story.Bounds.max.y + 1, story.Level, intersections, story, storyFolder);
+                _PlaceHalfWalls(story.Bounds.min.x - 1, story.Bounds.min.y - 1, story.Bounds.max.x + 1, story.Bounds.max.y + 1, story.Level, story, storyFolder);
             }
             else
             {

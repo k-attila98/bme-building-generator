@@ -304,7 +304,7 @@ namespace BuildingGenerator.Shared
 
         public RectInt Intersect(RectInt other)
         {
-            if (!Overlaps(other) || xMin == other.xMin || yMin == other.yMin)
+            if (!Overlaps(other)) //|| xMin == other.xMin || yMin == other.yMin)
             {
                 return new RectInt(0, 0, 0, 0);
             }
