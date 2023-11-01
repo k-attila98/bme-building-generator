@@ -106,9 +106,9 @@ namespace BuildingGenerator.BuildingGenerator
 
             foreach (var otherStory in otherStories)
             {
-                var newStoryBounds = new RectInt(otherStory.Bounds.min.x - 1, otherStory.Bounds.min.y - 1, otherStory.Bounds.width + 2, otherStory.Bounds.height + 2);
-                var story2 = new Story(otherStory.Level, otherStory.Walls, newStoryBounds, otherStory.IsHangingFloors);
-                intersections.Add(modifiedStory.Bounds.Intersect(story2.Bounds));
+                var extendedStoryBounds = new RectInt(otherStory.Bounds.min.x - 1, otherStory.Bounds.min.y - 1, otherStory.Bounds.width + 2, otherStory.Bounds.height + 2);
+                var extendedOtherStory = new Story(otherStory.Level, otherStory.Walls, extendedStoryBounds, otherStory.IsHangingFloors);
+                intersections.Add(modifiedStory.Bounds.Intersect(extendedOtherStory.Bounds));
             }
 
             return intersections.ToArray();
@@ -203,13 +203,15 @@ namespace BuildingGenerator.BuildingGenerator
             // the +1s are needed because the start values are shifted by -1, we compensate when passing endX and endY
             // then we have to go 1 further here to have an overhang part as well
             var newStoryBounds = new RectInt(startX, startY, endX+1, endY+1);
-            var story2 = new Story(level, story.Walls, newStoryBounds, story.IsHangingFloors);
-            RectInt[] intersections2 = _GetBalconyIntersectionsOnLevelForStory(level, story, story2);
+            var extendedStory = new Story(level, story.Walls, newStoryBounds, story.IsHangingFloors);
+            RectInt[] halfWallIntersections = _GetBalconyIntersectionsOnLevelForStory(level, story, extendedStory);
+
+
             for (int x = startX; x < endX; x++)
             {
                 for (int y = startY; y < endY; y++)
                 {
-                    if (_IsWallClipping(x, y, intersections2))
+                    if (_IsWallClipping(x, y, halfWallIntersections))
                     {
                         continue;
                     }
