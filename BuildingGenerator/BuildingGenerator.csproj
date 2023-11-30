@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Shared\Color.cs" />
+    <Compile Remove="Shared\Material.cs" />
+    <Compile Remove="Shared\Mtl.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Generated\" />
   </ItemGroup>
 

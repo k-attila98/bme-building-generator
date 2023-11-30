@@ -254,13 +254,5 @@ namespace BuildingGenerator.Shared
             return b.ToString();
         }
         
-        /*
-        public string ToString()
-        {
-            return $"f {_vertices[0].Id} {_vertices[1].Id} {_vertices[2].Id}\n";
-        }
-        */
-
-        
     }
 }

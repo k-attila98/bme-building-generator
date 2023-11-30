@@ -42,7 +42,7 @@ namespace BuildingGeneratorTest
             prefabPlacer.floorPrefab = floorPrefab.GetTransform();
             prefabPlacer.roofPrefab = new Transform[] { roofPrefab.GetTransform(), roofPrefab.GetTransform(), roofPrefab.GetTransform() };
             prefabPlacer.wallPrefab = new Transform[] { wallPrefab.GetTransform(), wallPrefab.GetTransform(), wallPrefab.GetTransform() };
-            var placedPrefabs = prefabPlacer.PlacePrefabs(b);
+            var (placedPrefabs, placedRoofs, placedWalls, placedFloors) = prefabPlacer.PlacePrefabs(b);
  
             var result = serializer.StringifyBuilding(placedPrefabs);
 

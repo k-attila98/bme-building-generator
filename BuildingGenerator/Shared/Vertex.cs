@@ -90,12 +90,6 @@ namespace BuildingGenerator.Shared
         {
             return new Vertex(_position.SubtractWithReturn(vertexToSubtract.Position));
         }
-        /*
-        public override string ToString()
-        {
-            return string.Format("v {0} {1} {2}\n", _position.x, _position.y, _position.z);
-        }
-        */
 
         public void Multiply(Vector3 scale)
         {

@@ -10,19 +10,8 @@ namespace BuildingGenerator.BuildingGenerator.Generation_Settings
 {
     public static class StrategyResolver
     {
-
-        
-
         public static WingsStrategy ResolveWingsStratFromName(string wingsStratName)
         {
-            /*
-            switch (wingsStratName)
-            {
-                case "DefaultWingsStrategy": return new DefaultWingsStrategy();
-                case "RandomizedCountWingsStrategy": return new RandomizedCountWingsStrategy();
-                default: throw new Exception("Could not resolve Wings Strategy from name!");
-            }*/
-
             if (!GetAllWingsStrats().Contains(wingsStratName))
             {
                 throw new ArgumentException("Could not resolve Wings Strategy from name!");
@@ -41,13 +30,6 @@ namespace BuildingGenerator.BuildingGenerator.Generation_Settings
 
         public static WingStrategy ResolveWingStratFromName(string wingStratName)
         {
-            /*
-            switch (wingStratName)
-            {
-                case "DefaultWingStrategy": return new DefaultWingStrategy();
-                default: throw new Exception("Could not resolve Wing Strategy from name!");
-            }
-            */
 
             if (!GetAllWingStrats().Contains(wingStratName))
             {
@@ -67,15 +49,6 @@ namespace BuildingGenerator.BuildingGenerator.Generation_Settings
 
         public static StoriesStrategy ResolveStoriesStratFromName(string storiesStratName)
         {
-            /*
-            switch (storiesStratName)
-            {
-                case "DefaultStoriesStrategy": return new DefaultStoriesStrategy();
-                case "RandomizedCountStoriesStrategy": return new RandomizedCountStoriesStrategy();
-                case "RandomizedCountStoriesWithTerracesStrategy": return new RandomizedCountStoriesWithTerracesStrategy();
-                default: throw new Exception("Could not resolve Stories Strategy from name!");
-            }
-            */
 
             if (!GetAllStoriesStrats().Contains(storiesStratName))
             {
@@ -95,13 +68,6 @@ namespace BuildingGenerator.BuildingGenerator.Generation_Settings
 
         public static StoryStrategy ResolveStoryStratFromName(string storyStratName)
         {
-            /*
-            switch (storyStratName)
-            {
-                case "DefaultStoryStrategy": return new DefaultStoryStrategy();
-                default: throw new Exception("Could not resolve Story Strategy from name!");
-            }
-            */
 
             if (!GetAllStoryStrats().Contains(storyStratName))
             {
@@ -201,8 +167,7 @@ namespace BuildingGenerator.BuildingGenerator.Generation_Settings
             {
                 "DefaultWallsStrategy",
                 "ParametrizedWallsStrategy",
-                "MultiStoryParametrizedWallsStrategy",
-                "BalconyWallsStrategy"
+                "MultiStoryParametrizedWallsStrategy"
             };
         }
 

@@ -85,12 +85,7 @@ namespace BuildingGenerator.Shared
 
             _SetVertexIds();
         }
-        /*
-        public Transform(Obj obj)
-        { 
-            Faces = 
-        }
-        */
+
         public void Translate(Vector3 vector)
         {
             for (int i = 0; i < Faces.Length; i++)
