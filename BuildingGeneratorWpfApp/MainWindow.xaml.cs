@@ -88,7 +88,7 @@ namespace BuildingGeneratorWpfApp
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             //TODO: a fájl nevét kicseérlni hogy ne relatív path legyen (lehet így nem működik még nem próbáltam)
-            string path = $"../../../../BuildingGenerator/Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss")}.obj";
+            string path = $"../../../../BuildingGenerator/Generated/building-{DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss")}/building-{DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss")}.obj";
 
             _SaveViewPortContent(ref viewPort3d, path);
             //TODO: ugyanez igaz importra is
@@ -108,9 +108,9 @@ namespace BuildingGeneratorWpfApp
             var objExporter = new CustomObjExporter()
             {
                 TextureFolder = dir,
-                FileCreator = f => File.Create(System.IO.Path.Combine(dir, f)),
+                FileCreator = f => System.IO.Path.GetExtension(f) == ".mtl" ? File.Create(System.IO.Path.Combine(dir, f)) : File.Create(f),
                 SwitchYZ = true,
-                TextureFileName = guidName.ToString()
+                TextureFileName = Guid.NewGuid().ToString()
             };
 
 
